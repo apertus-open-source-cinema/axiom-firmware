@@ -58,8 +58,14 @@ struct raw_info raw_info = {
     .api_version = 1,
     .bits_per_pixel = 12,
     .black_level = 0,
-    .white_level = 2000,
-    .cfa_pattern = 0x00010102,          // Blue  Green  Green  Red
+    .white_level = 4096,
+
+    // The sensor bayer patterns are:
+    //  0x02010100  0x01000201  0x01020001  0x00010102
+    //      R G         G B         G R         B G
+    //      G B         R G         B G         G R
+    .cfa_pattern = 0x02010100,
+
     .calibration_illuminant1 = 1,       // Daylight
     .color_matrix1 = {CAM_COLORMATRIX1},// camera-specific, from dcraw.c
 };
@@ -98,7 +104,22 @@ int main(int argc, char** argv)
     printf("Frame size  : %d bytes\n", raw_info.frame_size);
     printf("Black level : %d\n", raw_info.black_level);
     printf("White level : %d\n", raw_info.white_level);
-    
+    switch(raw_info.cfa_pattern) {
+        case 0x02010100:
+    	    printf("Bayer Order : RGGB \n");    
+            break;
+        case 0x01000201:
+    	    printf("Bayer Order : GBRG \n");    
+            break;
+        case 0x01020001:
+    	    printf("Bayer Order : GRBG \n");    
+            break;
+        case 0x00010102:
+    	    printf("Bayer Order : BGGR \n");    
+            break;
+    }
+
+
     /* load the raw data and convert it to DNG */
     char* raw = malloc(raw_info.frame_size);
     CHECK(raw, "malloc");
