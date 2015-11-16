@@ -73,6 +73,16 @@ struct raw_pixblock
     unsigned int g_lo: 2;
 } __attribute__((packed,aligned(2)));
 
+/* two pixels packed as 12-bit (Apertus raw12) */
+struct raw12_twopix
+{
+    unsigned a_hi: 8;
+    unsigned b_hi: 4;
+    unsigned a_lo: 4;
+    unsigned b_lo: 8;
+} __attribute__((packed));
+
+
 /* call this before performing any raw image analysis */
 /* returns 1=success, 0=failed */
 int raw_update_params();

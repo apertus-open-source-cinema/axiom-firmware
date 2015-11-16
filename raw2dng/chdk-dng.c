@@ -77,19 +77,10 @@ static int get_tick_count() { return get_ms_clock_value_fast(); }
 /* todo: move this into FPGA */
 void FAST reverse_bytes_order(char* buf, int count)
 {
-    /* two pixels packed as 12-bit */
-    struct twopix
-    {
-        unsigned a_hi: 8;
-        unsigned b_hi: 4;
-        unsigned a_lo: 4;
-        unsigned b_lo: 8;
-    } __attribute__((packed));
-    
     /* 4096 pixels per line */
     struct line
     {
-        struct twopix line[2048];
+        struct raw12_twopix line[2048];
     } __attribute__((packed));
     
     /* swap odd and even lines */

@@ -31,6 +31,11 @@ struct raw_info raw_info;
 #define FAIL(fmt,...) { fprintf(stderr, "Error: "); fprintf(stderr, fmt, ## __VA_ARGS__); fprintf(stderr, "\n"); exit(1); }
 #define CHECK(ok, fmt,...) { if (!ok) FAIL(fmt, ## __VA_ARGS__); }
 
+#define MIN(a,b) \
+   ({ __typeof__ ((a)+(b)) _a = (a); \
+      __typeof__ ((a)+(b)) _b = (b); \
+     _a < _b ? _a : _b; })
+
 void raw_set_geometry(int width, int height, int skip_left, int skip_right, int skip_top, int skip_bottom)
 {
     raw_info.width = width;
@@ -69,6 +74,24 @@ struct raw_info raw_info = {
     .calibration_illuminant1 = 1,       // Daylight
     .color_matrix1 = {CAM_COLORMATRIX1},// camera-specific, from dcraw.c
 };
+
+/* apply a constant offset to each raw12 pixel */
+static void raw12_data_offset(void* buf, int frame_size, int offset)
+{
+    int i;
+    struct raw12_twopix * buf2 = (struct raw12_twopix *) buf;
+    for (i = 0; i < frame_size / sizeof(struct raw12_twopix); i ++)
+    {
+        unsigned a = (buf2[i].a_hi << 4) | buf2[i].a_lo;
+        unsigned b = (buf2[i].b_hi << 8) | buf2[i].b_lo;
+        
+        a = MIN(a + offset, 4095);
+        b = MIN(b + offset, 4095);
+        
+        buf2[i].a_lo = a; buf2[i].a_hi = a >> 4;
+        buf2[i].b_lo = b; buf2[i].b_hi = b >> 8;
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -127,6 +150,19 @@ int main(int argc, char** argv)
     int r = fread(raw, 1, raw_info.frame_size, fi);
     CHECK(r == raw_info.frame_size, "fread");
     raw_info.buffer = raw;
+    
+    if (raw_info.black_level < 0)
+    {
+        /* We can't use a negative black level,
+         * but we may want to use one to fix green color cast in some images.
+         * Workaround: add a constant offset to the raw data, and use black=0 in exif.
+         */
+        int offset = -raw_info.black_level;     /* positive number */
+        printf("Raw offset  : %d\n", offset);
+        raw12_data_offset(raw_info.buffer, raw_info.frame_size, offset);
+        raw_info.black_level = 0;
+        raw_info.white_level = MIN(raw_info.white_level + offset, 4095);
+    }
     
     /* replace input file extension with .DNG */
     char fo[256];
