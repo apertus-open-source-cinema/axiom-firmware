@@ -58,7 +58,7 @@ struct raw_info raw_info = {
     .api_version = 1,
     .bits_per_pixel = 12,
     .black_level = 0,
-    .white_level = 4096,
+    .white_level = 4095,
 
     // The sensor bayer patterns are:
     //  0x02010100  0x01000201  0x01020001  0x00010102
