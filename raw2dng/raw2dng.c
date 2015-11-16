@@ -64,7 +64,7 @@ struct raw_info raw_info = {
     //  0x02010100  0x01000201  0x01020001  0x00010102
     //      R G         G B         G R         B G
     //      G B         R G         B G         G R
-    .cfa_pattern = 0x02010100,
+    .cfa_pattern = 0x01000201,
 
     .calibration_illuminant1 = 1,       // Daylight
     .color_matrix1 = {CAM_COLORMATRIX1},// camera-specific, from dcraw.c
@@ -127,8 +127,6 @@ int main(int argc, char** argv)
     int r = fread(raw, 1, raw_info.frame_size, fi);
     CHECK(r == raw_info.frame_size, "fread");
     raw_info.buffer = raw;
-
-    reverse_bytes_order(raw, raw_info.frame_size);
     
     /* replace input file extension with .DNG */
     char fo[256];
