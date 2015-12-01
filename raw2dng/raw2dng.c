@@ -52,12 +52,11 @@ void raw_set_geometry(int width, int height, int skip_left, int skip_right, int 
     raw_info.jpeg.height = raw_info.height - skip_top - skip_bottom;
 }
 
-//~ { "Nikon D5100", 0, 0x3de6,
-//~ { 8198,-2239,-724,-4871,12389,2798,-1043,2050,7181 } },
-#define CAM_COLORMATRIX1                       \
-     8198, 10000,    -2239, 10000,    -724, 10000, \
-    -4871, 10000,    12389, 10000,    2798, 10000, \
-    -1043, 10000,     2050, 10000,    7181, 10000
+/* computed by matching CC3.raw12 with _GEZ6498.NEF (Nikon D800E) */
+#define CAM_COLORMATRIX1                          \
+   12608, 10000,    -4345, 10000,    -962, 10000, \
+   -2849, 10000,    10361, 10000,    1958, 10000, \
+    -572, 10000,     2786, 10000,    6293, 10000
 
 struct raw_info raw_info = {
     .api_version = 1,
