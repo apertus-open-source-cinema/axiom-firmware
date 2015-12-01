@@ -216,7 +216,7 @@ static int find_tag_index(struct dir_entry * ifd, int num, unsigned short tag)
 #define DNG_VERSION_INDEX           find_tag_index(ifd0, DIR_SIZE(ifd0), 0xC612)
 #define UNIQUE_CAMERA_MODEL_INDEX   find_tag_index(ifd0, DIR_SIZE(ifd0), 0xC614)
 
-#define CAM_MAKE                    "Canon"
+#define CAM_MAKE                    "Apertus"
 
 
 // Index of specific entries in ifd1 below.
