@@ -1,0 +1,1 @@
+pin_i2c_ibc.xdc
