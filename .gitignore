@@ -1,0 +1,8 @@
+Linux/ArchLinuxARM*.gz
+Linux/DeviceTree/*.dtb
+#Logic/Lattice/*.svf
+Logic/Lattice/**/*.svf
+Logic/Lattice/**/*.bin
+Logic/Lattice/**/*.jed
+Logic/Lattice/**/*.svf.*
+Logic/cmv_hdmi3/*.bit
