@@ -1,0 +1,6 @@
+[submodule "Linux/Xilinx-Kernel"]
+	path = Linux/Xilinx-Kernel
+	url = https://github.com/Xilinx/linux-xlnx.git
+[submodule "Xilinx-u-boot"]
+	path = Xilinx-u-boot
+	url = https://github.com/Xilinx/u-boot-xlnx.git
