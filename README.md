@@ -1,4 +1,4 @@
-# Axiom-Beta-SW
+# Axiom Beta Software
 Software required to boot &amp; operate the Apertus Axiom Beta with CMV12000 sensor
 
 ## Bootloader
