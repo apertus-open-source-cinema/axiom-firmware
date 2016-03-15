@@ -904,7 +904,7 @@ architecture RTL of top is
     -- BRAM LUT Signals
     --------------------------------------------------------------------
 
-    constant CLUT_COUNT : natural := 4;
+    constant CLUT_COUNT : natural := 6;
 
     signal clut_addr : lut11_a (0 to CLUT_COUNT - 1);
     signal clut_dout : lut12_a (0 to CLUT_COUNT - 1);
@@ -1936,8 +1936,11 @@ begin
 	    clut_addr(0) <= std_logic_vector(ccnt_v);
 	    clut_addr(1) <= std_logic_vector(ccnt_v);
 
-	    clut_addr(2) <= std_logic_vector(rcnt_v);
-	    clut_addr(3) <= std_logic_vector(rcnt_v);
+	    clut_addr(2) <= std_logic_vector(ccnt_v);
+	    clut_addr(3) <= std_logic_vector(ccnt_v);
+
+	    clut_addr(4) <= std_logic_vector(rcnt_v);
+	    clut_addr(5) <= std_logic_vector(rcnt_v);
 
 	    lval_v := data_lval_d;
 	    fval_v := data_fval_d;
@@ -1957,10 +1960,13 @@ begin
 	    ch2_in => llut_dout_ch2_dd,
 	    ch3_in => llut_dout_ch3_dd,
 	    --
-	    c0_lut => clut_dout_dd(0),
-	    c1_lut => clut_dout_dd(1),
-	    r0_lut => clut_dout_dd(2),
-	    r1_lut => clut_dout_dd(3),
+	    c0r0_lut => clut_dout_dd(0),
+	    c1r0_lut => clut_dout_dd(1),
+	    c0r1_lut => clut_dout_dd(2),
+	    c1r1_lut => clut_dout_dd(3),
+	    --
+	    r0_lut => clut_dout_dd(4),
+	    r1_lut => clut_dout_dd(5),
 	    --
 	    ch0_out => data_rcn_ch0,
 	    ch1_out => data_rcn_ch1,

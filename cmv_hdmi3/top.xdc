@@ -178,7 +178,7 @@ create_pblock pblock_clut
 add_cells_to_pblock [get_pblocks pblock_clut] [get_cells reg_lut_inst0]
 resize_pblock [get_pblocks pblock_clut] -add {SLICE_X54Y100:SLICE_X57Y124}
 resize_pblock [get_pblocks pblock_clut] -add {RAMB18_X3Y40:RAMB18_X3Y49}
-resize_pblock [get_pblocks pblock_clut] -add {RAMB36_X3Y20:RAMB36_X3Y24}
+resize_pblock [get_pblocks pblock_clut] -add {RAMB36_X3Y20:RAMB36_X3Y25}
 
 create_pblock pblock_llut
 add_cells_to_pblock [get_pblocks pblock_llut] [get_cells reg_lut_inst2]

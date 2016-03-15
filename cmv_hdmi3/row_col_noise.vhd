@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------
 --  row_col_noise.vhd
 --	Correct Row/Col Noise
---	Version 1.2
+--	Version 1.3
 --
---  Copyright (C) 2014 H.Poetzl
+--  Copyright (C) 2014-2016 H.Poetzl
 --
 --	This program is free software: you can redistribute it and/or
 --	modify it under the terms of the GNU General Public License
@@ -28,8 +28,11 @@ entity row_col_noise is
 	ch2_in	: in std_logic_vector (17 downto 0);
 	ch3_in	: in std_logic_vector (17 downto 0);
 	--
-	c0_lut	: in std_logic_vector (11 downto 0);
-	c1_lut	: in std_logic_vector (11 downto 0);
+	c0r0_lut : in std_logic_vector (11 downto 0);
+	c1r0_lut : in std_logic_vector (11 downto 0);
+	c0r1_lut : in std_logic_vector (11 downto 0);
+	c1r1_lut : in std_logic_vector (11 downto 0);
+	--
 	r0_lut	: in std_logic_vector (11 downto 0);
 	r1_lut	: in std_logic_vector (11 downto 0);
 	--
@@ -115,26 +118,23 @@ architecture RTL of row_col_noise is
     alias p2_v0 : std_logic_vector (23 downto 0) is p2(23 downto 0);
     alias p2_v1 : std_logic_vector (23 downto 0) is p2(47 downto 24);
 
+    function invmsb (v : std_logic_vector)
+    	return std_logic_vector is
+    begin
+	return not v(v'high) & v(v'high - 1 downto 0);
+    end function;
+
+
 begin
-    ab0_v0 <= not c0_lut(c0_lut'high) & c0_lut(c0_lut'high - 1 downto 0);
-    ab0_v1 <= not c1_lut(c1_lut'high) & c1_lut(c1_lut'high - 1 downto 0);
-    ab0_v2 <= not c0_lut(c0_lut'high) & c0_lut(c0_lut'high - 1 downto 0);
-    ab0_v3 <= not c1_lut(c1_lut'high) & c1_lut(c1_lut'high - 1 downto 0);
+    ab0_v0 <= invmsb(c0r0_lut);
+    ab0_v1 <= invmsb(c1r0_lut);
+    ab0_v2 <= invmsb(c0r1_lut);
+    ab0_v3 <= invmsb(c1r1_lut);
 
-    c0_v0 <= not r0_lut(r0_lut'high) & r0_lut(r0_lut'high - 1 downto 0);
-    c0_v1 <= not r0_lut(r0_lut'high) & r0_lut(r0_lut'high - 1 downto 0);
-    c0_v2 <= not r1_lut(r1_lut'high) & r1_lut(r1_lut'high - 1 downto 0);
-    c0_v3 <= not r1_lut(r1_lut'high) & r1_lut(r1_lut'high - 1 downto 0);
-
-/*  ab0_v0 <= c0_lut;
-    ab0_v1 <= c1_lut;
-    ab0_v2 <= c0_lut;
-    ab0_v3 <= c1_lut;
-
-    c0_v0 <= r0_lut;
-    c0_v1 <= r0_lut;
-    c0_v2 <= r1_lut;
-    c0_v3 <= r1_lut;	*/
+    c0_v0 <= invmsb(r0_lut);
+    c0_v1 <= invmsb(r0_lut);
+    c0_v2 <= invmsb(r1_lut);
+    c0_v3 <= invmsb(r1_lut);
 
     DSP48E1_row_col : entity work.dsp48_wrap
 	generic map (
