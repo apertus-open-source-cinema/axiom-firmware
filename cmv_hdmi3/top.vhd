@@ -2908,73 +2908,83 @@ begin
     end process;
 
     rgb_proc : process (hdmi_clk)
+
+	variable cond : boolean;
+	
+	variable hd_r_d : std_logic_vector(11 downto 0);
+	variable hd_b_d : std_logic_vector(11 downto 0);
+
 	function "*" ( a : std_logic_vector; b : std_logic_vector )
 	    return std_logic_vector is
 
 	    variable res_v : std_logic_vector(a'high*2+1 downto a'low*2);
+	    variable J : natural;
 	begin
 	    for I in a'high downto a'low loop
+		J := I - a'low + b'low;
 		res_v(I*2+1) := a(I);
-		res_v(I*2) := b(I);
+		res_v(I*2) := b(J);
 	    end loop;
 	    return res_v;
 	end function;
+
+	function sel ( c : boolean; 
+	    a : std_logic_vector;
+	    b : std_logic_vector )
+	    return std_logic_vector is
+	begin
+	    if c then
+	    	return a;
+	    else
+	    	return b;
+	    end if;
+	end function;
+
     begin
 	if rising_edge(hdmi_clk) then
-	    case reg_oscn(15)(26 downto 24) is
-		when "000" =>
+
+	    cond := scan_fcnt(0) = '1' when reg_oscn(15)(25) = '1'
+	    	else reg_oscn(15)(24) = '1';
+
+	    case reg_oscn(15)(27 downto 26) is
+		when "00" =>	-- normal output
 		    rgb_data(0) <= hd_r(11 downto 4);
 		    rgb_data(1) <= hd_g1(11 downto 4);
 		    rgb_data(2) <= hd_b(11 downto 4);
 
+		when "01" =>	-- r/g1, b/g2 alternate
+		    rgb_data(0) <= sel(cond,
+		    	 hd_r(11 downto 4), hd_b(11 downto 4));
+		    rgb_data(1) <= sel(cond,
+		    	 hd_g1(3 downto 0) * hd_r(3 downto 0), 
+			 hd_g2(3 downto 0) * hd_b(3 downto 0));
+		    rgb_data(2) <= sel(cond,
+		    	 hd_g1(11 downto 4), hd_g2(11 downto 4));
+			 
+		when "10" =>	-- g1/g2, r/b fixed (AlexML)	
+		    rgb_data(0) <= sel(cond,
+		    	 hd_r(11 downto 4), hd_r_d(11 downto 4));
+		    rgb_data(1) <= sel(cond,
+		    	 hd_g1(11 downto 4), hd_g2(11 downto 4));
+		    rgb_data(0) <= sel(cond,
+		    	 hd_b(11 downto 4), hd_b_d(11 downto 4));
 
-		when "001" =>
-		    rgb_data(0) <= hd_r(11 downto 4);
-		    rgb_data(1) <= hd_g1(11 downto 4);
-		    rgb_data(2) <= hd_g1(3 downto 0) * hd_r(3 downto 0);
-
-		when "010" =>
-		    rgb_data(0) <= hd_b(11 downto 4);
-		    rgb_data(1) <= hd_g2(11 downto 4);
-		    rgb_data(2) <= hd_g2(3 downto 0) * hd_b(3 downto 0);
-
-		when "011" =>
-		    rgb_data(0) <= hd_r(11 downto 4) when scan_fcnt(0) 
-			else hd_b(11 downto 4);
-		    rgb_data(1) <= hd_g1(11 downto 4) when scan_fcnt(0)
-			else hd_g2(11 downto 4);
-		    rgb_data(2) <= hd_g1(3 downto 0) * hd_r(3 downto 0)
-			when scan_fcnt(0) 
-			else hd_g2(3 downto 0) * hd_b(3 downto 0);
-
-		when "100" =>
-		    rgb_data(0) <= hd_r(11 downto 8) & hd_r(3 downto 0);
-		    rgb_data(1) <= hd_g2(11 downto 4);
-		    rgb_data(2) <= hd_b(11 downto 8) & hd_b(3 downto 0);
-
-		when "101" =>
-		    rgb_data(0) <= hd_r(11 downto 4) when scan_fcnt(0)
-			else hd_r(11 downto 8) & hd_r(3 downto 0);
-		    rgb_data(1) <= hd_g1(11 downto 4) when scan_fcnt(0)
-			else hd_g2(11 downto 4);
-		    rgb_data(2) <= hd_b(11 downto 8) when scan_fcnt(0)
-			else hd_b(11 downto 8) & hd_b(3 downto 0);
-
-		when "110" =>
-		    rgb_data(0) <= hd_b(11 downto 8) & hd_r(3 downto 0);
-		    rgb_data(1) <= hd_g1(11 downto 8) & hd_g1(3 downto 0);
-		    rgb_data(2) <= hd_b(11 downto 8) & hd_b(3 downto 0);
-
-		when "111" =>
-		    rgb_data(0) <= hd_r(11 downto 4) when scan_fcnt(0)
-			else hd_b(11 downto 8) & hd_r(3 downto 0);
-		    rgb_data(1) <= hd_g1(11 downto 4) when scan_fcnt(0)
-			else hd_g1(11 downto 8) & hd_g1(3 downto 0);
-		    rgb_data(2) <= hd_b(11 downto 8) when scan_fcnt(0)
-			else hd_b(11 downto 8) & hd_b(3 downto 0);
+		when "11" =>	-- mix and match
+		    rgb_data(0) <= sel(cond,
+		    	hd_r(11 downto 4),
+			hd_b(11 downto 8) & hd_r(3 downto 0));
+		    rgb_data(1) <= sel(cond,
+		    	hd_g1(11 downto 4),
+			hd_g2(11 downto 8) * hd_g1(3 downto 0));
+		    rgb_data(2) <= sel(cond,
+		    	hd_b(11 downto 4),
+			hd_r(11 downto 8) & hd_b(3 downto 0));
 
 		-- when others =>
 	    end case;
+
+	    hd_r_d := hd_r;
+	    hd_b_d := hd_b;
 
 	    -- dil_data <= scan_hcnt(8 downto 0);
 	    dil_data <= dmem_dout;
