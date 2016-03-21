@@ -2966,7 +2966,7 @@ begin
 		    	 hd_r(11 downto 4), hd_r_d(11 downto 4));
 		    rgb_data(1) <= sel(cond,
 		    	 hd_g1(11 downto 4), hd_g2(11 downto 4));
-		    rgb_data(0) <= sel(cond,
+		    rgb_data(2) <= sel(cond,
 		    	 hd_b(11 downto 4), hd_b_d(11 downto 4));
 
 		when "11" =>	-- mix and match
