@@ -18,4 +18,4 @@ offset=55
 python rcn_darkframe.py $offset
 
 # tip: to check the pattern noise on a dark frame, try this:
-./mat4_conf.sh 0 20 0 0  0 0 0 20  0 0 20 0  20 0 0 0  0 0 0 0
+#./mat4_conf.sh 0 20 0 0  0 0 0 20  0 0 20 0  20 0 0 0  0 0 0 0
