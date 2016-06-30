@@ -73,6 +73,7 @@ print('target black level: %d' % target_black)
 
 print('reading %s...' % filename)
 dark = read_pnm(filename)
+dark = dark.astype(numpy.double)
 dark = numpy.round((dark - 1024) / 2)
 
 print('computing row/column offsets...')
