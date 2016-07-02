@@ -710,6 +710,10 @@ int     main(int argc, char *argv[])
             set_cmv_reg(71, exp_time[0] & 0xFFFF);
             set_cmv_reg(72, exp_time[0] >> 16);
         }
+        
+        /* default value for Vtfl: both fields enabled, with value 0 */
+        /* todo: check what happens if Vtfl is disabled */
+        set_cmv_reg(106, 0x2040);
 
         if (num_volts > 1) {
             vtfl[1] = evolt_pc[1];
