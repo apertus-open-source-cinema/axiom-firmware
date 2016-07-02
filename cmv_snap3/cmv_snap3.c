@@ -479,6 +479,24 @@ void    status(const char *str)
             val & 0x00010000 ? 1 : 0);
 }
 
+static uint16_t cmv_regs[128];
+
+static void get_cmv_metadata()
+{
+    for (int i=0; i<128; i++)
+    {
+        cmv_regs[i] = get_cmv_reg(i);
+    }
+}
+
+static void write_cmv_metadata()
+{
+    for (int i=0; i<128; i++)
+    {
+        write_register(cmv_regs[i]);
+    }
+}
+
 
 #define OPTIONS "h82dbprtze:v:s:S:P:R:"
 
@@ -763,6 +781,10 @@ regs:
         uint32_t status = get_fil_reg(FIL_REG_STATUS);
         uint16_t wsel = (status >> 30) & 0x3;
 
+        /* save cmv sensor metadata to memory, to be saved at the end of the file */
+        /* useful if multiple copies of cmv_snap3 are pipelined */
+        /* so each image gets the correct metadata */
+        get_cmv_metadata();
 
         fprintf(stderr, "triggering image capture ...\n");
 
@@ -824,8 +846,8 @@ regs:
 
 skip:
         if (opt_dumpr)
-            for (int i=0; i<128; i++)
-                write_register(get_cmv_reg(i));
+            write_cmv_metadata();
+
         exit((err_flag)?1:0);
 }
 
