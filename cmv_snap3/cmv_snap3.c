@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
+#include <semaphore.h>
 
 #include "cmv_reg.h"
 #include "scn_reg.h"
@@ -497,6 +498,44 @@ static void write_cmv_metadata()
     }
 }
 
+static sem_t * cmv_sem = 0;
+static char cmv_sem_name[]= "cmv";
+
+static void cmv_sem_unlock_and_cleanup()
+{
+    if (cmv_sem)
+    {
+        /* note: we must call sem_post exactly once */
+        /* otherwise, we will allow two other cmv_snap3 processes
+         * running at the same time (and locking up the system)
+         */
+        sem_post(cmv_sem);
+        sem_close(cmv_sem);
+        sem_unlink(cmv_sem_name);
+        cmv_sem = 0;
+    }
+}
+
+/* caveat: this can be called only once at startup */
+static void cmv_sem_init_and_lock()
+{
+    cmv_sem = sem_open(cmv_sem_name,O_CREAT,0644,1);
+    if (cmv_sem == SEM_FAILED)
+    {
+        perror("unable to create semaphore");
+        exit(-1);
+    }
+
+    sem_wait(cmv_sem);
+    if (cmv_sem == SEM_FAILED)
+    {
+        perror("unable to lock semaphore");
+        exit(-1);
+    }
+
+    /* unlock and delete the semaphore, no matter how we exit */
+    atexit(cmv_sem_unlock_and_cleanup);
+}
 
 #define OPTIONS "h82dbprtze:v:s:S:P:R:"
 
@@ -505,6 +544,10 @@ int     main(int argc, char *argv[])
         extern int optind;
         extern char *optarg;
         int c, err_flag = 0;
+
+        /* need exclusive access to image capture hardware */
+        /* useful if we want to start multiple copies of cmv_snap3.c in parallel */
+        cmv_sem_init_and_lock();
 
         cmd_name = argv[0];
         while ((c = getopt(argc, argv, OPTIONS)) != EOF) {
@@ -818,6 +861,15 @@ regs:
 
         set_gen_reg(GEN_REG_CONTROL, ctrl ^ 0x80);
         set_gen_reg(GEN_REG_CONTROL, ctrl);*/
+
+        /* capture complete; other processes can now capture images
+         * while we are saving the current one.
+         *
+         * FIXME: why do we need an extra delay here?
+         * (10000 is too small, locks up the camera)
+         */
+        usleep(20000);
+        cmv_sem_unlock_and_cleanup();
 
         if (opt_zero)
             goto skip;
