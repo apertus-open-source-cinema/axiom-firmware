@@ -839,12 +839,16 @@ regs:
         } else {
             fprintf(stderr, "writing image data ...\n");
 
+            clock_t t1,t2;
+            t1 = clock();
             for (int frame = 0; frame < num_frames; frame++) {
                 for (int row = 0; row < 3072; row+=2) {
                     write_dline(dp, 32*128*2/4);
                     dp += 32*128*2/4;
                 }
             }
+            t2 = clock() - t1;
+            fprintf(stderr, "writing took %.2f s.\n", (double)t2 / CLOCKS_PER_SEC);
         }
 
 
