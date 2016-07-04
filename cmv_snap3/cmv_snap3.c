@@ -740,18 +740,20 @@ int     main(int argc, char *argv[])
 
         if (num_times > 2) {
             exp_time[2] = calc_exp_time(etime_ns[2]);
-            set_cmv_reg(77, exp_time[0] & 0xFFFF);
-            set_cmv_reg(78, exp_time[0] >> 16);
         }
         if (num_times > 1) {
             exp_time[1] = calc_exp_time(etime_ns[1]);
-            set_cmv_reg(75, exp_time[0] & 0xFFFF);
-            set_cmv_reg(76, exp_time[0] >> 16);
         }
         if (num_times > 0) {
             exp_time[0] = calc_exp_time(etime_ns[0]);
+
+            /* configure all 3 exposure registers if -e is specified */
             set_cmv_reg(71, exp_time[0] & 0xFFFF);
             set_cmv_reg(72, exp_time[0] >> 16);
+            set_cmv_reg(75, exp_time[1] & 0xFFFF);
+            set_cmv_reg(76, exp_time[1] >> 16);
+            set_cmv_reg(77, exp_time[2] & 0xFFFF);
+            set_cmv_reg(78, exp_time[2] >> 16);
         }
         
         /* default value for Vtfl: both fields enabled, with value 0 */
