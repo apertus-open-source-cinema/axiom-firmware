@@ -378,7 +378,7 @@ double  total(uint32_t time, uint32_t frames)
 
 uint32_t calc_exp_time(double etime_ns)
 {
-        double lvds = 300e6;
+        double lvds = 250e6;
         double bits = 12;
         double fot_overlap = 34 * (reg82 & 0xFF) + 1;
 
