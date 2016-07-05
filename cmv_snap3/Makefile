@@ -53,6 +53,9 @@ cmv_snap3_sem_test:
 		wait; \
 	done
 
+cmv_snap3_asm: cmv_snap3.o
+	objdump -d -M reg-names-raw --section=.dump_asm cmv_snap3.o
+
 # 	block normal .c -> .o
 # %.o : %.c
 

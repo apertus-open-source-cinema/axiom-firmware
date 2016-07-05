@@ -200,21 +200,57 @@ void    write_dvalue(uint32_t val)
         putchar(val & 0xFF);
 }
 
-static inline
-void    write_dline(uint64_t *ptr, unsigned count)
+inline void __attribute__((optimize("-O3,-funroll-loops"))) __attribute__ ((section(".dump_asm")))
+split_dline_12(uint64_t *ptr, unsigned count, uint8_t * outA, uint8_t * outB)
 {
-    for (int c=0; c<count; c++) {
-        if (out_12) {
-            write_dvalue((ptr[c] >> 16) & 0xFFFFFF);
-        } else {
+    for (int c = 0; c < count; c++)
+    {
+        uint64_t x = ptr[c];
+        uint32_t a = x >> 16;  /* & 0xFFFFFF */
+        uint32_t b = x >> 40;  /* & 0xFFFFFF */
+        outA[c*3  ] = a >> 16; outB[c*3  ] = b >> 16;
+        outA[c*3+1] = a >>  8; outB[c*3+1] = b >>  8;
+        outA[c*3+2] = a      ; outB[c*3+2] = b      ;
+    }
+}
+
+static
+void   write_dline(uint64_t *ptr, unsigned count)
+{
+    if (out_12)
+    {
+        /* allocate two line buffers on first use */
+        static uint8_t * out_lines = 0;
+        size_t line_size = count * 2 * 12 / 8;
+
+        if (!out_lines)
+        {
+            out_lines = malloc(2 * line_size);
+
+            if (!out_lines)
+            {
+                fprintf(stderr,
+                    "error allocating memory\n%s\n",
+                    strerror(errno));
+                exit(3);
+            }
+        }
+
+        /* split Bayer data in two lines for raw12 output */
+        split_dline_12(ptr, count, out_lines, out_lines + line_size);
+
+        /* write the two lines */
+        fwrite(out_lines, 1, 2 * line_size, stdout);
+    }
+    else
+    {
+        for (int c=0; c<count; c++)
+        {
             write_value((ptr[c] >> 28) & 0xFFF);
             write_value((ptr[c] >> 16) & 0xFFF);
         }
-    }
-    for (int c=0; c<count; c++) {
-        if (out_12) {
-            write_dvalue((ptr[c] >> 40) & 0xFFFFFF);
-        } else {
+        for (int c=0; c<count; c++)
+        {
             write_value((ptr[c] >> 52) & 0xFFF);
             write_value((ptr[c] >> 40) & 0xFFF);
         }
@@ -492,10 +528,7 @@ static void get_cmv_metadata()
 
 static void write_cmv_metadata()
 {
-    for (int i=0; i<128; i++)
-    {
-        write_register(cmv_regs[i]);
-    }
+    fwrite(cmv_regs, 2, 128, stdout);
 }
 
 static sem_t * cmv_sem = 0;
