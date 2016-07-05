@@ -203,22 +203,22 @@ void    write_dvalue(uint32_t val)
 static inline
 void    write_dline(uint64_t *ptr, unsigned count)
 {
-        for (int c=0; c<count; c++) {
-            if (out_12) {
-                write_dvalue((ptr[c] >> 40) & 0xFFFFFF);
-            } else {
-                write_value((ptr[c] >> 52) & 0xFFF);
-                write_value((ptr[c] >> 40) & 0xFFF);
-            }
+    for (int c=0; c<count; c++) {
+        if (out_12) {
+            write_dvalue((ptr[c] >> 16) & 0xFFFFFF);
+        } else {
+            write_value((ptr[c] >> 28) & 0xFFF);
+            write_value((ptr[c] >> 16) & 0xFFF);
         }
-        for (int c=0; c<count; c++) {
-            if (out_12) {
-                write_dvalue((ptr[c] >> 16) & 0xFFFFFF);
-            } else {
-                write_value((ptr[c] >> 28) & 0xFFF);
-                write_value((ptr[c] >> 16) & 0xFFF);
-            }
+    }
+    for (int c=0; c<count; c++) {
+        if (out_12) {
+            write_dvalue((ptr[c] >> 40) & 0xFFFFFF);
+        } else {
+            write_value((ptr[c] >> 52) & 0xFFF);
+            write_value((ptr[c] >> 40) & 0xFFF);
         }
+    }
 }
 
 static inline
