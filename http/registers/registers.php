@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>apertus&deg; Axiom Alpha Registers</title>
+    <title>apertus&deg; AXIOM Beta Registers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="../libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -98,7 +98,7 @@ if (!isset($_GET['page'])) {
 		<p><a class="btn <?php if ($page == "time") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=time&70&71&72">Timing</a></p>
 		<p><a class="btn <?php if ($page == "hdr") { echo "btn-success"; } else { echo "btn-primary"; } ?>" href="registers.php?page=hdr&71&72&73&74&75&76&77&78&79&80&106&118">HDR</a></p>
 	  </div>
-  <h1 style="margin-top: 0px; padding-top:10px">apertus&deg; Axiom Alpha Registers</h1>
+  <h1 style="margin-top: 0px; padding-top:10px">apertus&deg; AXIOM Beta Registers</h1>
 
 <?php
 $registers_to_show = null;

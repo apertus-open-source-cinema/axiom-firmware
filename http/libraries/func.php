@@ -13,7 +13,8 @@ function SetRegisterValue($register, $value) {
 } 
 
 function GetRegisters() {
-	$cmd = "sudo bash /root/cmv_reg_read_all.sh";
+	//$cmd = "sudo bash /root/registers.sh";
+	$cmd = "sudo /bin/sh /root/cmv_reg_read_all.sh";
 	$return = shell_exec($cmd);
 	$registers = explode("\n", $return);
 	for ($i = 0; $i < 128; $i++) {
