@@ -3,6 +3,7 @@
 # Capture an image with a unique name
 #
 
+PARAMS=$1
 IMAGENAME=`date +%Y%m%d_%H%M%S`
 mkdir -p /opt/picture-snap/$IMAGENAME
 
@@ -10,8 +11,11 @@ mkdir -p /opt/picture-snap/$IMAGENAME
 fil_reg 15 0
 
 #capture frame
-./cmv_snap3 -e 10ms -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
-# todo make exposure time dynamic
+./cmv_snap3 -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
+
+#convert to DNG
+./raw2dng /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12 --swap-lines 
+
 
 # restart HDMI live stream
 fil_reg 15 0x01000100
