@@ -26,4 +26,4 @@ convert /opt/picture-snap/$IMAGENAME/$IMAGENAME.ppm /opt/picture-snap/$IMAGENAME
 # restart HDMI live stream
 fil_reg 15 0x01000100
 
-echo "done!"
+echo "all done - JPG written!"
