@@ -1,0 +1,36 @@
+#!/bin/sh
+
+scn_reg() {
+    addr=$(( 0x80000100 + ($1 * 2) ))
+    [ $# -gt 1 ] \
+	&& devmem $addr 16 $2 \
+	|| devmem $addr 16
+}
+
+gen_reg() {
+    addr=$(( 0x80100100 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& devmem $addr 32 $2 \
+	|| devmem $addr 32
+}
+
+mat_reg() {
+    addr=$(( 0x80200100 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& devmem $addr 32 $2 \
+	|| devmem $addr 32
+}
+
+pll_reg() {
+    addr=$(( 0x80400000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& devmem $addr 32 $2 \
+	|| devmem $addr 32
+}
+
+mem_reg() {
+    addr=$(( 0x80500000 + ($1 * 4) ))
+    [ $# -gt 1 ] \
+	&& devmem $addr 32 $2 \
+	|| devmem $addr 32
+}

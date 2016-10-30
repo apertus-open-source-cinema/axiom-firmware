@@ -8,8 +8,6 @@ IMAGENAME=`date +%Y%m%d_%H%M%S`
 mkdir -p /opt/picture-snap/$IMAGENAME
 echo /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 
-#TODO handle $PARAMS being empty
-
 # Stop HDMI live stream so it does not interfere with image snapping
 fil_reg 15 0
 

@@ -1,3 +1,4 @@
+
 # Offset tuning: until the black reference columns are around 128 (not critical, +/-50 is fine)
 # ADC_RANGE tuning: until an overexposed image (by 2 stops or so) reaches 4000 at 99.9th percentile
 # this is so it won't clip harshly to white, and to also use the full range
@@ -38,4 +39,3 @@ cmv_reg 116 $ADC_RANGE # ADC_range fine-tuned for each gain
 cmv_reg 100 1          # ADC_range_mult2
 cmv_reg 87 2000        # offset 1
 cmv_reg 88 2000        # offset 2
-

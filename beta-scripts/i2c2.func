@@ -1,0 +1,54 @@
+#!/bin/sh
+
+. ./bit.func
+
+
+i2c2_get() {
+    i2cget -y 2 $@
+}
+
+i2c2_set() {
+    i2cset -y 2 $@
+}
+
+i2c2_bit_get() {
+    local val=`i2c2_get $1 $2`
+    local msk=`bit_msk $3`
+    local bit=$(( (val & msk) >> $3 ))
+    printf "%d" $bit
+    return $bit
+}
+
+i2c2_bit_set() {
+    local val=`i2c2_get $1 $2`
+    local msk=`bit_msk $3`
+    val=$(( val | msk ))
+    i2c2_set $1 $2 $val
+}
+
+i2c2_bit_clr() {
+    local val=`i2c2_get $1 $2`
+    local msk=`bit_msk $3`
+    val=$(( val & ~msk ))
+    i2c2_set $1 $2 $val
+}
+
+i2c2_map() {
+    local val=`i2c2_get $1 $2`
+    val=`bit_map $val $3 $4 $5`
+    i2c2_set $1 $2 $val
+}
+
+i2c2_bit() {
+    [ -n "$4" ] && \
+      i2c2_map $1 $2 $3 $3 $4 ||
+      i2c2_bit_get $1 $2 $3
+}
+
+i2c2_mbv() {
+    local val=`i2c2_get $1 $2`
+    local msk=`bit_msk $3 $4`
+    val=$(( (val & msk) >> $3 ))
+    printf "%d" $val
+}
+
