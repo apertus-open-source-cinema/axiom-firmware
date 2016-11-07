@@ -4,10 +4,10 @@ TARGETS = mimg
 
 all : $(TARGETS)
 
-CC = gcc
+CC = $(CROSS_COMPILE)gcc
 STRIP = strip
 CFLAGS += -ggdb -Wall -std=gnu99 -O2
-LDFLAGS += -lm
+LDLIBS += -lm
 
 install:
 	$(STRIP) $(TARGETS)
