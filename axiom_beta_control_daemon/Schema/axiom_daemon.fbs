@@ -1,0 +1,11 @@
+// TODO: Add namespace
+enum ConnectionType:byte { I2C, UART, SPI }
+
+table Setting
+{
+    destination:string;
+    connectionType:ConnectionType;
+    payload:[ubyte];
+}
+
+root_type Setting;

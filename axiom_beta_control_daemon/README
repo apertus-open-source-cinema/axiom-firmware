@@ -1,0 +1,9 @@
+Daemon for settings and general control of Axiom Beta
+
+Build instructions:
+- mkdir build
+- cd build
+- cmake ..
+- make -j4
+
+
