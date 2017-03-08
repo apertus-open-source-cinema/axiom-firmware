@@ -1,5 +1,10 @@
 // TODO: Add namespace
-enum ConnectionType:byte { I2C, UART, SPI }
+enum ConnectionType:byte { Memory, I2C, UART, SPI }
+
+table SettingList
+{
+    settings:[Setting];
+}
 
 table Setting
 {
@@ -8,4 +13,4 @@ table Setting
     payload:[ubyte];
 }
 
-root_type Setting;
+root_type SettingList;

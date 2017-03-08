@@ -13,8 +13,17 @@
 #include <flatbuffers/util.h>
 #include "Schema/axiom_daemon_generated.h"
 
+#include "API/Client.h"
+
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char *argv[])
 {
+    Client client;
+    uint8_t payload[] = {1, 2 , 5};
+    client.AddSetting("Test123", ConnectionType::Memory, payload, 3);
+    uint8_t payload2[] = {8, 2 , 3, 6, 12};
+    client.AddSetting("Test456abc", ConnectionType::Memory, payload2, 5);
+    client.Execute();
+
     setlogmask (LOG_UPTO (LOG_NOTICE));
     openlog ("axiom_daemon", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 

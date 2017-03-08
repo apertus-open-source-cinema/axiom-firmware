@@ -20,10 +20,12 @@ MESSAGE(STATUS "flatc location: ${FLATC}")
 
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
     "Adapter/*.cpp" "Adapter/*.h"
-    "Connection/*.cpp" "Connection/*.h")
+    "API/*.cpp" "API/*.h"
+    "Connection/*.cpp" "Connection/*.h"
+    "Schema/*.cpp" "Schema/*.h" "Schema/*.fbs")
 
 ADD_CUSTOM_TARGET(flatc_gen 
-                    COMMAND ${FLATC} --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
+                    COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
                     COMMENT "Running PRE_BUILD action" DEPENDS flatc)
 
