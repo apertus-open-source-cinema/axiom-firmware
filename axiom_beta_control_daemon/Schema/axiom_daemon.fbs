@@ -1,4 +1,6 @@
 // TODO: Add namespace
+enum Mode:byte { Read, Write }
+
 enum ConnectionType:byte { Memory, I2C, UART, SPI }
 
 table SettingList
@@ -8,6 +10,7 @@ table SettingList
 
 table Setting
 {
+    mode:Mode;
     destination:string;
     connectionType:ConnectionType;
     payload:[ubyte];

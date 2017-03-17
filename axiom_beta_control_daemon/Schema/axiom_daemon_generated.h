@@ -10,6 +10,27 @@ struct SettingList;
 
 struct Setting;
 
+enum class Mode : int8_t {
+  Read = 0,
+  Write = 1,
+  MIN = Read,
+  MAX = Write
+};
+
+inline const char **EnumNamesMode() {
+  static const char *names[] = {
+    "Read",
+    "Write",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameMode(Mode e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesMode()[index];
+}
+
 enum class ConnectionType : int8_t {
   Memory = 0,
   I2C = 1,
@@ -87,10 +108,14 @@ inline flatbuffers::Offset<SettingList> CreateSettingListDirect(
 
 struct Setting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
-    VT_DESTINATION = 4,
-    VT_CONNECTIONTYPE = 6,
-    VT_PAYLOAD = 8
+    VT_MODE = 4,
+    VT_DESTINATION = 6,
+    VT_CONNECTIONTYPE = 8,
+    VT_PAYLOAD = 10
   };
+  Mode mode() const {
+    return static_cast<Mode>(GetField<int8_t>(VT_MODE, 0));
+  }
   const flatbuffers::String *destination() const {
     return GetPointer<const flatbuffers::String *>(VT_DESTINATION);
   }
@@ -102,6 +127,7 @@ struct Setting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<int8_t>(verifier, VT_MODE) &&
            VerifyField<flatbuffers::uoffset_t>(verifier, VT_DESTINATION) &&
            verifier.Verify(destination()) &&
            VerifyField<int8_t>(verifier, VT_CONNECTIONTYPE) &&
@@ -114,6 +140,9 @@ struct Setting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct SettingBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
+  void add_mode(Mode mode) {
+    fbb_.AddElement<int8_t>(Setting::VT_MODE, static_cast<int8_t>(mode), 0);
+  }
   void add_destination(flatbuffers::Offset<flatbuffers::String> destination) {
     fbb_.AddOffset(Setting::VT_DESTINATION, destination);
   }
@@ -129,7 +158,7 @@ struct SettingBuilder {
   }
   SettingBuilder &operator=(const SettingBuilder &);
   flatbuffers::Offset<Setting> Finish() {
-    const auto end = fbb_.EndTable(start_, 3);
+    const auto end = fbb_.EndTable(start_, 4);
     auto o = flatbuffers::Offset<Setting>(end);
     return o;
   }
@@ -137,6 +166,7 @@ struct SettingBuilder {
 
 inline flatbuffers::Offset<Setting> CreateSetting(
     flatbuffers::FlatBufferBuilder &_fbb,
+    Mode mode = Mode::Read,
     flatbuffers::Offset<flatbuffers::String> destination = 0,
     ConnectionType connectionType = ConnectionType::Memory,
     flatbuffers::Offset<flatbuffers::Vector<uint8_t>> payload = 0) {
@@ -144,16 +174,19 @@ inline flatbuffers::Offset<Setting> CreateSetting(
   builder_.add_payload(payload);
   builder_.add_destination(destination);
   builder_.add_connectionType(connectionType);
+  builder_.add_mode(mode);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<Setting> CreateSettingDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
+    Mode mode = Mode::Read,
     const char *destination = nullptr,
     ConnectionType connectionType = ConnectionType::Memory,
     const std::vector<uint8_t> *payload = nullptr) {
   return CreateSetting(
       _fbb,
+      mode,
       destination ? _fbb.CreateString(destination) : 0,
       connectionType,
       payload ? _fbb.CreateVector<uint8_t>(*payload) : 0);

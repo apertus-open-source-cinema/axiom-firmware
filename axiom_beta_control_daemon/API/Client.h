@@ -15,7 +15,7 @@ public:
     Client() :
         _builder(new flatbuffers::FlatBufferBuilder())
     {
-
+        SetupSocket();
     }
 
     ~Client()
@@ -26,12 +26,12 @@ public:
         }
     }
 
-    void AddSetting(std::string destination, ConnectionType type, uint8_t* payload, unsigned int payloadLength)
+    void AddSetting(Mode mode, std::string destination, ConnectionType type, uint8_t* payload, unsigned int payloadLength)
     {
         auto destinationFB = _builder->CreateString(destination);
         auto payloadFB = _builder->CreateVector(payload, payloadLength);
 
-        auto setting = CreateSetting(*_builder, destinationFB, type, payloadFB);
+        auto setting = CreateSetting(*_builder, mode, destinationFB, type, payloadFB);
         _settings.push_back(setting);
     }
 
@@ -76,6 +76,11 @@ public:
 
         // Clear settings after sending
         _settings.clear();
+    }
+
+    void SetupSocket()
+    {
+
     }
 };
 
