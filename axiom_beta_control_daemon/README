@@ -7,3 +7,6 @@ Build instructions:
 - make -j4
 
 
+Socket test:
+- Install socat package
+- Command: socat - /tmp/axiom_daemon 

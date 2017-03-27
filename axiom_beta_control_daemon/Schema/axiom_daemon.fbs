@@ -1,19 +1,32 @@
 // TODO: Add namespace
 enum Mode:byte { Read, Write }
 
-enum ConnectionType:byte { Memory, I2C, UART, SPI }
+enum ConnectionType:byte { Memory, I2C, UART, SPI, ImageSensor}
 
-table SettingList
+enum ImageSensorSettings:byte { Gain, ADCRange, WhiteBalance }
+
+union Setting { ImageSensorSetting, SPISetting }
+
+// Added 2 parameters to be able to process things like gain in one go
+table ImageSensorSetting
 {
-    settings:[Setting];
+    mode:Mode;
+    setting:ImageSensorSettings;
+    parameter1:ushort;
+    parameter2:ushort;
 }
 
-table Setting
+table SPISetting
 {
     mode:Mode;
     destination:string;
     connectionType:ConnectionType;
     payload:[ubyte];
+}
+
+table SettingList
+{
+    settings:[Setting];
 }
 
 root_type SettingList;

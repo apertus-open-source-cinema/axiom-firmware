@@ -1,24 +1,57 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <sys/un.h>
+#include <sys/socket.h>
+
+#include "../Adapter/I2CAdapter.h"
+#include "../Adapter/MemoryAdapter.h"
+
 class Server
 {
     std::string _socketPath;
 
-    bool running;
+    bool _running;
 
     // TODO: Allow multiple connections
-    int socketDesc;
-    sockaddr_un name;
+    int _socketDesc;
+    sockaddr_un _name;
 
     std::string _statusMessage;
+
+    IAdapter* _memoryAdapter = nullptr;
+    IAdapter* _i2cAdapter = nullptr;
 
 public:
     Server() :
         _socketPath("/tmp/axiom_daemon"),
-        running(true)
+        _running(true)
     {
+        // TODO: Add real reading of revision/version
+        //std::string/int?? revision = ReadRevision();
+        std::string revision = "29";
 
+        // TODO: Idea: Replace plain initialization with map of adapters, evaluation required
+        _memoryAdapter = new MemoryAdapter();
+        _i2cAdapter = new I2CAdapter();
+
+        // TODO: Adjust paths to real ones, this ones are just for testing
+        // TODO: Add fallback to older revision version if for current one no file is available
+        _memoryAdapter->ReadDescriptions("../Description/MemoryDesc_rev" + revision + ".json");
+        _i2cAdapter->ReadDescriptions("../Description/I2CDesc_rev" + revision + ".json");
+    }
+
+    ~Server()
+    {
+        if(_memoryAdapter != nullptr)
+        {
+            delete _memoryAdapter;
+        }
+
+        if(_i2cAdapter != nullptr)
+        {
+            delete _i2cAdapter;
+        }
     }
 
     void Setup()
@@ -37,10 +70,10 @@ private:
     {
         uint8_t* buf2 = new uint8_t[1024];
 
-        while(running)
+        while(_running)
         {
             memset(buf2, 0, 1024);
-            int size = read(socketDesc, buf2, 1024);
+            int size = read(_socketDesc, buf2, 1024);
             std::cout << "Output: " << buf2 << std::endl;
         }
     }
@@ -49,21 +82,21 @@ private:
     {
         std::string errorMessage = "";
 
-        socketDesc = socket(PF_LOCAL, SOCK_DGRAM, 0);
-        if (socketDesc < 0)
+        _socketDesc = socket(PF_LOCAL, SOCK_DGRAM, 0);
+        if (_socketDesc < 0)
         {
             errorMessage = "Socket error: " + std::string(strerror(errno));
         }
 
         unlink(_socketPath.c_str()); // Unlink socket to ensure that new connection will not be refused
 
-        name.sun_family=AF_LOCAL;
-        strcpy(name.sun_path, _socketPath.c_str());
+        _name.sun_family=AF_LOCAL;
+        strcpy(_name.sun_path, _socketPath.c_str());
 
-        if (bind(socketDesc, (struct sockaddr*)&name, SUN_LEN(&name)) != 0)
+        if (bind(_socketDesc, (struct sockaddr*)&_name, SUN_LEN(&_name)) != 0)
         {
             _statusMessage = "Bind failed: " + std::string(strerror(errno));
-            syslog (LOG_ERR, _statusMessage.c_str());
+            syslog (LOG_ERR, "%s", _statusMessage.c_str());
             exit(1);
         }
     }

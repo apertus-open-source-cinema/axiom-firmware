@@ -6,9 +6,11 @@
 
 #include "flatbuffers/flatbuffers.h"
 
-struct SettingList;
+struct ImageSensorSetting;
 
-struct Setting;
+struct SPISetting;
+
+struct SettingList;
 
 enum class Mode : int8_t {
   Read = 0,
@@ -36,8 +38,9 @@ enum class ConnectionType : int8_t {
   I2C = 1,
   UART = 2,
   SPI = 3,
+  ImageSensor = 4,
   MIN = Memory,
-  MAX = SPI
+  MAX = ImageSensor
 };
 
 inline const char **EnumNamesConnectionType() {
@@ -46,6 +49,7 @@ inline const char **EnumNamesConnectionType() {
     "I2C",
     "UART",
     "SPI",
+    "ImageSensor",
     nullptr
   };
   return names;
@@ -56,57 +60,138 @@ inline const char *EnumNameConnectionType(ConnectionType e) {
   return EnumNamesConnectionType()[index];
 }
 
-struct SettingList FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
-    VT_SETTINGS = 4
+enum class ImageSensorSettings : int8_t {
+  Gain = 0,
+  ADCRange = 1,
+  WhiteBalance = 2,
+  MIN = Gain,
+  MAX = WhiteBalance
+};
+
+inline const char **EnumNamesImageSensorSettings() {
+  static const char *names[] = {
+    "Gain",
+    "ADCRange",
+    "WhiteBalance",
+    nullptr
   };
-  const flatbuffers::Vector<flatbuffers::Offset<Setting>> *settings() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Setting>> *>(VT_SETTINGS);
+  return names;
+}
+
+inline const char *EnumNameImageSensorSettings(ImageSensorSettings e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesImageSensorSettings()[index];
+}
+
+enum class Setting : uint8_t {
+  NONE = 0,
+  ImageSensorSetting = 1,
+  SPISetting = 2,
+  MIN = NONE,
+  MAX = SPISetting
+};
+
+inline const char **EnumNamesSetting() {
+  static const char *names[] = {
+    "NONE",
+    "ImageSensorSetting",
+    "SPISetting",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameSetting(Setting e) {
+  const size_t index = static_cast<int>(e);
+  return EnumNamesSetting()[index];
+}
+
+template<typename T> struct SettingTraits {
+  static const Setting enum_value = Setting::NONE;
+};
+
+template<> struct SettingTraits<ImageSensorSetting> {
+  static const Setting enum_value = Setting::ImageSensorSetting;
+};
+
+template<> struct SettingTraits<SPISetting> {
+  static const Setting enum_value = Setting::SPISetting;
+};
+
+bool VerifySetting(flatbuffers::Verifier &verifier, const void *obj, Setting type);
+bool VerifySettingVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
+
+struct ImageSensorSetting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_MODE = 4,
+    VT_SETTING = 6,
+    VT_PARAMETER1 = 8,
+    VT_PARAMETER2 = 10
+  };
+  Mode mode() const {
+    return static_cast<Mode>(GetField<int8_t>(VT_MODE, 0));
+  }
+  ImageSensorSettings setting() const {
+    return static_cast<ImageSensorSettings>(GetField<int8_t>(VT_SETTING, 0));
+  }
+  uint16_t parameter1() const {
+    return GetField<uint16_t>(VT_PARAMETER1, 0);
+  }
+  uint16_t parameter2() const {
+    return GetField<uint16_t>(VT_PARAMETER2, 0);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SETTINGS) &&
-           verifier.Verify(settings()) &&
-           verifier.VerifyVectorOfTables(settings()) &&
+           VerifyField<int8_t>(verifier, VT_MODE) &&
+           VerifyField<int8_t>(verifier, VT_SETTING) &&
+           VerifyField<uint16_t>(verifier, VT_PARAMETER1) &&
+           VerifyField<uint16_t>(verifier, VT_PARAMETER2) &&
            verifier.EndTable();
   }
 };
 
-struct SettingListBuilder {
+struct ImageSensorSettingBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_settings(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Setting>>> settings) {
-    fbb_.AddOffset(SettingList::VT_SETTINGS, settings);
+  void add_mode(Mode mode) {
+    fbb_.AddElement<int8_t>(ImageSensorSetting::VT_MODE, static_cast<int8_t>(mode), 0);
   }
-  SettingListBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  void add_setting(ImageSensorSettings setting) {
+    fbb_.AddElement<int8_t>(ImageSensorSetting::VT_SETTING, static_cast<int8_t>(setting), 0);
+  }
+  void add_parameter1(uint16_t parameter1) {
+    fbb_.AddElement<uint16_t>(ImageSensorSetting::VT_PARAMETER1, parameter1, 0);
+  }
+  void add_parameter2(uint16_t parameter2) {
+    fbb_.AddElement<uint16_t>(ImageSensorSetting::VT_PARAMETER2, parameter2, 0);
+  }
+  ImageSensorSettingBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  SettingListBuilder &operator=(const SettingListBuilder &);
-  flatbuffers::Offset<SettingList> Finish() {
-    const auto end = fbb_.EndTable(start_, 1);
-    auto o = flatbuffers::Offset<SettingList>(end);
+  ImageSensorSettingBuilder &operator=(const ImageSensorSettingBuilder &);
+  flatbuffers::Offset<ImageSensorSetting> Finish() {
+    const auto end = fbb_.EndTable(start_, 4);
+    auto o = flatbuffers::Offset<ImageSensorSetting>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<SettingList> CreateSettingList(
+inline flatbuffers::Offset<ImageSensorSetting> CreateImageSensorSetting(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Setting>>> settings = 0) {
-  SettingListBuilder builder_(_fbb);
-  builder_.add_settings(settings);
+    Mode mode = Mode::Read,
+    ImageSensorSettings setting = ImageSensorSettings::Gain,
+    uint16_t parameter1 = 0,
+    uint16_t parameter2 = 0) {
+  ImageSensorSettingBuilder builder_(_fbb);
+  builder_.add_parameter2(parameter2);
+  builder_.add_parameter1(parameter1);
+  builder_.add_setting(setting);
+  builder_.add_mode(mode);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<SettingList> CreateSettingListDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<Setting>> *settings = nullptr) {
-  return CreateSettingList(
-      _fbb,
-      settings ? _fbb.CreateVector<flatbuffers::Offset<Setting>>(*settings) : 0);
-}
-
-struct Setting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct SPISetting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_MODE = 4,
     VT_DESTINATION = 6,
@@ -137,40 +222,40 @@ struct Setting FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
 };
 
-struct SettingBuilder {
+struct SPISettingBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_mode(Mode mode) {
-    fbb_.AddElement<int8_t>(Setting::VT_MODE, static_cast<int8_t>(mode), 0);
+    fbb_.AddElement<int8_t>(SPISetting::VT_MODE, static_cast<int8_t>(mode), 0);
   }
   void add_destination(flatbuffers::Offset<flatbuffers::String> destination) {
-    fbb_.AddOffset(Setting::VT_DESTINATION, destination);
+    fbb_.AddOffset(SPISetting::VT_DESTINATION, destination);
   }
   void add_connectionType(ConnectionType connectionType) {
-    fbb_.AddElement<int8_t>(Setting::VT_CONNECTIONTYPE, static_cast<int8_t>(connectionType), 0);
+    fbb_.AddElement<int8_t>(SPISetting::VT_CONNECTIONTYPE, static_cast<int8_t>(connectionType), 0);
   }
   void add_payload(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> payload) {
-    fbb_.AddOffset(Setting::VT_PAYLOAD, payload);
+    fbb_.AddOffset(SPISetting::VT_PAYLOAD, payload);
   }
-  SettingBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  SPISettingBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  SettingBuilder &operator=(const SettingBuilder &);
-  flatbuffers::Offset<Setting> Finish() {
+  SPISettingBuilder &operator=(const SPISettingBuilder &);
+  flatbuffers::Offset<SPISetting> Finish() {
     const auto end = fbb_.EndTable(start_, 4);
-    auto o = flatbuffers::Offset<Setting>(end);
+    auto o = flatbuffers::Offset<SPISetting>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<Setting> CreateSetting(
+inline flatbuffers::Offset<SPISetting> CreateSPISetting(
     flatbuffers::FlatBufferBuilder &_fbb,
     Mode mode = Mode::Read,
     flatbuffers::Offset<flatbuffers::String> destination = 0,
     ConnectionType connectionType = ConnectionType::Memory,
     flatbuffers::Offset<flatbuffers::Vector<uint8_t>> payload = 0) {
-  SettingBuilder builder_(_fbb);
+  SPISettingBuilder builder_(_fbb);
   builder_.add_payload(payload);
   builder_.add_destination(destination);
   builder_.add_connectionType(connectionType);
@@ -178,18 +263,109 @@ inline flatbuffers::Offset<Setting> CreateSetting(
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<Setting> CreateSettingDirect(
+inline flatbuffers::Offset<SPISetting> CreateSPISettingDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     Mode mode = Mode::Read,
     const char *destination = nullptr,
     ConnectionType connectionType = ConnectionType::Memory,
     const std::vector<uint8_t> *payload = nullptr) {
-  return CreateSetting(
+  return CreateSPISetting(
       _fbb,
       mode,
       destination ? _fbb.CreateString(destination) : 0,
       connectionType,
       payload ? _fbb.CreateVector<uint8_t>(*payload) : 0);
+}
+
+struct SettingList FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum {
+    VT_SETTINGS_TYPE = 4,
+    VT_SETTINGS = 6
+  };
+  const flatbuffers::Vector<uint8_t> *settings_type() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_SETTINGS_TYPE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<void>> *settings() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<void>> *>(VT_SETTINGS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SETTINGS_TYPE) &&
+           verifier.Verify(settings_type()) &&
+           VerifyField<flatbuffers::uoffset_t>(verifier, VT_SETTINGS) &&
+           verifier.Verify(settings()) &&
+           VerifySettingVector(verifier, settings(), settings_type()) &&
+           verifier.EndTable();
+  }
+};
+
+struct SettingListBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_settings_type(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> settings_type) {
+    fbb_.AddOffset(SettingList::VT_SETTINGS_TYPE, settings_type);
+  }
+  void add_settings(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<void>>> settings) {
+    fbb_.AddOffset(SettingList::VT_SETTINGS, settings);
+  }
+  SettingListBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  SettingListBuilder &operator=(const SettingListBuilder &);
+  flatbuffers::Offset<SettingList> Finish() {
+    const auto end = fbb_.EndTable(start_, 2);
+    auto o = flatbuffers::Offset<SettingList>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<SettingList> CreateSettingList(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> settings_type = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<void>>> settings = 0) {
+  SettingListBuilder builder_(_fbb);
+  builder_.add_settings(settings);
+  builder_.add_settings_type(settings_type);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<SettingList> CreateSettingListDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<uint8_t> *settings_type = nullptr,
+    const std::vector<flatbuffers::Offset<void>> *settings = nullptr) {
+  return CreateSettingList(
+      _fbb,
+      settings_type ? _fbb.CreateVector<uint8_t>(*settings_type) : 0,
+      settings ? _fbb.CreateVector<flatbuffers::Offset<void>>(*settings) : 0);
+}
+
+inline bool VerifySetting(flatbuffers::Verifier &verifier, const void *obj, Setting type) {
+  switch (type) {
+    case Setting::NONE: {
+      return true;
+    }
+    case Setting::ImageSensorSetting: {
+      auto ptr = reinterpret_cast<const ImageSensorSetting *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case Setting::SPISetting: {
+      auto ptr = reinterpret_cast<const SPISetting *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    default: return false;
+  }
+}
+
+inline bool VerifySettingVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types) {
+  if (values->size() != types->size()) return false;
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+    if (!VerifySetting(
+        verifier,  values->Get(i), types->GetEnum<Setting>(i))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 inline const SettingList *GetSettingList(const void *buf) {
