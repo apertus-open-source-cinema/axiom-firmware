@@ -7,6 +7,8 @@
 #include "../Adapter/I2CAdapter.h"
 #include "../Adapter/MemoryAdapter.h"
 
+#include "../Schema/axiom_daemon_generated.h"
+
 class Server
 {
     std::string _socketPath;
@@ -74,7 +76,36 @@ private:
         {
             memset(buf2, 0, 1024);
             int size = read(_socketDesc, buf2, 1024);
-            std::cout << "Output: " << buf2 << std::endl;
+
+            auto packet = GetPacket(buf2);
+            auto set = packet->settings();
+            int size2 = set->size();
+
+            for(int index = 0; index < size2; ++index)
+            {
+                auto t = set->Get(index);
+                auto p = t->payload_type();
+
+                switch(p)
+                {
+                case Setting::ImageSensorSetting:
+                {
+                    const ImageSensorSetting* is = t->payload_as_ImageSensorSetting();
+                    /*Mode mode = is->mode();
+                    uint16_t parameter = is->parameter();
+                    ImageSensorSettings s2 = is->setting();*/
+                    //_settingsIS.push_back(is);
+                }
+                    break;
+                case Setting::SPISetting:
+                {
+                    const SPISetting* is = t->payload_as_SPISetting();
+                }
+                    break;
+                default:
+                    break;
+                }
+            }
         }
     }
 

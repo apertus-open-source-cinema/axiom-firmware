@@ -1,2 +1,4 @@
 
 *.user
+
+axiom_beta_control_daemon/Schema/axiom_daemon_generated\.h
