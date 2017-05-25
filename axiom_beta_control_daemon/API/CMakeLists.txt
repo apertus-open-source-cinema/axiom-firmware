@@ -18,6 +18,10 @@ ADD_COMPILE_OPTIONS(-std=c++11)
 #SET(FLATC ${PROJECT_BINARY_DIR}/3rdParty/flatbuffers/flatc)
 #MESSAGE(STATUS "flatc location: ${FLATC}")
 
+ExternalProject_Get_Property(flatbuffers_project SOURCE_DIR)
+MESSAGE(STATUS "flatbuffers source dir: ${SOURCE_DIR}")
+include_directories(${SOURCE_DIR}/include)
+
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h")
 #    "Adapter/*.cpp" "Adapter/*.h"
 #    "API/*.cpp" "API/*.h"
@@ -31,4 +35,4 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
 
-#ADD_DEPENDENCIES(${PROJECT_NAME} flatc_gen)
+ADD_DEPENDENCIES(${PROJECT_NAME} flatbuffers_project flatc_gen)
