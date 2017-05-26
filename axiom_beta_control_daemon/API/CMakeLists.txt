@@ -35,4 +35,4 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
 
-ADD_DEPENDENCIES(${PROJECT_NAME} flatbuffers_project flatc_gen)
+ADD_DEPENDENCIES(${PROJECT_NAME} flatbuffers_project flatc_cpp_gen)

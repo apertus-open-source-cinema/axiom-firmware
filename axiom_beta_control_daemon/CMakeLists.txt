@@ -48,11 +48,17 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
 # Client example should be build separately for now
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
 
-ADD_CUSTOM_TARGET(flatc_gen
+# C/C++ schema
+ADD_CUSTOM_TARGET(flatc_cpp_gen
                     COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
-                    COMMENT "Running PRE_BUILD action" DEPENDS flatbuffers_project)
+                    COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
+# Go schema
+ADD_CUSTOM_TARGET(flatc_go_gen
+                    COMMAND ${FLATC} --scoped-enums --no-prefix --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
+                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
+                    COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
 
-ADD_DEPENDENCIES(${PROJECT_NAME} flatc_gen)
+ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen flatc_go_gen)
