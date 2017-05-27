@@ -55,7 +55,7 @@ ADD_CUSTOM_TARGET(flatc_cpp_gen
                     COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
 # Go schema
 ADD_CUSTOM_TARGET(flatc_go_gen
-                    COMMAND ${FLATC} --scoped-enums --no-prefix --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
+                    COMMAND ${FLATC} --go-namespace AxiomDaemon --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
                     COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
 
