@@ -6,7 +6,7 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 
-#include "../Schema/axiom_daemon_generated.h"
+#include <Schema/axiom_daemon_generated.h>
 
 class Client
 {

@@ -45,15 +45,17 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
     "Connection/*.cpp" "Connection/*.h"
     "Schema/*.cpp" "Schema/*.h" "Schema/*.fbs")
 
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
+
 # C/C++schema
 ADD_CUSTOM_TARGET(flatc_cpp_gen
                     COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
                     COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
 # Go schema
 ADD_CUSTOM_TARGET(flatc_go_gen
                     COMMAND ${FLATC} --go-namespace AxiomDaemon --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
                     COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
 
 # Prepare flatbuffers Go package (source)
@@ -65,6 +67,9 @@ ADD_CUSTOM_COMMAND(TARGET flatbuffers_project PRE_BUILD
 # Client example should be build separately for now
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
+
+# Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
 ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen)

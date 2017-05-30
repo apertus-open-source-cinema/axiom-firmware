@@ -5,6 +5,7 @@ FILE(GLOB SOURCE_FILES "client.go")
 
 ExternalProject_Get_Property(flatbuffers_project SOURCE_DIR)
 SET(GOPATH ${SOURCE_DIR})
+SET(GOPATH ${GOPATH}:${CMAKE_BINARY_DIR})
 MESSAGE(STATUS "GOPATH: ${GOPATH}")
 
 add_custom_target(${PROJECT_NAME} ALL DEPENDS ${PROJECT_NAME})

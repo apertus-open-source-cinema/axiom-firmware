@@ -7,7 +7,7 @@
 #include "../Adapter/I2CAdapter.h"
 #include "../Adapter/MemoryAdapter.h"
 
-#include "../Schema/axiom_daemon_generated.h"
+#include <Schema/axiom_daemon_generated.h>
 
 class Server
 {
