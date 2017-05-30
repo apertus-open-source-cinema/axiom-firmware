@@ -14,10 +14,10 @@ SET(CMAKE_CXX_FLAGS "-pedantic -pedantic-errors -Wall -Wextra")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-## Compiler flags
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    SET(CMAKE_CXX_FLAGS "-O2")        ## Optimize
-    SET(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+# Compiler flags
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    SET(CMAKE_CXX_FLAGS "-O2") #Optimize
+    SET(CMAKE_EXE_LINKER_FLAGS "-s") # Strip binary
 endif()
 
 ExternalProject_Add(flatbuffers_project
@@ -45,10 +45,7 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
     "Connection/*.cpp" "Connection/*.h"
     "Schema/*.cpp" "Schema/*.h" "Schema/*.fbs")
 
-# Client example should be build separately for now
-ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
-
-# C/C++ schema
+# C/C++schema
 ADD_CUSTOM_TARGET(flatc_cpp_gen
                     COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
@@ -59,6 +56,15 @@ ADD_CUSTOM_TARGET(flatc_go_gen
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Schema/
                     COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
+# Prepare flatbuffers Go package (source)
+ADD_CUSTOM_COMMAND(TARGET flatbuffers_project PRE_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E copy_directory
+                          ${SOURCE_DIR}/go
+                          ${SOURCE_DIR}/src/github.com/google/flatbuffers/go )
 
-ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen flatc_go_gen)
+# Client example should be build separately for now
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
+
+ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
+ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen)
