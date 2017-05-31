@@ -36,6 +36,6 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h")
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
 
 ADD_DEPENDENCIES(${PROJECT_NAME} flatbuffers_project flatc_cpp_gen)
