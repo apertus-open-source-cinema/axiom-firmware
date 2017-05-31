@@ -9,6 +9,8 @@ using json = nlohmann::json;
 
 #include "IAdapter.h"
 
+#include "../Helpers/Helpers.h"
+
 class I2CAdapter : public IAdapter
 {
 public:
@@ -36,13 +38,28 @@ public:
     void Execute();
 };
 
-void I2CAdapter::ReadByte(uint8_t data) {}
-void I2CAdapter::WriteByte(uint8_t data) {}
-void I2CAdapter::ReadBlock(uint8_t *data, unsigned int length) {}
-void I2CAdapter::WriteBlock(uint8_t *data, unsigned int length) {}
+void I2CAdapter::ReadByte(uint8_t data)
+{
+    UNUSED(data);
+}
+
+void I2CAdapter::WriteByte(uint8_t data)
+{
+    UNUSED(data);
+}
+
+void I2CAdapter::ReadBlock(uint8_t *data, unsigned int length)
+{
+    UNUSED(data);
+    UNUSED(length);
+}
+
+void I2CAdapter::WriteBlock(uint8_t *data, unsigned int length)
+{
+    UNUSED(data);
+    UNUSED(length);
+}
 
 void I2CAdapter::Execute() {}
 
 #endif // I2CADAPTER_H
-
-

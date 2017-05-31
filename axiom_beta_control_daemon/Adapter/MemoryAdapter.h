@@ -11,18 +11,38 @@
 
 #include "IAdapter.h"
 
+#include "../Helpers/Helpers.h"
 
 class MemoryAdapter : public IAdapter
 {
 public:
-    void ReadDescriptions(std::string descriptionFile) {}
+    void ReadDescriptions(std::string descriptionFile)
+    {
+        UNUSED(descriptionFile);
+    }
+
     void CheckDevices() {}
 
-    void ReadByte(uint8_t data) {}
-    void WriteByte(uint8_t data) {}
+    void ReadByte(uint8_t data)
+    {
+        UNUSED(data);
+    }
+    void WriteByte(uint8_t data)
+    {
+        UNUSED(data);
+    }
 
-    void ReadBlock(uint8_t *data, unsigned int length) {}
-    void WriteBlock(uint8_t *data, unsigned int length) {}
+    void ReadBlock(uint8_t *data, unsigned int length)
+    {
+        UNUSED(data);
+        UNUSED(length);
+    }
+
+    void WriteBlock(uint8_t *data, unsigned int length)
+    {
+        UNUSED(data);
+        UNUSED(length);
+    }
 
     void* MemoryMap(uint32_t address, uint32_t size)
     {

@@ -43,7 +43,8 @@ MESSAGE(STATUS "flatc location: ${FLATC}")
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
     "Adapter/*.cpp" "Adapter/*.h"
     "Connection/*.cpp" "Connection/*.h"
-    "Schema/*.cpp" "Schema/*.h" "Schema/*.fbs")
+    "Schema/*.fbs"
+    "Helpers/*.h")
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
 

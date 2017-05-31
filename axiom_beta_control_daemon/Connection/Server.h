@@ -91,6 +91,7 @@ private:
                 case Setting::ImageSensorSetting:
                 {
                     const ImageSensorSetting* is = t->payload_as_ImageSensorSetting();
+                    is->mode(); // Just a dummy call to supress "unused" warning
                     /*Mode mode = is->mode();
                     uint16_t parameter = is->parameter();
                     ImageSensorSettings s2 = is->setting();*/
@@ -100,6 +101,7 @@ private:
                 case Setting::SPISetting:
                 {
                     const SPISetting* is = t->payload_as_SPISetting();
+                    is->destination(); // Just a dummy call to supress "unused" warning
                 }
                     break;
                 default:
