@@ -11,7 +11,7 @@ MESSAGE(STATUS "GOPATH: ${GOPATH}")
 add_custom_target(${PROJECT_NAME} ALL DEPENDS ${PROJECT_NAME})
 add_custom_command(TARGET ${PROJECT_NAME}
                    COMMAND env GOPATH=${GOPATH} go build 
-                   -o "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}"
+                   -o "${CMAKE_BINARY_DIR}/go_client"
                    ${SOURCE_FILES})
 
 ADD_DEPENDENCIES(${PROJECT_NAME} flatc_go_gen)
