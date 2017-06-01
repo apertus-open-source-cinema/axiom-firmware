@@ -22,7 +22,7 @@ endif()
 
 ExternalProject_Add(flatbuffers_project
                     PREFIX 3rdParty/flatbuffers
-                    GIT_REPOSITORY "https://github.com/google/flatbuffers"
+                    GIT_REPOSITORY "https://github.com/BAndiT1983/flatbuffers.git"
                     GIT_TAG "master"
                     UPDATE_COMMAND ""
                     INSTALL_COMMAND ""
@@ -41,27 +41,27 @@ SET(FLATC ${BINARY_DIR}/flatc)
 MESSAGE(STATUS "flatc location: ${FLATC}")
 
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
-    "Adapter/*.cpp" "Adapter/*.h"
-    "Connection/*.cpp" "Connection/*.h"
-    "Schema/*.fbs"
-    "Helpers/*.h")
+     "Adapter/*.cpp" "Adapter/*.h"
+     "Connection/*.cpp" "Connection/*.h"
+     "Schema/*.fbs"
+     "Helpers/*.h")
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
 
 # C/C++schema
 ADD_CUSTOM_TARGET(flatc_cpp_gen
-                    COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
-                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
-                    COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
+                  COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
+                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
+                  COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
 # Go schema
 ADD_CUSTOM_TARGET(flatc_go_gen
-                    COMMAND ${FLATC} --go-namespace AxiomDaemon --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
-                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
-                    COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
+                  COMMAND ${FLATC} --scoped-enums --go-namespace AxiomDaemon --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
+                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
+                  COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
 
 # Prepare flatbuffers Go package (source)
 ADD_CUSTOM_COMMAND(TARGET flatbuffers_project PRE_BUILD
-                  COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
                           ${SOURCE_DIR}/go
                           ${SOURCE_DIR}/src/github.com/google/flatbuffers/go )
 
@@ -73,4 +73,4 @@ ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
-ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen)
+ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen flatc_go_gen )
