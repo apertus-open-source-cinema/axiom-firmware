@@ -30,7 +30,7 @@
 #include "cmv_reg.h"
 #include "scn_reg.h"
 
-#define VERSION "V1.10"
+#define VERSION "V1.11"
 
 static char *cmd_name = NULL;
 
