@@ -4,6 +4,10 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 
+// For systemd
+#include <systemd/sd-daemon.h>
+#include <systemd/sd-journal.h>
+
 #include "../Adapter/I2CAdapter.h"
 #include "../Adapter/MemoryAdapter.h"
 
@@ -26,7 +30,7 @@ class Server
 
 public:
     Server() :
-        _socketPath("/tmp/axiom_daemon"),
+        _socketPath("/tmp/axiom_daemon2"),
         _running(true)
     {
         // TODO: Add real reading of revision/version
@@ -39,8 +43,9 @@ public:
 
         // TODO: Adjust paths to real ones, this ones are just for testing
         // TODO: Add fallback to older revision version if for current one no file is available
-        _memoryAdapter->ReadDescriptions("../Description/MemoryDesc_rev" + revision + ".json");
-        _i2cAdapter->ReadDescriptions("../Description/I2CDesc_rev" + revision + ".json");
+        
+	//_memoryAdapter->ReadDescriptions("../Descriptions/Memory_rev" + revision + ".json");
+        //_i2cAdapter->ReadDescriptions("../Descriptions/I2C_rev" + revision + ".json");
     }
 
     ~Server()
@@ -63,7 +68,14 @@ public:
 
     void Start()
     {
-        Process();
+	if (sd_listen_fds(0) != 1)
+	{
+	   _socketDesc = SD_LISTEN_FDS_START;
+	}
+	else
+	{
+           Process();
+	}
     }
 
 private:
