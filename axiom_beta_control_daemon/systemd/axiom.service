@@ -1,0 +1,14 @@
+[Unit]
+Description=Axiom Service
+After=network.target axiom.socket
+Requires=axiom.socket
+
+[Service]
+Type=simple
+ExecStart=/home/dev/Source/beta-software/axiom_beta_control_daemon/build/axiom_daemon
+StandardInput=socket
+StandardError=journal
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target

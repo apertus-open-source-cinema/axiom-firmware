@@ -30,7 +30,7 @@ class Server
 
 public:
     Server() :
-        _socketPath("/tmp/axiom_daemon2"),
+        _socketPath("/tmp/axiom_daemon"),
         _running(true)
     {
         // TODO: Add real reading of revision/version
@@ -63,19 +63,21 @@ public:
 
     void Setup()
     {
-        SetupSocket();
+        if (sd_listen_fds(0) != 1)
+        {
+            sd_journal_print(LOG_INFO, "systemd socket activation", (unsigned long)getpid());            
+           _socketDesc = SD_LISTEN_FDS_START;
+        }
+        else
+        {
+            sd_journal_print(LOG_INFO, "legacy socket initialization", (unsigned long)getpid());
+            SetupSocket();
+        }
     }
 
     void Start()
     {
-	if (sd_listen_fds(0) != 1)
-	{
-	   _socketDesc = SD_LISTEN_FDS_START;
-	}
-	else
-	{
            Process();
-	}
     }
 
 private:

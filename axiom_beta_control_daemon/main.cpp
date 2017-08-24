@@ -25,15 +25,14 @@
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char *argv[])
 {
-    setlogmask (LOG_UPTO (LOG_NOTICE));
-    openlog ("axiom_daemon", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-
+    sd_journal_print(LOG_INFO, "Initialization", (unsigned long)getpid());
+    
     // TODO: Add smart pointer, to have more modern code
     Server* server = new Server();
     server->Setup();
     server->Start();
 
-    closelog();
+    //closelog();
 
     if(server != nullptr)
     {
