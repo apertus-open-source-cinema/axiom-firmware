@@ -53,6 +53,7 @@ ADD_CUSTOM_TARGET(flatc_cpp_gen
                   COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
                   COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
+
 # Go schema
 ADD_CUSTOM_TARGET(flatc_go_gen
                   COMMAND ${FLATC} --scoped-enums --go-namespace AxiomDaemon --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
@@ -64,6 +65,42 @@ ADD_CUSTOM_COMMAND(TARGET flatbuffers_project PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                           ${SOURCE_DIR}/go
                           ${SOURCE_DIR}/src/github.com/google/flatbuffers/go )
+
+# Prepare mux Go package (source)
+ExternalProject_Add(mux_project
+                    PREFIX 3rdParty/mux
+                    GIT_REPOSITORY "https://github.com/gorilla/mux.git"
+                    GIT_TAG "master"
+                    CONFIGURE_COMMAND ""
+                    UPDATE_COMMAND ""
+                    INSTALL_COMMAND ""
+                    BUILD_COMMAND "")
+
+ExternalProject_Get_Property(mux_project SOURCE_DIR)
+
+file(MAKE_DIRECTORY ${SOURCE_DIR}/src/github.com/gorilla/mux )
+ADD_CUSTOM_COMMAND(TARGET mux_project PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                          ${SOURCE_DIR}/*.go
+                          ${SOURCE_DIR}/src/github.com/gorilla/mux )
+
+# Prepare handlers Go package (source)
+ExternalProject_Add(handlers_project
+                    PREFIX 3rdParty/handlers
+                    GIT_REPOSITORY "https://github.com/gorilla/handlers.git"
+                    GIT_TAG "master"
+                    CONFIGURE_COMMAND ""
+                    UPDATE_COMMAND ""
+                    INSTALL_COMMAND ""
+                    BUILD_COMMAND "")
+
+ExternalProject_Get_Property(handlers_project SOURCE_DIR)
+
+file(MAKE_DIRECTORY ${SOURCE_DIR}/src/github.com/gorilla/handlers )
+ADD_CUSTOM_COMMAND(TARGET handlers_project PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                          ${SOURCE_DIR}/*.go
+                          ${SOURCE_DIR}/src/github.com/gorilla/handlers )
 
 # Client example should be build separately for now
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)

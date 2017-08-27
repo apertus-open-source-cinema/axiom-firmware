@@ -51,7 +51,8 @@ public:
         _builder->Finish(_packetBuilder.Finish());
 
         send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
-
+        std::string message = "Data size: " + std::to_string(_builder->GetSize());
+        std::cout << message.c_str() << std::endl;
         // Clear settings after sending
         _settings.clear();
     }

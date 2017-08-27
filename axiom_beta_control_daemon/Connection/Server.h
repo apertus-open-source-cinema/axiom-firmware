@@ -3,6 +3,7 @@
 
 #include <sys/un.h>
 #include <sys/socket.h>
+#include <string>
 
 // For systemd
 #include <systemd/sd-daemon.h>
@@ -63,15 +64,24 @@ public:
 
     void Setup()
     {
-        if (sd_listen_fds(0) != 1)
+        int fdCount = sd_listen_fds(0);
+        if (fdCount  == 1)
         {
             sd_journal_print(LOG_INFO, "systemd socket activation", (unsigned long)getpid());            
            _socketDesc = SD_LISTEN_FDS_START;
         }
-        else
+        else if(fdCount > 1)
         {
-            sd_journal_print(LOG_INFO, "legacy socket initialization", (unsigned long)getpid());
-            SetupSocket();
+            sd_journal_print(LOG_INFO, "Too many file descriptors", (unsigned long)getpid());    
+            exit(1);
+        }
+            else
+            {
+                std::string message = "Number of file descriptors: " + std::to_string(fdCount);
+                sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());    
+             sd_journal_print(LOG_INFO, "legacy socket initialization", (unsigned long)getpid());
+        
+             SetupSocket();
         }
     }
 
@@ -91,6 +101,9 @@ private:
             memset(buf2, 0, 1024);
             int size = read(_socketDesc, buf2, 1024);
 
+            std::string message = "Received data size: " + std::to_string(size);
+            sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());            
+
             auto packet = GetPacket(buf2);
             auto set = packet->settings();
             int size2 = set->size();
@@ -104,6 +117,7 @@ private:
                 {
                 case Setting::ImageSensorSetting:
                 {
+                    sd_journal_print(LOG_INFO, "Received: Image Sensor setting", (unsigned long)getpid());
                     const ImageSensorSetting* is = t->payload_as_ImageSensorSetting();
                     is->mode(); // Just a dummy call to supress "unused" warning
                     /*Mode mode = is->mode();
@@ -114,11 +128,13 @@ private:
                     break;
                 case Setting::SPISetting:
                 {
+                    sd_journal_print(LOG_INFO, "Received: SPI setting", (unsigned long)getpid());
                     const SPISetting* is = t->payload_as_SPISetting();
                     is->destination(); // Just a dummy call to supress "unused" warning
                 }
                     break;
                 default:
+                    sd_journal_print(LOG_INFO, "Received: Unknown setting", (unsigned long)getpid());
                     break;
                 }
             }
