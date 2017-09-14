@@ -5,6 +5,4 @@ axiom_beta_control_daemon/Schema/axiom_daemon_generated\.h
 
 axiom_beta_control_daemon/build/
 
-axiom_beta_control_daemon/.vscode/tasks.json
-axiom_beta_control_daemon/.vscode/.cmaketools.json
-axiom_beta_control_daemon/.vscode/launch.json
+axiom_beta_control_daemon/.vscode/*
