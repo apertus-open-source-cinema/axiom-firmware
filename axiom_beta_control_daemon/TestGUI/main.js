@@ -57,6 +57,7 @@ function sendSettings(settingName, value) {
     });
 }
 
+// input: on release, change: immediately, e.g. when dragging
 $(document).on("change", '#gain', function () {
     var value = $('#gain').val();
     var valueText = value;

@@ -108,17 +108,22 @@ func (c *Client) AddSettingIS(mode schema.Mode, imageSensorSetting schema.ImageS
 	c.Settings = append(c.Settings, payload)
 }
 
+func ReceivedDataHandler(setting *Setting) {
+	fmt.Printf("Setting received: %s\n", setting.ID)
+}
+
 func main() {
 	c := new(Client)
 	c.Init()
 
 	//c.AddSettingSPI(Mode::Write, )
-	c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsGain, 2)
+	//c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsGain, 2)
 
-	c.TransferData()
+	//c.TransferData()
 
 	server := new(RESTserver)
 	server.Init()
+	server.AddReceivedDataHandler(ReceivedDataHandler)
 
 	// TODO: Add c.Execute() to process sent settings as bulk
 }

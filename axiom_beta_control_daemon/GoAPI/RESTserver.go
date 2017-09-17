@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -12,7 +13,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Setting struct {
+	ID    string `json: "id"`
+	Value string `json: "value"`
+}
+
 type RESTserver struct {
+	ReceivedDataHandler func(*Setting)
+}
+
+func (server *RESTserver) AddReceivedDataHandler(dataHandler func(*Setting)) {
+	server.ReceivedDataHandler = dataHandler
 }
 
 func (server *RESTserver) Init() {
@@ -77,6 +88,12 @@ func SettingsShowPUT(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "can't read body", http.StatusBadRequest)
 		return
 	}
+
+	var setting Setting
+
+	fmt.Printf("Received body: %s\n", body)
+	json.Unmarshal(body, &setting)
+	ReceivedDataHandler(&setting)
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
