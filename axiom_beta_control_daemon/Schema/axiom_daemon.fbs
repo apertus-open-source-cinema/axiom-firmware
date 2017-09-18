@@ -3,7 +3,7 @@ enum Mode:ubyte { Read, Write }
 
 enum ConnectionType:ubyte { Memory, I2C, UART, SPI, ImageSensor}
 
-enum ImageSensorSettings:ubyte { Gain, ADCRange, WhiteBalance }
+enum ImageSensorSettings:ubyte { Gain, ADCRange, ADCRangeMult2, Offset1, Offset2,  WhiteBalance }
 
 union Setting { ImageSensorSetting, SPISetting }
 

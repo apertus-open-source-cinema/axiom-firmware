@@ -24,9 +24,13 @@ import (
 	"io"
 	"log"
 	"net"
+	"strconv"
 
 	flatbuffers "github.com/google/flatbuffers/go"
 )
+
+// Just a workaround, needs proper solution later
+var c *Client
 
 // Client for REST API
 type Client struct {
@@ -88,6 +92,8 @@ func (c *Client) TransferData() {
 		log.Fatal("write error:", err)
 	}
 
+	c.Settings = c.Settings[:0]
+	c.Builder.Reset()
 }
 
 // AddSettingIS provides method to add image sensor settings
@@ -110,10 +116,39 @@ func (c *Client) AddSettingIS(mode schema.Mode, imageSensorSetting schema.ImageS
 
 func ReceivedDataHandler(setting *Setting) {
 	fmt.Printf("Setting received: %s\n", setting.ID)
+	if setting.ID == "gain" {
+		gainIndex, err := strconv.Atoi(setting.Value)
+		if err != nil {
+			fmt.Printf("Value cannot be converted\n")
+			return
+		}
+		GainHandler(uint16(gainIndex))
+	}
+}
+
+var gainValues [5]uint16
+var adcRanges [5]uint16
+
+func GainHandler(gainIndex uint16) {
+	fmt.Printf("GainHandler()\n")
+
+	gainValue := gainValues[gainIndex]
+	adcRange := adcRanges[gainIndex]
+
+	c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsGain, gainValue)
+	c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsADCRange, adcRange)
+	c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsADCRangeMult2, 1)
+	c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsOffset1, 2000)
+	c.AddSettingIS(schema.ModeWrite, schema.ImageSensorSettingsOffset2, 2000)
+
+	c.TransferData()
 }
 
 func main() {
-	c := new(Client)
+	gainValues = [...]uint16{0, 1, 3, 7, 11}
+	adcRanges = [...]uint16{0x3eb, 0x3d5, 0x3d5, 0x3d5, 0x3e9}
+
+	c = new(Client)
 	c.Init()
 
 	//c.AddSettingSPI(Mode::Write, )
