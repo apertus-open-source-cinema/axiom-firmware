@@ -1,5 +1,10 @@
 #include "CMVAdapter.h"
 
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <systemd/sd-journal.h>
+
 CMVAdapter::CMVAdapter()
 {
     // Map the regions at start, to prevent repeating calls of mmap()
@@ -38,6 +43,8 @@ void CMVAdapter::SetGain(unsigned int gain, unsigned int adcRAnge)
 void CMVAdapter::SetCMVRegister(u_int8_t registerIndex, unsigned int value)
 {
     // TODO: Add implementation
+    std::string message = "SetCMVRegister() - Register: " + std::to_string(registerIndex) + " | Value: " + std::to_string(value);
+    sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
     //mappedAddress[registerIndex] = value;
 }
 

@@ -11,6 +11,7 @@
 
 #include "../Adapter/I2CAdapter.h"
 #include "../Adapter/MemoryAdapter.h"
+#include "../Adapter/CMVAdapter.h"
 
 #include <Schema/axiom_daemon_generated.h>
 
@@ -28,6 +29,7 @@ class Server
 
     IAdapter* _memoryAdapter = nullptr;
     IAdapter* _i2cAdapter = nullptr;
+    CMVAdapter* _cmvAdapter = nullptr;
 
 public:
     Server() :
@@ -41,6 +43,7 @@ public:
         // TODO: Idea: Replace plain initialization with map of adapters, evaluation required
         _memoryAdapter = new MemoryAdapter();
         _i2cAdapter = new I2CAdapter();
+        _i2cAdapter = new CMVAdapter();
 
         // TODO: Adjust paths to real ones, this ones are just for testing
         // TODO: Add fallback to older revision version if for current one no file is available
@@ -59,6 +62,11 @@ public:
         if(_i2cAdapter != nullptr)
         {
             delete _i2cAdapter;
+        }
+
+        if(_cmvAdapter != nullptr)
+        {
+            delete _cmvAdapter;
         }
     }
 
@@ -119,7 +127,8 @@ private:
                 {
                     sd_journal_print(LOG_INFO, "Received: Image Sensor setting", (unsigned long)getpid());
                     const ImageSensorSetting* is = t->payload_as_ImageSensorSetting();
-                    is->mode(); // Just a dummy call to supress "unused" warning
+                    _cmvAdapter->SetCMVRegister((u_int8_t)is->setting(), is->parameter());
+                    //is->mode(); // Just a dummy call to supress "unused" warning
                     /*Mode mode = is->mode();
                     uint16_t parameter = is->parameter();
                     ImageSensorSettings s2 = is->setting();*/

@@ -76,9 +76,11 @@ func (c *Client) SetupSocket() {
 func (c *Client) TransferData() {
 	//byteVector := c.Builder.CreateByteVector(c.Settings)
 
-	schema.PacketStartSettingsVector(c.Builder, 1)
-	c.Builder.PrependUOffsetT(c.Settings[0])
-	settings := c.Builder.EndVector(1)
+	schema.PacketStartSettingsVector(c.Builder, len(c.Settings))
+	for _, element := range c.Settings {
+		c.Builder.PrependUOffsetT(element)
+	}
+	settings := c.Builder.EndVector(len(c.Settings))
 
 	schema.PacketStart(c.Builder)
 	schema.PacketAddSettings(c.Builder, settings)
