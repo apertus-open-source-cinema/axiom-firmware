@@ -9,6 +9,7 @@ ExecStart=/home/dev/Source/beta-software/axiom_beta_control_daemon/build/axiom_d
 StandardInput=socket
 StandardError=journal
 TimeoutStopSec=5
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
