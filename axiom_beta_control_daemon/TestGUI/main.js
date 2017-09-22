@@ -43,9 +43,9 @@ function sendSettings(settingName, value) {
     $.ajax({
         url: "http://127.0.0.1:7070/settings",
         type: "PUT",
-        data: JSONObject,
+        data: JSON.stringify(JSONObject),
         crossDomain: true,
-        dataType: "text",
+        dataType: "json",
         success: function (responseData, textStatus, jqXHR) {
             console.log(responseData);
         },
