@@ -18,6 +18,8 @@
 
 class MemoryAdapter : public IAdapter
 {
+    uint32_t* baseAddress;
+
 public:
     void ReadDescriptions(std::string descriptionFile)
     {
@@ -35,6 +37,11 @@ public:
         UNUSED(data);
     }
 
+    void	WriteWord(unsigned reg, uint16_t val)
+    {
+        baseAddress[reg] = val;
+    }
+    
     void ReadBlock(uint8_t *data, unsigned int length)
     {
         UNUSED(data);
@@ -49,6 +56,8 @@ public:
 
     void* MemoryMap(uint32_t address, uint32_t size)
     {
+        baseAddress = (uint32_t *)address;
+
         // TODO: Check if alignment is required
         int fd = open("/dev/mem", O_RDWR | O_SYNC);
         if (fd == -1)
@@ -58,7 +67,7 @@ public:
             return (void*)-1;
         }
 
-        void* result = mmap((void*)0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
+        void* result = mmap((void*)address, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
         if(result == (void*)-1)
         {
             // TODO: Add error log
