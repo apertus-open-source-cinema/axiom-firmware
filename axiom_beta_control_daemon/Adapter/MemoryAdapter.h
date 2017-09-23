@@ -8,6 +8,9 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/syslog.h>
+#include <unistd.h>
+
+#include <systemd/sd-journal.h>
 
 #include "IAdapter.h"
 
@@ -55,14 +58,12 @@ public:
             return (void*)-1;
         }
 
-        // TODO: Needs review
-        uint32_t tempAddress = 0x00000000;
-
-        void* result = mmap((void*)tempAddress, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
+        void* result = mmap((void*)0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
         if(result == (void*)-1)
         {
             // TODO: Add error log
-
+            std::string message = "Cannot map memory to address: " + std::to_string(address);
+            sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
         }
 
         return result;

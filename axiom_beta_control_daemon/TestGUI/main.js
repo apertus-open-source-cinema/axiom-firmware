@@ -62,7 +62,7 @@ $(document).on("change", '#gain', function () {
     var value = $('#gain').val();
     var valueText = value;
 
-    if (value == 5) {
+    if (value == 4) {
         valueText = "3/3";
     }
 

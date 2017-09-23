@@ -1,10 +1,5 @@
 #include "CMVAdapter.h"
 
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <systemd/sd-journal.h>
-
 CMVAdapter::CMVAdapter()
 {
     // Map the regions at start, to prevent repeating calls of mmap()
