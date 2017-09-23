@@ -78,11 +78,11 @@ ExternalProject_Add(mux_project
 
 ExternalProject_Get_Property(mux_project SOURCE_DIR)
 
-file(MAKE_DIRECTORY ${SOURCE_DIR}/src/github.com/gorilla/mux )
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/github.com/gorilla/mux )
 ADD_CUSTOM_COMMAND(TARGET mux_project PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
                           ${SOURCE_DIR}/*.go
-                          ${SOURCE_DIR}/src/github.com/gorilla/mux )
+                          ${CMAKE_BINARY_DIR}/src/github.com/gorilla/mux )
 
 # Prepare handlers Go package (source)
 ExternalProject_Add(handlers_project
@@ -96,11 +96,11 @@ ExternalProject_Add(handlers_project
 
 ExternalProject_Get_Property(handlers_project SOURCE_DIR)
 
-file(MAKE_DIRECTORY ${SOURCE_DIR}/src/github.com/gorilla/handlers )
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/github.com/gorilla/handlers )
 ADD_CUSTOM_COMMAND(TARGET handlers_project PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
                           ${SOURCE_DIR}/*.go
-                          ${SOURCE_DIR}/src/github.com/gorilla/handlers )
+                          ${CMAKE_BINARY_DIR}/src/github.com/gorilla/handlers )
 
 # Client example should be build separately for now
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
