@@ -6,3 +6,6 @@ axiom_beta_control_daemon/Schema/axiom_daemon_generated\.h
 axiom_beta_control_daemon/build/
 
 axiom_beta_control_daemon/.vscode/*
+axiom_beta_control_daemon/.vs/
+axiom_beta_control_daemon/CMakeSettings.json
+axiom_beta_control_daemon/CppProperties.json

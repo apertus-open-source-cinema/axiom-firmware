@@ -18,7 +18,8 @@
 
 class MemoryAdapter : public IAdapter
 {
-    uint32_t* baseAddress;
+protected:
+    void* baseAddress;
 
 public:
     void ReadDescriptions(std::string descriptionFile)
@@ -39,7 +40,8 @@ public:
 
     void	WriteWord(unsigned reg, uint16_t val)
     {
-        baseAddress[reg] = val;
+		volatile uint32_t* ptr = (uint32_t*)baseAddress;
+        ptr[reg] = val;
     }
     
     void ReadBlock(uint8_t *data, unsigned int length)
@@ -74,6 +76,8 @@ public:
             std::string message = "Cannot map memory to address: " + std::to_string(address);
             sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
         }
+		
+		baseAddress = result;
 
         return result;
     }

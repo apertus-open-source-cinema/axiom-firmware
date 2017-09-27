@@ -43,7 +43,7 @@ public:
         // TODO: Idea: Replace plain initialization with map of adapters, evaluation required
         _memoryAdapter = new MemoryAdapter();
         _i2cAdapter = new I2CAdapter();
-        _i2cAdapter = new CMVAdapter();
+        _cmvAdapter = new CMVAdapter();
 
         // TODO: Adjust paths to real ones, this ones are just for testing
         // TODO: Add fallback to older revision version if for current one no file is available

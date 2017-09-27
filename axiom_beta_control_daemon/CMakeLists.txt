@@ -103,7 +103,7 @@ ADD_CUSTOM_COMMAND(TARGET handlers_project PRE_BUILD
                           ${CMAKE_BINARY_DIR}/src/github.com/gorilla/handlers )
 
 # Client example should be build separately for now
-ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
+# ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
 
 # Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>

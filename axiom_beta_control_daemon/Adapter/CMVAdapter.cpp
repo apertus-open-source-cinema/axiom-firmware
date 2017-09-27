@@ -3,12 +3,12 @@
 CMVAdapter::CMVAdapter()
 {
     // Map the regions at start, to prevent repeating calls of mmap()
-    mappedAddress = (uint32_t*)MemoryMap(baseAddress, memorySize);
+    MemoryMap(address, memorySize);
 }
 
 CMVAdapter::~CMVAdapter()
 {
-    MemoryUnmap(baseAddress, memorySize);
+    MemoryUnmap(address, memorySize);
 }
 
 void CMVAdapter::SetGain(unsigned int gain, unsigned int adcRAnge)
