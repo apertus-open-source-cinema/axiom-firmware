@@ -2,6 +2,9 @@ Daemon for settings and general control of Axiom Beta
 
 Prequired packages (names are varying between Linux distributions): cmake, go, libsystemd-dev, lighttpd
 
+General info:
+- REST port: 7070
+
 Build instructions:
 - Install required packages
 - Clone beta-software repo
@@ -23,7 +26,7 @@ Setup daemon:
 Setup web GUI:
 - Copy TestGUI folder to /srv/http (ArchLinux) or /var/www/html (Debian-based distributions)
 - Modify server address in main.js in method sendSettings()
-
-Socket test:
-- Install socat package
-- Command: socat - /tmp/axiom_daemon 
+- Temporary: systemctl start lighttpd
+- Permanent: systemctl enable lighttpd
+             systemctl start lighttpd
+- Check if started correctly with systemctl status lighttpd
