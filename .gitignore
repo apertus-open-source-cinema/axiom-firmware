@@ -1,11 +1,19 @@
-
 *.user
 
-axiom_beta_control_daemon/Schema/axiom_daemon_generated\.h
+software/axiom_beta_control_daemon/Schema/axiom_daemon_generated\.h
+software/axiom_beta_control_daemon/build/
+software/axiom_beta_control_daemon/.vscode/*
+software/axiom_beta_control_daemon/.vs/
+software/axiom_beta_control_daemon/CMakeSettings.json
+software/axiom_beta_control_daemon/CppProperties.json
 
-axiom_beta_control_daemon/build/
+stuff/linux/ArchLinuxARM*.gz
+stuff/linux/DeviceTree/*.dtb
 
-axiom_beta_control_daemon/.vscode/*
-axiom_beta_control_daemon/.vs/
-axiom_beta_control_daemon/CMakeSettings.json
-axiom_beta_control_daemon/CppProperties.json
+#Logic/Lattice/*.svf
+gateware/Lattice/**/*.svf
+gateware/Lattice/**/*.bin
+gateware/Lattice/**/*.jed
+gateware/Lattice/**/*.svf.*
+gateware/cmv_hdmi3/*.bit
+

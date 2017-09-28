@@ -1,0 +1,54 @@
+
+#project files
+add_file -vhdl -lib work "/opt/diamond/3.5_x64/cae_library/synthesis/vhdl/machxo2.vhd"
+add_file -vhdl -lib work "./pass.vhd"
+
+#implementation "count"
+impl -add count -type fpga
+
+#implementation attributes
+set_option -vlog_std sysv
+set_option -project_relative_includes 1
+
+#device options
+#set_option -technology LATTICE-XP
+set_option -technology MACHXO2
+#set_option -part LFXP6C
+set_option -part LCMXO2_1200HC
+set_option -package TG100C
+set_option -speed_grade -4
+set_option -part_companion ""
+
+#compilation/mapping options
+
+# mapper_options
+set_option -frequency auto
+set_option -write_verilog 0
+set_option -write_vhdl 0
+set_option -srs_instrumentation 1
+
+# Lattice XP
+set_option -maxfan 100
+set_option -disable_io_insertion 0
+set_option -retiming 0
+set_option -pipe 1
+set_option -forcegsr no
+set_option -fix_gated_and_generated_clocks 1
+set_option -RWCheckOnRam 1
+set_option -update_models_cp 0
+set_option -syn_edif_array_rename 1
+
+# sequential_optimization_options
+set_option -symbolic_fsm_compiler 1
+
+# Compiler Options
+set_option -compiler_compatible 0
+set_option -resource_sharing 1
+set_option -multi_file_compilation_unit 1
+
+#automatic place and route (vendor) options
+set_option -write_apr_constraint 1
+
+#set result format/file last
+project -result_file "./pass.edi"
+
