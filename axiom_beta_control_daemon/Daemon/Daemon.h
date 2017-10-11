@@ -15,7 +15,7 @@
 
 #include <Schema/axiom_daemon_generated.h>
 
-class Server
+class Daemon
 {
     std::string _socketPath;
 
@@ -32,7 +32,7 @@ class Server
     CMVAdapter* _cmvAdapter = nullptr;
 
 public:
-    Server() :
+    Daemon() :
         _socketPath("/tmp/axiom_daemon"),
         _running(true)
     {
@@ -52,7 +52,7 @@ public:
         //_i2cAdapter->ReadDescriptions("../Descriptions/I2C_rev" + revision + ".json");
     }
 
-    ~Server()
+    ~Daemon()
     {
         if(_memoryAdapter != nullptr)
         {

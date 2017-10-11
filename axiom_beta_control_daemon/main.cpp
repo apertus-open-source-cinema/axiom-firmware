@@ -5,7 +5,7 @@
 
 //#include <systemd/sd-daemon.h>
 
-#include "Connection/Server.h"
+#include "Daemon/Daemon.h"
 
 #include <flatbuffers/idl.h>
 #include <flatbuffers/util.h>
@@ -28,15 +28,15 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char *argv[])
     sd_journal_print(LOG_INFO, "Initialization", (unsigned long)getpid());
     
     // TODO: Add smart pointer, to have more modern code
-    Server* server = new Server();
-    server->Setup();
-    server->Start();
+    Daemon* daemon = new Daemon();
+    daemon->Setup();
+    daemon->Start();
 
     //closelog();
 
-    if(server != nullptr)
+    if(daemon != nullptr)
     {
-        delete server;
+        delete daemon;
     }
 
     return 0;
