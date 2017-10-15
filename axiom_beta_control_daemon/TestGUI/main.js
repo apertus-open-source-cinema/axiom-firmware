@@ -1,36 +1,11 @@
+// Default address
+var serverIP = "127.0.0.1";
+
 function startUp() {
     $('#demo').text("Test123");
     $("#slider").slider();
-}
-
-function decrementISO() {
-    $.ajax({
-        url: "http://rest-service.guides.spring.io/greeting"
-    }).then(function (data) {
-        //$('.greeting-id').append(data.id);
-        //$('.greeting-content').append(data.content);
-        console.log(data.content);
-    });
-
-}
-
-function incrementISO() {
-    var JSONObject = {
-        "uname": "testUname",
-        "password": "testPassword"
-    };
-    //var jsonData = JSON.parse(JSONObject);
-
-    $.ajax({
-        url: "https://jsonplaceholder.typicode.com/posts/1",
-        type: "PUT",
-        data: JSONObject,
-        dataType: "json"
-    }).then(function (data) {
-        //$('.greeting-id').append(data.id);
-        //$('.greeting-content').append(data.content);
-        console.log(data.content);
-    });
+    $('#IP').text(serverIP);
+    $('#serverIP').val(serverIP);
 }
 
 function sendSettings(settingName, value) {
@@ -41,7 +16,7 @@ function sendSettings(settingName, value) {
     };
 
     $.ajax({
-        url: "http://127.0.0.1:7070/settings",
+        url: "http://" + serverIP + ":7070/settings",
         type: "PUT",
         data: JSON.stringify(JSONObject),
         crossDomain: true,
@@ -68,6 +43,11 @@ $(document).on("change", '#gain', function () {
 
     $('#gainValue').text(valueText);
     sendSettings("gain", value);
+});
+
+$(document).on("change, input", '#serverIP', function () {
+    serverIP = $('#serverIP').val();
+    $('#IP').text(serverIP);
 });
 
 function testFunc() {

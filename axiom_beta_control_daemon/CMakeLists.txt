@@ -10,7 +10,7 @@ SET(CMAKE_VERBOSE_MAKEFILE, ON)
 ADD_COMPILE_OPTIONS(-std=c++11)
 
 # Make GCC more strict
-SET(CMAKE_CXX_FLAGS "-pedantic -pedantic-errors -Wall -Wextra")
+SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -37,12 +37,16 @@ include_directories(${SOURCE_DIR}/include)
 # JSON
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/3rdParty/json/)
 
+# Pistache
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/3rdParty/pistache)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/3rdParty/pistache/include)
+
 SET(FLATC ${BINARY_DIR}/flatc)
 MESSAGE(STATUS "flatc location: ${FLATC}")
 
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
      "Adapter/*.cpp" "Adapter/*.h"
-     "Connection/*.cpp" "Connection/*.h"
+     "Daemon/*.cpp" "Daemon/*.h"
      "Schema/*.fbs"
      "Helpers/*.h")
 
@@ -54,62 +58,14 @@ ADD_CUSTOM_TARGET(flatc_cpp_gen
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
                   COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
 
-# Go schema
-ADD_CUSTOM_TARGET(flatc_go_gen
-                  COMMAND ${FLATC} --scoped-enums --go-namespace AxiomDaemon --go ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
-                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
-                  COMMENT "Running flatc_go_gen action" DEPENDS flatbuffers_project)
-
-# Prepare flatbuffers Go package (source)
-ADD_CUSTOM_COMMAND(TARGET flatbuffers_project PRE_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                          ${SOURCE_DIR}/go
-                          ${SOURCE_DIR}/src/github.com/google/flatbuffers/go )
-
-# Prepare mux Go package (source)
-ExternalProject_Add(mux_project
-                    PREFIX 3rdParty/mux
-                    GIT_REPOSITORY "https://github.com/gorilla/mux.git"
-                    GIT_TAG "master"
-                    CONFIGURE_COMMAND ""
-                    UPDATE_COMMAND ""
-                    INSTALL_COMMAND ""
-                    BUILD_COMMAND "")
-
-ExternalProject_Get_Property(mux_project SOURCE_DIR)
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/github.com/gorilla/mux )
-ADD_CUSTOM_COMMAND(TARGET mux_project PRE_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy
-                          ${SOURCE_DIR}/*.go
-                          ${CMAKE_BINARY_DIR}/src/github.com/gorilla/mux )
-
-# Prepare handlers Go package (source)
-ExternalProject_Add(handlers_project
-                    PREFIX 3rdParty/handlers
-                    GIT_REPOSITORY "https://github.com/gorilla/handlers.git"
-                    GIT_TAG "master"
-                    CONFIGURE_COMMAND ""
-                    UPDATE_COMMAND ""
-                    INSTALL_COMMAND ""
-                    BUILD_COMMAND "")
-
-ExternalProject_Get_Property(handlers_project SOURCE_DIR)
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/github.com/gorilla/handlers )
-ADD_CUSTOM_COMMAND(TARGET handlers_project PRE_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy
-                          ${SOURCE_DIR}/*.go
-                          ${CMAKE_BINARY_DIR}/src/github.com/gorilla/handlers )
-
 # Client example should be build separately for now
-# ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
-ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
+#ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
 
 # Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
-ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen flatc_go_gen )
+ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen)
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} systemd)

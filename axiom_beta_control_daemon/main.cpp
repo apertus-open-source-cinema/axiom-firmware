@@ -19,8 +19,6 @@
 // Requirement: package libi2c-dev, otherwise shorter one from kernel is used
 #include <linux/i2c-dev.h>
 
-#include "API/Client.h"
-
 #include "Adapter/CMVAdapter.h"
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char *argv[])

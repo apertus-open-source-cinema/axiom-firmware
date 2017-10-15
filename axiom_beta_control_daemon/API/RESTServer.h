@@ -6,10 +6,18 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 
+#include <pistache/http.h>
+#include <pistache/router.h>
+#include <pistache/endpoint.h>
+
 #include <Schema/axiom_daemon_generated.h>
 
-class Client
+using namespace Pistache;
+
+class RESTServer
 {
+    //HTTP_PROTOTYPE(RESTServer)
+
     std::string socketPath;
 
     // Using separate lists for now as it seems that flatbuffers does not use inheritance for unions
@@ -19,23 +27,68 @@ class Client
 
     flatbuffers::FlatBufferBuilder* _builder = nullptr;
 
+    Pistache::Address _address;
+
+    std::shared_ptr<Pistache::Http::Endpoint> _httpEndpoint;
+    Pistache::Rest::Router router;
+
     int clientSocket;
     struct sockaddr_un address;
 
 public:
-    Client() :
+    RESTServer(Pistache::Address address) :
         socketPath("/tmp/axiom_daemon"),
-        _builder(new flatbuffers::FlatBufferBuilder())
+        _builder(new flatbuffers::FlatBufferBuilder()),
+        _httpEndpoint(std::make_shared<Http::Endpoint>(address))
     {
+        auto opts = Http::Endpoint::options().threads(2).flags(Tcp::Options::ReuseAddr);
+                                             //.flags(Tcp::Options::InstallSignalHandler);
+        _httpEndpoint->init(opts);
+
+        SetupRoutes();
+
         SetupSocket();
     }
 
-    ~Client()
+    ~RESTServer()
     {
         if(_builder != nullptr)
         {
             delete _builder;
         }
+    }
+
+    void Start()
+    {
+        _httpEndpoint->setHandler(router.handler());
+        _httpEndpoint->serve();
+    }
+
+    void GetSettings(const Rest::Request& request, Http::ResponseWriter response)
+    {
+        std::string availableSettings = "Available Settings:\n";
+        availableSettings += "gain";
+        response.send(Http::Code::Ok, availableSettings);
+    }
+
+    void PutSettings(const Rest::Request& request, Http::ResponseWriter response)
+    {
+        // std::string availableSettings = "Available Settings:\n";
+        // availableSettings += "gain"
+        std::string receivedContent  = request.body();
+        response.send(Http::Code::Ok, "Received: " + receivedContent);
+    }
+
+    void GetGeneral(const Rest::Request& request, Http::ResponseWriter response)
+    {
+        response.send(Http::Code::Not_Acceptable, "Use specific sub-page");
+    }
+
+    void SetupRoutes()
+    {
+        Rest::Routes::Get(router, "/", Rest::Routes::bind(&RESTServer::GetGeneral, this));
+        Rest::Routes::Get(router, "/settings/", Rest::Routes::bind(&RESTServer::GetSettings, this));
+        Rest::Routes::Put(router, "/settings/", Rest::Routes::bind(&RESTServer::PutSettings, this));
     }
 
     void Execute()

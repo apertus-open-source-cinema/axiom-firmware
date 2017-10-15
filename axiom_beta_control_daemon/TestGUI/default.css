@@ -2,6 +2,10 @@ body {
     background-color: #2A3139;
 }
 
+#serverIP{
+    margin-bottom: 2em;
+}
+
 .testOutput {
     color: red;
 }
@@ -12,4 +16,9 @@ body {
 
 .lightText{
     color: white;
+}
+
+.label{
+    margin-right: 1em;
+    width: 10em;
 }
