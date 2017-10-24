@@ -10,9 +10,35 @@
 #include <pistache/router.h>
 #include <pistache/endpoint.h>
 
+#include <json.hpp>
+
 #include <Schema/axiom_daemon_generated.h>
 
 using namespace Pistache;
+using json = nlohmann::json;
+
+struct Setting2
+{
+    std::string id;
+    int value;
+    RWMode Mode;
+    std::string type;
+};
+
+void from_json(const json& j, Setting2& s) {
+    s.id = j.at("id").get<std::string>();
+    s.value = j.at("value").get<int>();
+    s.type = j.at("type").get<std::string>();
+
+    if(j.at("mode").get<std::string>() == "write")
+    {
+        s.Mode = RWMode::Write;
+    }
+    else if(j.at("mode").get<std::string>() == "read")
+    {
+        s.Mode = RWMode::Read;
+    }
+}
 
 class RESTServer
 {
@@ -41,13 +67,14 @@ public:
         _builder(new flatbuffers::FlatBufferBuilder()),
         _httpEndpoint(std::make_shared<Http::Endpoint>(address))
     {
+        // Connect to daemon
+        SetupSocket();
+
+        // Pistache setup
         auto opts = Http::Endpoint::options().threads(2).flags(Tcp::Options::ReuseAddr);
-                                             //.flags(Tcp::Options::InstallSignalHandler);
         _httpEndpoint->init(opts);
 
         SetupRoutes();
-
-        SetupSocket();
     }
 
     ~RESTServer()
@@ -75,8 +102,37 @@ public:
     {
         // std::string availableSettings = "Available Settings:\n";
         // availableSettings += "gain"
-        std::string receivedContent  = request.body();
-        response.send(Http::Code::Ok, "Received: " + receivedContent);
+        std::string content  = request.body();
+        
+        auto receivedJSON = json::parse(content);
+     
+        std::string message = "Received: " + content + '\n';
+        Setting2 s = receivedJSON;
+        message += "JSON ID: " + s.id + '\n';
+        message += "JSON Value: " + std::to_string(s.value) + '\n';
+        if(s.Mode == RWMode::Write)
+        {
+            message += "JSON Mode: write\n";
+        }
+        else if(s.Mode == RWMode::Read)
+        {
+            message += "JSON Mode: read \n";
+        }
+        else
+        {
+            message += "JSON Mode: unknown\n";
+        }
+        
+        message += "JSON Type: " + s.type +'\n';
+
+        // TODO: Dumb test, replace by more sophisticated code
+        if(s.type == "ImageSensor")
+        {
+            AddSettingIS(s.Mode, ImageSensorSettings::Gain, 2);
+            TransferData();
+            message += "|Setting applied|\n";
+        }
+        response.send(Http::Code::Ok, message);
     }
 
     void GetGeneral(const Rest::Request& request, Http::ResponseWriter response)
@@ -106,6 +162,7 @@ public:
         send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
         std::string message = "Data size: " + std::to_string(_builder->GetSize());
         std::cout << message.c_str() << std::endl;
+        
         // Clear settings after sending
         _settings.clear();
     }
@@ -118,7 +175,7 @@ public:
         connect(clientSocket, (struct sockaddr*) &address, sizeof (address));
     }
 
-    void AddSettingSPI(Mode mode, std::string destination, ConnectionType type, uint8_t* payload, unsigned int payloadLength)
+    void AddSettingSPI(RWMode mode, std::string destination, ConnectionType type, uint8_t* payload, unsigned int payloadLength)
     {
         auto destinationFB = _builder->CreateString(destination);
         auto payloadFB = _builder->CreateVector(payload, payloadLength);
@@ -133,7 +190,7 @@ public:
 
     // Write/read setting of image sensor
     // Fixed to 2 bytes for now, as CMV used 128 x 2 bytes registers and it should be sufficient for first tests
-    void AddSettingIS(Mode mode, ImageSensorSettings setting, uint16_t parameter)
+    void AddSettingIS(RWMode mode, ImageSensorSettings setting, uint16_t parameter)
     {
         auto settingFB = CreateImageSensorSetting(*_builder, mode, setting, parameter);
         auto payload = CreatePayload(*_builder, Setting::ImageSensorSetting, settingFB.Union());

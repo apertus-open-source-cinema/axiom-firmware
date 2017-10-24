@@ -1,5 +1,5 @@
 // TODO: Add namespace
-enum Mode:ubyte { Read, Write }
+enum RWMode:ubyte { Read, Write }
 
 enum ConnectionType:ubyte { Memory, I2C, UART, SPI, ImageSensor}
 
@@ -10,14 +10,14 @@ union Setting { ImageSensorSetting, SPISetting }
 
 table ImageSensorSetting
 {
-    mode:Mode;
+    mode:RWMode;
     setting:ImageSensorSettings;
     parameter:ushort;
 }
 
 table SPISetting
 {
-    mode:Mode;
+    mode:RWMode;
     destination:string;
     connectionType:ConnectionType;
     payload:[ubyte];
