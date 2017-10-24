@@ -4,6 +4,7 @@ Prequired packages (names are varying between Linux distributions): cmake, go, l
 
 General info:
 - REST port: 7070
+- Available pages: /settings (PUT/GET)
 
 Build instructions:
 - Install required packages
