@@ -1,0 +1,91 @@
+.menu {
+    display: flex;
+    height: 100%;
+}
+
+.menuButton {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    text-align: center;
+    height: 100%;
+}
+
+
+.menuButtonInverted{
+  /* align-items: flex-end; */
+  /* height: 75%; */
+  margin-top: auto;
+}
+
+.menuButton:active {
+    opacity: 0.5;
+}
+
+.roundedTop {
+    border-top-left-radius: 0.3em;
+    border-top-right-radius: 0.3em;
+}
+
+.roundedBottom {
+    border-bottom-left-radius: 0.3em;
+    border-bottom-right-radius: 0.3em;
+}
+
+.currentValue {
+    background: white;
+    color: black;
+    font-size: 3em;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttonCaption {
+    background: black;
+    color: white;
+    font-size: 1.7em;
+    height: 1.7em;
+    line-height: 1.7em;
+}
+
+
+
+
+/* .menu1 > div {
+    font-size: 3vh;
+    text-align: center;
+    color: white;
+    background: #232323;
+    margin: 0 3em 0 3em;
+    padding: .75em;
+    border-radius: 0 0 .3125em .3125em;
+    flex: 1;
+  }
+
+  .menu2 > div {
+    font-size: 3vh;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    background: rgb(255, 255, 255);
+    margin: 0 3em 0 3em;
+    padding: .75em;
+    border-radius: 0 0 .3125em .3125em;
+    flex: 1;
+  }
+
+  .menu1-scala > div {
+    width: 50px;
+
+    font-size: 3vh;
+    text-align: center;
+    color: white;
+    background: #aa1f1f;
+    margin: 0 3em 0 3em;
+    padding: .75em;
+    border-radius: 0 0 .3125em .3125em;
+    flex: 1;
+  }
+ */

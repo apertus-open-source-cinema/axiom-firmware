@@ -1,0 +1,48 @@
+    * {
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    @font-face {
+        font-family: 'Titillium';
+        src: url('/fonts/Titillium-Regular.otf') format('opentype');
+    }
+    
+    html,
+    body {
+        height: 100%;
+        background-color: lightgray;
+        font-family: 'Titillium';
+
+        /* Disable text selection */
+        user-select: none;
+    }
+    /* Header
+-----------------------------------------------------------------------------*/
+
+    .header {
+        width: 100%;
+        height: 20%;
+        position: fixed;
+        top: 0;
+    }
+    /* Middle
+-----------------------------------------------------------------------------*/
+
+    .content {
+        /* padding-top: 0 0 .625em; */
+        position: fixed;
+        width: 100%;
+        top: 20%;
+        bottom: 20%;
+    }
+    /* Footer
+-----------------------------------------------------------------------------*/
+
+    .footer {
+        width: 100%;
+        height: 20%;
+        position: fixed;
+        bottom: 0;
+    }

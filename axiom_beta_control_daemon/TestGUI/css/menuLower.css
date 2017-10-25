@@ -1,0 +1,47 @@
+
+.menuBottom {
+    display: flex;
+}
+  /* .menu3 > div {
+    font-size: 3vh;
+    text-align: center;
+    color: white;
+    background: #232323;
+    margin: 0 3em 0 3em;
+    padding: .75em;
+    border-radius: .3125em .3125em 0 0;
+    flex: 1;
+  }
+
+  .menu4 > div {
+    /*float: right;*/
+  /*  font-size: 3vh;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    background: rgb(255, 255, 255);
+    margin: 0 3em 0 3em;
+    padding: .75em; 
+    border-radius: .3125em .3125em 0 0;
+    flex: 1;
+  }
+
+  .menu-menu {
+    float: left;
+    min-width: 23%;
+    min-height: 10%;
+    font-size: 3vh;
+    text-align: center;
+    color: white;
+    background: #232323;
+    margin: 0 3em 0 3em;
+    padding: .75em;
+    border-radius: .3125em .3125em 0 0;
+    flex: 1;
+  }
+
+  .menu-clear {
+    float: left;
+    min-width: 23%;
+    flex: 1;
+    opacity: 0;
+  } */
