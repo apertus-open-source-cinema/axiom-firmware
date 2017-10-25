@@ -1,0 +1,69 @@
+.menu {
+    display: flex;
+    height: 100%;
+}
+
+.menuBottom {
+    display: flex;
+    /* height: 100%; */
+    align-items: flex-end;
+}
+
+.menuButton {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.menuButtonInverted {
+    /* align-items: flex-end; */
+    /* height: 75%; */
+    margin-top: auto;
+}
+
+.menuButton:active {
+    opacity: 0.5;
+}
+
+.roundedTop {
+    border-top-left-radius: 0.3em;
+    border-top-right-radius: 0.3em;
+}
+
+.roundedBottom {
+    border-bottom-left-radius: 0.3em;
+    border-bottom-right-radius: 0.3em;
+}
+
+.currentValue {
+    background: white;
+    color: black;
+    font-size: 3em;
+    /* height: 60%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 2;
+}
+
+.buttonCaption {
+    background: black;
+    color: white;
+    font-size: 1.3em;
+    /* font-size: 1.7em; */
+    /* height: 1.7em; */
+    /* line-height: 1.7em; */
+    flex-grow: 1;
+}
+
+.buttonIcons {
+    width: 100%;
+    height: 100%;
+    align-self: center;
+    object-fit: contain;
+}

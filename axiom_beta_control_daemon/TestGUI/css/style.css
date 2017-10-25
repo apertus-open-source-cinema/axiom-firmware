@@ -1,9 +1,3 @@
-    * {
-        margin: 0;
-        padding: 0;
-        border: 0;
-    }
-
     @font-face {
         font-family: 'Titillium';
         src: url('/fonts/Titillium-Regular.otf') format('opentype');
@@ -12,8 +6,13 @@
     html,
     body {
         height: 100%;
+        width: 100%;
         background-color: lightgray;
         font-family: 'Titillium';
+
+        margin: 0;
+        padding: 0;
+        border: 0;
 
         /* Disable text selection */
         user-select: none;
