@@ -9,3 +9,5 @@ axiom_beta_control_daemon/.vscode/*
 axiom_beta_control_daemon/.vs/
 axiom_beta_control_daemon/CMakeSettings.json
 axiom_beta_control_daemon/CppProperties.json
+
+**/.DS_Store
