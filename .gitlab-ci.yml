@@ -10,7 +10,7 @@ before_script:
 build_qemu:
   stage: build_qemu
   script:
-    - apt-get install -y -qq wget git e2fsprogs mtools build-essential gcc-arm-linux-gnueabi libglib2.0-dev zlib1g-dev dh-autoreconf flex bison > /dev/null
+    - apt-get install -y -qq $(grep -vE "^\s*#" build_tools/dependencies.txt | tr "\n" " ") > /dev/null
     - build_tools/axiom_beta_build_image_Ubuntu.sh
   artifacts:
     paths:
