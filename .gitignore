@@ -11,3 +11,4 @@ axiom_beta_control_daemon/CMakeSettings.json
 axiom_beta_control_daemon/CppProperties.json
 
 **/.DS_Store
+build/
