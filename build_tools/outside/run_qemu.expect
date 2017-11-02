@@ -1,0 +1,35 @@
+#!/usr/bin/expect -f
+puts stdout "starting qemu!\n\n"
+set timeout 300
+
+spawn qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb BOOT.fs/devicetree.dtb -kernel BOOT.fs/BOOT.bin -drive if=sd,format=raw,index=0,file=IMAGE.dd -boot mode=5 -append "root=/dev/mmcblk0p2 rw rootwait rootfstype=ext4"
+expect {
+    "login: " { }
+    timeout { puts "\ntimed out\n"; exit 1 }
+}
+send "apertus\r"
+expect {
+    "Password: " { }
+    timeout { puts "\ntimed out\n"; exit 1 }
+}
+send "axiom\r"
+expect {
+    "$ " { }
+    timeout { puts "\ntimed out\n"; exit 1 }
+}
+
+# TODO: add some basic funtionality tests
+
+send "sudo systemctl poweroff\r"
+expect {
+    "password for apertus:" { }
+    timeout { puts "\ntimed out\n"; exit 1 }
+}
+send "axiom\r"
+expect {
+    "System halted" { }
+    timeout { puts "\ntimed out\n"; exit 1 }
+}
+
+# finished sucessfully
+exit
