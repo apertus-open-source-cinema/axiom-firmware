@@ -17,7 +17,7 @@ cmv_perf3 : cmv_perf3.o
 
 install:
 	$(STRIP) $(TARGETS)
-	cp -va $(TARGETS) /root/
+	for TARGET in $(TARGETS); do ln -sf $(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
 
 clean:
 	rm -f *.o
