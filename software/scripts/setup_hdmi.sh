@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
 
 DISP=${1:-1080p60}
 

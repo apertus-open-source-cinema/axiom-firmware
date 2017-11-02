@@ -1,6 +1,6 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
 
-cd "${0%/*}"            # change into script dir
 
 . ./cmv.func
 . ./hdmi.func
@@ -25,7 +25,7 @@ while sleep 1; do
     fil_reg 15 0x0
 
     ./cmv_init.sh
-    ./cmv_train3 && break
+    ../cmv_tools/cmv_train3/cmv_train3 && break
 
     ./power_init.sh
 done
@@ -37,8 +37,8 @@ done
 
 fil_reg 15 0x01000100
 
-# ./mimg -a -o /opt/IMG/overlay_05.rgb
-/opt/BERTL/mimg -a -O /opt/IMG/AXIOM-Beta-logo-overlay-white.raw
+# ../processing_tools/mimg/mimg -a -o /opt/IMG/overlay_05.rgb
+../processing_tools/mimg/mimg -a -O /opt/IMG/AXIOM-Beta-logo-overlay-white.raw
 
 # scn_reg 32  264		# pream_s
 # scn_reg 33  264		# guard_s

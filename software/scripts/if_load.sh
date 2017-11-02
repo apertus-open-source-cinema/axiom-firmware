@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+cd $(dirname $(realpath $0))    # change into script dir
 
 . ./hdmi.func
 

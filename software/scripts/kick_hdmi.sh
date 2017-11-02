@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
 
 . ./cmv.func
 
@@ -17,7 +18,7 @@ cat cmv_hdmi4.bit >/dev/xdevcfg
 # fil_reg 15 0x0
 
 # ./cmv_init.sh
-# ./cmv_train3
+# ../cmv_tools/cmv_train3/cmv_train3
 
 # ./setup.sh
 # bash -x ./setup_hdmi.sh

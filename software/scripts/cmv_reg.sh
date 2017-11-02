@@ -1,6 +1,7 @@
 #!/bin/sh
+cd $(dirname $(realpath $0))    # change into script dir
 
-. /root/cmv.func
+. ./cmv.func
 
 cmv_reg $1 $2
 

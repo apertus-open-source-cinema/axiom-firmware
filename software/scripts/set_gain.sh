@@ -1,7 +1,10 @@
-
+#!/bin/basH
 # Offset tuning: until the black reference columns are around 128 (not critical, +/-50 is fine)
 # ADC_RANGE tuning: until an overexposed image (by 2 stops or so) reaches 4000 at 99.9th percentile
 # this is so it won't clip harshly to white, and to also use the full range
+
+cd $(dirname $(realpath $0))    # change into script dir
+
 
 case $1 in 
    ("1")

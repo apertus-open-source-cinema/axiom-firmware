@@ -1,6 +1,5 @@
 #!/bin/sh
-
-cd "${0%/*}"		# change into script dir
+cd $(dirname $(realpath $0))    # change into script dir
 
 . ./cmv.func
 
