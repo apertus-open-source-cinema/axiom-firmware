@@ -18,6 +18,9 @@ Linux user-space tools and scripts used to operate the Axiom Beta hardware.
 ### `gateware/`
 Contains the VHDL sources for the various Programmable Logic devices on the board. (Currently not everything is contained)
 
+### `boot/`
+Files needed in the boot process.
+
 
 ### `build_tools/`
 Contains all the other stuff that is needed for creating a Beta firmware image.
