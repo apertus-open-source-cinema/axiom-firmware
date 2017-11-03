@@ -1,4 +1,4 @@
-Daemon for settings and general control of Axiom Beta
+Daemon for settings and general control of AXIOM Beta
 
 Prequired packages (names are varying between Linux distributions): cmake, go, libsystemd-dev, lighttpd
 
