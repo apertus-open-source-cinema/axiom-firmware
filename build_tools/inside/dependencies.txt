@@ -9,6 +9,7 @@ figlet
 # dependencies of tools
 python
 devmem
+python-numpy
 
 # convenience tools
 vim
