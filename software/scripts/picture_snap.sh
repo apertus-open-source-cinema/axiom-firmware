@@ -2,6 +2,8 @@
 #
 # Capture an image with a unique name
 #
+cd $(dirname $(realpath $0))    # change into script dir
+
 
 PARAMS=$1
 IMAGENAME=`date +%Y%m%d_%H%M%S`
@@ -12,7 +14,7 @@ echo /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 fil_reg 15 0
 
 #capture frame
-./cmv_snap3 -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
+../cmv_tools/cmv_snap3/cmv_snap3 -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 
 echo "raw12 written"
 

@@ -11,7 +11,7 @@ LDLIBS += -lm
 
 install:
 	$(STRIP) $(TARGETS)
-	cp -va $(TARGETS) /root/
+	for TARGET in $(TARGETS); do ln -sf $(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
 
 clean:
 	rm -f *.o

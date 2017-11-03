@@ -1,9 +1,7 @@
 
 .SUFFIXES: .c .o .asm .hex .bin
 
-TARGETS = cmv_train4 cmv_snap3 cmv_train3 cmv_hist3 cmv_perf3 lut_conf3 cmv_rcn3 pmem mimg
-TARGETS += cmv_snap3.static cmv_hist3.static lut_conf3.static
-TARGETS += smbget pong track paint
+TARGETS = cmv_snap3
 
 all : $(TARGETS)
 
@@ -34,7 +32,7 @@ lut_conf3.static : lut_conf3.o
 
 install:
 	$(STRIP) $(TARGETS)
-	cp -va $(TARGETS) /root/
+	for TARGET in $(TARGETS); do ln -sf $(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
 
 clean:
 	rm -f *.o

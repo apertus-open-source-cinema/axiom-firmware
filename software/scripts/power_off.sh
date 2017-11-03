@@ -1,6 +1,6 @@
 #!/bin/sh
+cd $(dirname $(realpath $0))    # change into script dir
 
-cd "${0%/*}"		# change into script dir
 
 . ./i2c.func
 

@@ -1,0 +1,16 @@
+# This file contains a list of all the archlinuxarm packages, that are needed inside the image
+# install them via: pacman --noconfirm $(grep -vE "^\s*#" dependencies.txt | tr "\n" " ")
+
+# things needed for setup
+base-devel
+git
+figlet
+
+# dependencies of tools
+python
+devmem
+
+# convenience tools
+vim
+nano
+python-pip

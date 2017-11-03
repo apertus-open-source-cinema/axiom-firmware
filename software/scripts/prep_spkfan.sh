@@ -1,4 +1,6 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
+
 
 ./power_init.sh
 ./power_on.sh

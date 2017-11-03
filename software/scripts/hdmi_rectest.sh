@@ -1,3 +1,6 @@
+#!/bin/sh
+cd $(dirname $(realpath $0))    # change into script dir
+
 # set gain x1, full 12-bit range
 ./set_gain.sh 1
 

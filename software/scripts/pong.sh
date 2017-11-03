@@ -1,6 +1,8 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
 
-./cmv_snap3 -e 9.2ms -z
+
+../cmv_tools/cmv_snap3/cmv_snap3 -e 9.2ms -z
 
 chr_reg 0 0x0
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
+
 
 export BETA=192.168.1.101 # replace by your camera IP
 
