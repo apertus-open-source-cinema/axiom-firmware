@@ -22,12 +22,10 @@ Build instructions:
 - `make -j4`
 
 Setup daemon:
-- cd into systemd directory
-- copy .socket and .service to `/etc/systemd/system`
-- Adjust the path to `axiom_daemon` executable in `.service` (This step will be adjusted later, so daemon is installed to some global place)
-- `systemctl enable axiom`
-- `systemctl start axiom`
-- `systemctl status axiom` to check if the service was started correctly, last line should say "legacy socket initialization" (preliminary log for now, will be improved later)
+- Install script and systemd description files for daemon will be copied by CMake to the build directory
+- After successful build, execute `./install_daemon.sh`
+- Required files will be copied to `/opt/axiom_daemon` directory, daemon set up and started
+- Finally the status of the daemon will be shown in the terminal
 
 Setup web GUI:
 - Copy TestGUI folder to `/srv/http` (ArchLinux) or `/var/www/html` (Debian-based distributions)
