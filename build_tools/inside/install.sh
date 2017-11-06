@@ -20,7 +20,7 @@ build_tools/inside/update.sh
 
 # setup hostname & set before login message
 echo "axiom-beta" > /etc/hostname
-echo "Apertus Axiom Beta Booted!" > /etc/issue
+echo "apertus° AXIOM Beta Booted!" > /etc/issue
 echo "Login as apertus with password axiom." >> /etc/issue
 
 # setup users

@@ -5,7 +5,7 @@ Requires=axiom.socket
 
 [Service]
 Type=simple
-ExecStart=/root/Source/beta-software/axiom_beta_control_daemon/build/axiom_daemon
+ExecStart=/opt/axiom_daemon/axiom_daemon
 StandardInput=socket
 StandardError=journal
 TimeoutStopSec=5

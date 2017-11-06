@@ -14,3 +14,4 @@ devmem
 vim
 nano
 python-pip
+python-numpy

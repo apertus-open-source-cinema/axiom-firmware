@@ -50,13 +50,16 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
      "Schema/*.fbs"
      "Helpers/*.h")
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
+FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
 
 # C/C++schema
 ADD_CUSTOM_TARGET(flatc_cpp_gen
                   COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
                   COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
+
+# Copy systemd description files
+FILE(COPY ${CMAKE_SOURCE_DIR}/systemd/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Client example should be build separately for now
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)

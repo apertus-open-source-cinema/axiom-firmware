@@ -17,6 +17,9 @@ for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/local/bin/axi
 
 ln -sf $(pwd)/build_tools/inside/update.sh /usr/local/bin/axiom-update
 
+# install Pure Python library for PNG image encoding/decoding 
+pip install pypng
+
 # TODO: build and install the control daemon
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng

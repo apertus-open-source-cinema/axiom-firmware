@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------
 --  lvds_pll.vhd
---	Axiom Alpha LVDS related PLLs
+--	AXIOM Alpha LVDS related PLLs
 --	Version 1.0
 --
 --  Copyright (C) 2013 H.Poetzl
