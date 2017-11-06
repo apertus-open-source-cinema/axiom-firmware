@@ -5,13 +5,21 @@ set -o pipefail
 mkdir -p build
 cd build
 
-if ([ ! -d BOOT.fs/ ] || [ ! -d ROOT.fs/ ] || [ ! -d ROOT.fs_kernel_modules/ ]); then
-    echo "build the BOOT.fs/, the ROOT.fs/ and the ROOT.fs_kernel_modules/ first!"
+if ([ ! -f linux-xlnx.git/arch/arm/boot/zImage ] || [ ! -d kernel_modules/ ] || [ ! -f BOOT.bin ] || [ ! -d ROOT.fs/ ]); then
+    echo "build the kernel, u-boot and the the rootfs first!"
     exit 1
 fi
 
 echo "combine ROOT.fs_kernel_modules into ROOT.fs" | boxes -d parchment
-rsync -aK ROOT.fs_kernel_modules/ ROOT.fs/
+rsync -aK kernel_modules/ ROOT.fs/
+
+
+echo "create the bootfs" | boxes -d parchment
+mkdir -p BOOT.fs
+cp linux-xlnx.git/arch/arm/boot/zImage BOOT.fs/
+cp BOOT.bin BOOT.fs/
+cp ../boot/uEnv.txt BOOT.fs/
+cp ../boot/devicetree.dtb BOOT.fs/devicetree.dtb
 
 
 echo "create the base image structure" | boxes -d parchment
@@ -31,7 +39,6 @@ sfdisk -uS IMAGE.dd << EOF
  part3 : start=        0, size=        0, Id=  0
  part4 : start=        0, size=        0, Id=  0
 EOF
-
 
 echo "create the boot partition & assamble it into the image" | boxes -d parchment
 rm -f BOOT.part

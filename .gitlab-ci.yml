@@ -18,16 +18,24 @@ variables:
 
 
 # build the ROOT.fs and the BOOT.fs. Aditionally build qemu for testing.
-build_bootfs:
+build_kernel:
   stage: build
   script:
-    - build_tools/outside/build_bootfs.sh
-    - tar -cpf build/BOOT.fs.tar build/BOOT.fs
-    - tar -cpf build/ROOT.fs_kernel_modules.tar build/ROOT.fs_kernel_modules
+    - build_tools/outside/build_kernel.sh
+    - tar -cpf build/kernel_modules.tar build/kernel_modules
   artifacts:
     paths:
-      - build/BOOT.fs.tar
-      - build/ROOT.fs_kernel_modules.tar
+      - build/linux-xlnx.git/arch/arm/boot/zImage
+      - build/kernel_modules.tar
+
+build_u_boot:
+  stage: build
+  script:
+    - build_tools/outside/build_u_boot.sh
+  artifacts:
+    paths:
+      - build/BOOT.bin
+      - build/u-boot-xlnx.git/u-boot.elf
 
 build_rootfs:
   stage: build
@@ -53,11 +61,11 @@ build_qemu:
 assemble_image:
   stage: assemble
   dependencies:
-    - build_bootfs
+    - build_kernel
+    - build_u_boot
     - build_rootfs
   script:
-    - tar --same-owner -xf build/BOOT.fs.tar
-    - tar --same-owner -xf build/ROOT.fs_kernel_modules.tar
+    - tar --same-owner -xf build/kernel_modules.tar
     - tar --same-owner -xf build/ROOT.fs.tar
     - build_tools/outside/assemble_image.sh
   artifacts:
@@ -70,34 +78,19 @@ test_qemu:
   stage: test
   dependencies:
     - build_qemu
-    - build_bootfs
+    - build_u_boot
     - assemble_image
   script:
-    - tar --same-owner -xf build/BOOT.fs.tar
-    - tar --same-owner -xf build/ROOT.fs_kernel_modules.tar
     - cd build/ && ../build_tools/outside/run_qemu.expect
 
 
-# create final artifacts & upload the link to gitlab pages
-pages:
-  stage: deploy
-  only:
-    - master
-  before_script:
-    - "echo no install"
-  script:
-    - mkdir public
-    - echo "<meta http-equiv="refresh" content=\"0; URL=$CI_PROJECT_URL/-/jobs/artifacts/master/download?job=final_artifacts\">" > public/index.html
-  artifacts:
-    paths:
-      - public
-
+# create final artifacts
 final_artifacts:
   stage: deploy
   dependencies:
     - assemble_image
   before_script:
-    - "echo no install"
+    - echo "no install"
   script:
     - cp build/IMAGE.dd axiom-beta-$CI_COMMIT_SHA.img
   artifacts:

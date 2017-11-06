@@ -1,9 +1,8 @@
 baudrate=115200
-bitstream_image=system.bit.bin
 boot_image=BOOT.bin
 boot_size=0xF00000
 bootargs=console=ttyPS0,115200n8 root=/dev/mmcblk0p2 rw rootfstype=ext4 rootdelay=2 debug verbose systemd.log_level=warning systemd.log_target=console kernel.sysrq=1 init=/usr/lib/systemd/systemd
-bootcmd=fatload mmc 0 0x3000000 uImage;fatload mmc 0 0x2A00000 devicetree.dtb;bootm 0x3000000 - 0x2A00000
+bootcmd=fatload mmc 0 0x3000000 zImage;fatload mmc 0 0x2A00000 devicetree.dtb;bootz 0x3000000 - 0x2A00000
 uenvcmd=fatload mmc 0 0x3000000 zImage;fatload mmc 0 0x2A00000 devicetree.dtb;fdt addr 0x2A00000; fdt resize; fdt rsvmem add 0x18000000 0x08000000; fdt rsvmem print; fdt print /chosen bootargs; bootz 0x3000000 - 0x2A00000
 uenvcmd.old=fatload mmc 0 0x3000000 zImage.old;fatload mmc 0 0x2A00000 devicetree.dtb.old;fdt addr 0x2A00000; fdt resize; fdt rsvmem add 0x18000000 0x08000000; fdt rsvmem print; fdt print /chosen bootargs; bootz 0x3000000 - 0x2A00000
 bootdelay=1
