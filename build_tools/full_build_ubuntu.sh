@@ -13,8 +13,12 @@ echo -e "\nbuilding the rootfs:\n"
 build_tools/outside/build_rootfs.sh
 
 
-echo -e "\nbuilding the bootfs:\n"
-build_tools/outside/build_bootfs.sh
+echo -e "\nbuilding the kernel:\n"
+build_tools/outside/build_kernel.sh
+
+
+echo -e "\nbuilding u-boot:\n"
+build_tools/outside/build_u_boot.sh
 
 
 echo -e "\nassamblying the image:\n"

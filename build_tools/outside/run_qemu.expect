@@ -2,7 +2,7 @@
 puts stdout "starting qemu!\n\n"
 set timeout 300
 
-spawn qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb BOOT.fs/devicetree.dtb -kernel BOOT.fs/BOOT.bin -drive if=sd,format=raw,index=0,file=IMAGE.dd -boot mode=5 -append "root=/dev/mmcblk0p2 rw rootwait rootfstype=ext4"
+spawn qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb ../boot/devicetree.dtb -kernel u-boot-xlnx.git/u-boot.elf -drive if=sd,format=raw,index=0,file=IMAGE.dd -boot mode=5
 expect {
     "login: " { }
     timeout { puts "\ntimed out\n"; exit 1 }

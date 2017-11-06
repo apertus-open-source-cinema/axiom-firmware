@@ -19,3 +19,6 @@ python
 qemu-user-static
 openssl
 expect
+libssl-dev
+libelf-dev
+device-tree-compiler
