@@ -3,12 +3,12 @@
 CMVAdapter::CMVAdapter()
 {
     // Map the regions at start, to prevent repeating calls of mmap()
-    //MemoryMap(address, memorySize);
+    MemoryMap(address, memorySize);
 }
 
 CMVAdapter::~CMVAdapter()
 {
-    //MemoryUnmap(address, memorySize);
+    MemoryUnmap(address, memorySize);
 }
 
 void CMVAdapter::SetGain(unsigned int gain, unsigned int adcRAnge)
@@ -40,7 +40,7 @@ void CMVAdapter::SetCMVRegister(u_int8_t registerIndex, unsigned int value)
     // TODO: Add implementation
     std::string message = "SetCMVRegister() - Register: " + std::to_string(registerIndex) + " | Value: " + std::to_string(value);
     sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
-    //WriteWord(registerIndex, value);
+    WriteWord(registerIndex, value);
 }
 
 void CMVAdapter::Execute()

@@ -30,4 +30,4 @@ systemctl daemon-reload
 echo "--- Enable axiom service and show status";
 systemctl enable axiom
 systemctl start axiom
-systemctl status axiom
+systemctl status --no-pager axiom
