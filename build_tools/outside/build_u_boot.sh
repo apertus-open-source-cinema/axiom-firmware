@@ -11,10 +11,11 @@ git clone --depth 1 https://github.com/Xilinx/u-boot-xlnx u-boot-xlnx.git
 
 ARCH=arm
 CROSS=arm-linux-gnueabi-
+MAKE="make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/u-boot.config"
 (cd u-boot-xlnx.git; patch Makefile ../../boot/u-boot.patch)
-(cd u-boot-xlnx.git; yes "" | make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/u-boot.config oldconfig || echo "")
-(cd u-boot-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/u-boot.config -j$(nproc))
-(cd u-boot-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/u-boot.config u-boot.elf)
+(cd u-boot-xlnx.git; yes "" | $MAKE oldconfig || echo "")
+(cd u-boot-xlnx.git; $MAKE -j$(nproc))
+(cd u-boot-xlnx.git; $MAKE u-boot.elf)
 
 
 echo "download and build zynq-mkbootimage" | boxes -d parchment

@@ -12,9 +12,10 @@ git clone --branch $BRANCH --depth 1 https://github.com/Xilinx/linux-xlnx.git li
 
 ARCH=arm
 CROSS=arm-linux-gnueabi-
+MAKE="make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/kernel.config"
 (cd linux-xlnx.git; git checkout tags/xilinx-v2016.4 -b xilinx-v2016.4 )
-(cd linux-xlnx.git; yes "" | make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/kernel.config oldconfig || echo "")
-(cd linux-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/kernel.config -j$(nproc) )
-(cd linux-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/kernel.config ../../boot/devicetree.dtb )
-(cd linux-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/kernel.config -j$(nproc) modules)
-(cd linux-xlnx.git; make CROSS_COMPILE=$CROSS ARCH=$ARCH KCONFIG_CONFIG=../../boot/kernel.config INSTALL_MOD_PATH=../kernel_modules modules_install )
+(cd linux-xlnx.git; yes "" | $MAKE oldconfig || echo "")
+(cd linux-xlnx.git; $MAKE -j$(nproc) )
+(cd linux-xlnx.git; $MAKE ../../boot/devicetree.dtb )
+(cd linux-xlnx.git; $MAKE -j$(nproc) modules)
+(cd linux-xlnx.git; $MAKE INSTALL_MOD_PATH=../kernel_modules modules_install )
