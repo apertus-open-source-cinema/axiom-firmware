@@ -15,8 +15,8 @@ function cdmake () {
 for dir in $(ls -d software/cmv_tools/*/); do (cdmake "$dir"); done
 for dir in $(ls -d software/processing_tools/*/); do (cdmake "$dir"); done
 
-for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script .sh); done
-for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script .py); done
+for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script); done
+for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script); done
 
 ln -sf $(pwd)/build_tools/inside/update.sh /usr/local/bin/axiom-update
 
