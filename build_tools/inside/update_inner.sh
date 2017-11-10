@@ -9,11 +9,14 @@ pacman --noconfirm -Syu
 
 
 # build all the tools
-for dir in $(find software/cmv_tools/ -maxdepth 1 -type d | tail -n +2); do (cd $dir && make && make install); done
-for dir in $(find software/processing_tools/ -maxdepth 1 -type d | tail -n +2); do (cd $dir && make && make install); done
+function cdmake () {
+    [[ -d "$1" ]] && cd "$1" && make && make install
+}
+for dir in $(ls -d software/cmv_tools/*/); do (cdmake "$dir"); done
+for dir in $(ls -d software/processing_tools/*/); do (cdmake "$dir"); done
 
-for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script .sh); done
-for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script .py); done
+for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script); done
+for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script); done
 
 ln -sf $(pwd)/build_tools/inside/update.sh /usr/local/bin/axiom-update
 
