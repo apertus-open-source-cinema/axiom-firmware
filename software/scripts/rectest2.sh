@@ -22,7 +22,7 @@ for t in 1 2 3 4; do
 	
 done
 
-for f in /opt/IMG/*.raw.xz; do
+for f in /opt/overlays/*.raw.xz; do
 
     xzcat $f | ../processing_tools/mimg/mimg -r -w    
 

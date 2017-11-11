@@ -37,8 +37,7 @@ done
 
 fil_reg 15 0x01000100
 
-# ../processing_tools/mimg/mimg -a -o /opt/IMG/overlay_05.rgb
-../processing_tools/mimg/mimg -a -O /opt/IMG/AXIOM-Beta-logo-overlay-white.raw
+../processing_tools/mimg/mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
 
 # scn_reg 32  264		# pream_s
 # scn_reg 33  264		# guard_s
