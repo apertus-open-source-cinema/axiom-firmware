@@ -47,6 +47,7 @@ build_rootfs:
   artifacts:
     paths:
       - build/ROOT.fs.tar
+  retry: 2
 
 build_qemu:
   stage: build
