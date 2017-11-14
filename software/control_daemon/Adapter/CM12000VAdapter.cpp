@@ -2,13 +2,14 @@
 
 CMV12000Adapter::CMV12000Adapter()
 {
+    _memoryAdapter = std::make_shared<MemoryAdapter>();
     // Map the regions at start, to prevent repeating calls of mmap()
-    MemoryMap(address, memorySize);
+    _memoryAdapter->MemoryMap(address, memorySize);
 }
 
 CMV12000Adapter::~CMV12000Adapter()
 {
-    MemoryUnmap(address, memorySize);
+    _memoryAdapter->MemoryUnmap(address, memorySize);
 }
 
 void CMV12000Adapter::SetGain(unsigned int gain, unsigned int adcRAnge)
@@ -40,7 +41,7 @@ void CMV12000Adapter::SetConfigRegister(u_int8_t registerIndex, unsigned int val
     // TODO: Add implementation
     std::string message = "SetConfigRegister() - Register: " + std::to_string(registerIndex) + " | Value: " + std::to_string(value);
     sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
-    WriteWord(registerIndex, value);
+    _memoryAdapter->WriteWord(registerIndex, value);
 }
 
 void CMV12000Adapter::Execute()

@@ -1,14 +1,18 @@
 #ifndef CMVADAPTER_H
 #define CMVADAPTER_H
 
-#include "MemoryAdapter.h"
+#include <memory>
 
-class CMV12000Adapter : public MemoryAdapter
+#include "MemoryAdapter.h"
+#include "IImageSensorAdapter.h"
+
+class CMV12000Adapter //: public IImageSensorAdapter
 {
     //uint32_t address = 0x60000000;
     uint32_t address = 0x18000000;
     uint32_t memorySize = 0x00020000;
 
+    std::shared_ptr<MemoryAdapter> _memoryAdapter;
     //uint32_t* mappedAddress;
 
 public:
