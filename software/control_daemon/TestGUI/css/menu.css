@@ -5,7 +5,7 @@
 
 .menuBottom {
     display: flex;
-    /* height: 100%; */
+    height: 100%;
     align-items: flex-end;
 }
 
@@ -15,15 +15,18 @@
     margin-left: 0.5em;
     margin-right: 0.5em;
     text-align: center;
-    height: 100%;
+    /* height: 100%; */
     display: flex;
     flex-direction: column;
 }
 
 .menuButtonInverted {
     /* align-items: flex-end; */
-    /* height: 75%; */
+    height: 75%;
     margin-top: auto;
+    font-size: 1.7em;
+    justify-content: center;
+    background: black;
 }
 
 .menuButton:active {
@@ -43,22 +46,22 @@
 .currentValue {
     background: white;
     color: black;
-    font-size: 3em;
+    font-size: 2em;
     /* height: 60%; */
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-grow: 2;
+    /* flex-grow: 2; */
 }
 
 .buttonCaption {
     background: black;
     color: white;
-    font-size: 1.3em;
+    /* font-size: 1em; */
     /* font-size: 1.7em; */
     /* height: 1.7em; */
     /* line-height: 1.7em; */
-    flex-grow: 1;
+    /* flex-grow: 1; */
 }
 
 .buttonIcons {

@@ -3,7 +3,7 @@
 
 #include "MemoryAdapter.h"
 
-class CMVAdapter : public MemoryAdapter
+class CMV12000Adapter : public MemoryAdapter
 {
     //uint32_t address = 0x60000000;
     uint32_t address = 0x18000000;
@@ -18,7 +18,7 @@ public:
 
     void SetGain(unsigned int gain, unsigned int adcRAnge);
 
-    void SetCMVRegister(u_int8_t registerIndex, unsigned int value);
+    void SetConfigRegister(u_int8_t registerIndex, unsigned int value);
 
     void Execute();
 };

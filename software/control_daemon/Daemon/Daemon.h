@@ -11,7 +11,7 @@
 
 #include "../Adapter/I2CAdapter.h"
 #include "../Adapter/MemoryAdapter.h"
-#include "../Adapter/CMVAdapter.h"
+#include "../Adapter/CMV12000Adapter.h"
 
 #include <Schema/axiom_daemon_generated.h>
 
@@ -29,7 +29,7 @@ class Daemon
 
     IAdapter* _memoryAdapter = nullptr;
     IAdapter* _i2cAdapter = nullptr;
-    CMVAdapter* _cmvAdapter = nullptr;
+    CMV12000Adapter* _cmvAdapter = nullptr;
 
 public:
     Daemon() :
@@ -43,7 +43,7 @@ public:
         // TODO: Idea: Replace plain initialization with map of adapters, evaluation required
         _memoryAdapter = new MemoryAdapter();
         _i2cAdapter = new I2CAdapter();
-        _cmvAdapter = new CMVAdapter();
+        _cmvAdapter = new CMV12000Adapter();
 
         // TODO: Adjust paths to real ones, this ones are just for testing
         // TODO: Add fallback to older revision version if for current one no file is available
