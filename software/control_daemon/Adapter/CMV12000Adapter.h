@@ -12,9 +12,9 @@ class CMV12000Adapter : public MemoryAdapter
     //uint32_t* mappedAddress;
 
 public:
-    CMVAdapter();
+    CMV12000Adapter();
 
-    ~CMVAdapter();
+    ~CMV12000Adapter();
 
     void SetGain(unsigned int gain, unsigned int adcRAnge);
 

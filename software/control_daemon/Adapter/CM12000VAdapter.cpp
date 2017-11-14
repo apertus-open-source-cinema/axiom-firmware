@@ -6,7 +6,7 @@ CMV12000Adapter::CMV12000Adapter()
     MemoryMap(address, memorySize);
 }
 
-CMVA12000dapter::~CMV12000Adapter()
+CMV12000Adapter::~CMV12000Adapter()
 {
     MemoryUnmap(address, memorySize);
 }
@@ -27,18 +27,18 @@ void CMV12000Adapter::SetGain(unsigned int gain, unsigned int adcRAnge)
     //cmv_reg 87 2000        # offset 1
     //cmv_reg 88 2000        # offset 2
 
-    SetCMVRegister(115, gain);
-    SetCMVRegister(116, adcRAnge);
-    SetCMVRegister(100, 1);
-    SetCMVRegister(87, 2000);
-    SetCMVRegister(88, 2000);
+    SetConfigRegister(115, gain);
+    SetConfigRegister(116, adcRAnge);
+    SetConfigRegister(100, 1);
+    SetConfigRegister(87, 2000);
+    SetConfigRegister(88, 2000);
 }
 
 // CAUTION: Deactivated this method for now, as the development/testing is done on PC and this would constantly result in SEGFAULT (or similar)
 void CMV12000Adapter::SetConfigRegister(u_int8_t registerIndex, unsigned int value)
 {
     // TODO: Add implementation
-    std::string message = "SetCMVRegister() - Register: " + std::to_string(registerIndex) + " | Value: " + std::to_string(value);
+    std::string message = "SetConfigRegister() - Register: " + std::to_string(registerIndex) + " | Value: " + std::to_string(value);
     sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
     WriteWord(registerIndex, value);
 }
