@@ -36,8 +36,10 @@ echo "taking 64 dark frames at 10ms"
 mkdir -p $STORE/rcn
 for i in $(seq 1 64); do
   ./cmv_snap3 -2 -b -r -e 10ms > $STORE/rcn/dark-x1-10ms-$i.raw12 2>/dev/null
-  printf .
+  printf "capturing darkframe $i of 64"\\r
 done
+
+printf "captured darkframe 64 of 64 \n"
 
 # enable HDMI stream
 ./cmv.func; fil_reg 15 0x01000100
