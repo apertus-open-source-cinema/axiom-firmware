@@ -14,6 +14,7 @@ pacman --noconfirm -Syu
 # install dependencies
 pacman --noconfirm -Syu
 pacman --noconfirm -S $(grep -vE "^\s*#" build_tools/inside/dependencies.txt | tr "\n" " ")
+ln -s $(which devmem2) /usr/local/sbin/devmem
 
 # do the normal axiom-update procedure
 build_tools/inside/update.sh
