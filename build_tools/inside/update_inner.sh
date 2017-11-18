@@ -29,7 +29,7 @@ pip install pypng
 
 
 # Add login headers to users
-figlet "Axiom-Beta" > /etc/motd
+figlet "AXIOM Beta" > /etc/motd
 echo "Software version $(git rev-parse --short HEAD). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update run, \"axiom-update\"." >> /etc/motd
 
