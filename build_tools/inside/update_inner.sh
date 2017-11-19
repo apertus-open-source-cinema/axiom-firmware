@@ -23,7 +23,17 @@ ln -sf $(pwd)/build_tools/inside/update.sh /usr/local/bin/axiom-update
 # install Pure Python library for PNG image encoding/decoding 
 pip install pypng
 
-# TODO: build and install the control daemon
+# configure lighttpd
+cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
+systemctl enable lighttpd
+
+# build and install the control daemon
+(cd software/control_daemon/; mkdir build)
+(cd software/control_daemon/build/; cmake ..)
+(cd software/control_daemon/build/; make -j$(nproc))
+(cd software/control_daemon/build/; ./install_daemon.sh)
+cp -rf software/control_daemon/TestGUI/* /srv/http/
+
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
 
