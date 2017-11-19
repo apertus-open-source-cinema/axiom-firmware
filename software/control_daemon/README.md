@@ -29,7 +29,6 @@ Setup daemon:
 
 Setup web GUI:
 - Copy TestGUI folder to `/srv/http` (ArchLinux) or `/var/www/html` (Debian-based distributions)
-- Modify server address in `main.js` in method sendSettings()
 - Temporary: `systemctl start lighttpd`
 - Permanent: `systemctl enable lighttpd`  
              `systemctl start lighttpd`

@@ -1,5 +1,5 @@
 // Default address
-var serverIP = "127.0.0.1";
+var serverIP = window.location.host;
 
 function startUp() {
     $('#demo').text("Test123");
@@ -16,7 +16,7 @@ function sendSettings(settingName, value) {
     };
 
     $.ajax({
-        url: "http://" + serverIP + ":7070/settings",
+        url: "http://" + serverIP + "/api/settings",
         type: "PUT",
         data: JSON.stringify(JSONObject),
         crossDomain: true,

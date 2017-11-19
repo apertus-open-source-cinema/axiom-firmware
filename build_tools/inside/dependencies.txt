@@ -9,9 +9,13 @@ figlet
 # dependencies of tools
 python
 devmem
+cmake
 
 # convenience tools
 vim
 nano
 python-pip
 python-numpy
+
+# webserver
+lighttpd
