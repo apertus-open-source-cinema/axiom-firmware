@@ -10,11 +10,11 @@
 #include <sys/syslog.h>
 #include <unistd.h>
 
-#include <systemd/sd-journal.h>
-
 #include "IAdapter.h"
 
 #include "../Helpers/Helpers.h"
+
+#include "../Log/JournalLogger.h"
 
 class MemoryAdapter : public IAdapter
 {
@@ -60,12 +60,14 @@ public:
     {
         baseAddress = (uint32_t *)address;
 
+        std::string message = "";
+        
         // TODO: Check if alignment is required
         int fd = open("/dev/mem", O_RDWR | O_SYNC);
         if (fd == -1)
         {
-            std::string _statusMessage = "Error (open /dev/mem): " + std::string(strerror(errno));
-            syslog (LOG_ERR, "%s", _statusMessage.c_str());
+            message = "Error (open /dev/mem): " + std::string(strerror(errno));
+            JournalLogger::Log(message);
             return (void*)-1;
         }
 
@@ -73,8 +75,8 @@ public:
         if(result == (void*)-1)
         {
             // TODO: Add error log
-            std::string message = "Cannot map memory to address: " + std::to_string(address);
-            sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());
+            message = "Cannot map memory to address: " + std::to_string(address);
+            JournalLogger::Log(message);
         }
 		
 		baseAddress = result;

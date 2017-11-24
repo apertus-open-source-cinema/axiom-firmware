@@ -17,7 +17,7 @@
 using namespace Pistache;
 using json = nlohmann::json;
 
-struct Setting2
+struct JSONSetting
 {
     std::string id;
     int value;
@@ -25,7 +25,7 @@ struct Setting2
     std::string type;
 };
 
-void from_json(const json& j, Setting2& s) {
+void from_json(const json& j, JSONSetting& s) {
     s.id = j.at("id").get<std::string>();
     s.value = j.at("value").get<int>();
     s.type = j.at("type").get<std::string>();
@@ -100,21 +100,48 @@ public:
 
     void PutSettings(const Rest::Request& request, Http::ResponseWriter response)
     {
+        std::string receivedContent  = request.body();
+        std::string message = "Received (raw): " + receivedContent + '\n';
+        JSONSetting setting = json::parse(receivedContent);
+        // JSONSetting setting = receivedJSON;
+
+        OutputReceivedData(setting, message);
+
+        // TODO: Dumb test, replace by more sophisticated code
+        if(setting.type == "ImageSensor")
+        {
+            AddSettingIS(setting.Mode, ImageSensorSettings::Gain, 2);
+            TransferData();
+            message += "|Setting applied|\n";
+        }
+        else
+        {
+            message = "Handler not implemented yet!";
+        }
+
         // std::string availableSettings = "Available Settings:\n";
         // availableSettings += "gain"
-        std::string content  = request.body();
-        
-        auto receivedJSON = json::parse(content);
-     
-        std::string message = "Received: " + content + '\n';
-        Setting2 s = receivedJSON;
-        message += "JSON ID: " + s.id + '\n';
-        message += "JSON Value: " + std::to_string(s.value) + '\n';
-        if(s.Mode == RWMode::Write)
+
+        // TODO: Dumb test, replace by more sophisticated code
+        // if(s.type == "ImageSensor")
+        // {
+        //     AddSettingIS(s.Mode, ImageSensorSettings::Gain, 2);
+        //     TransferData();
+        //     message += "|Setting applied|\n";
+        // }
+        response.send(Http::Code::Ok, message);
+    }
+
+    void OutputReceivedData(JSONSetting setting, std::string& message)
+    {
+        message += "Received (JSON): " + '\n';
+        message += "JSON ID: " + setting.id + '\n';
+        message += "JSON Value: " + std::to_string(setting.value) + '\n';
+        if(setting.Mode == RWMode::Write)
         {
             message += "JSON Mode: write\n";
         }
-        else if(s.Mode == RWMode::Read)
+        else if(setting.Mode == RWMode::Read)
         {
             message += "JSON Mode: read \n";
         }
@@ -123,16 +150,7 @@ public:
             message += "JSON Mode: unknown\n";
         }
         
-        message += "JSON Type: " + s.type +'\n';
-
-        // TODO: Dumb test, replace by more sophisticated code
-        if(s.type == "ImageSensor")
-        {
-            AddSettingIS(s.Mode, ImageSensorSettings::Gain, 2);
-            TransferData();
-            message += "|Setting applied|\n";
-        }
-        response.send(Http::Code::Ok, message);
+        message += "JSON Type: " + setting.type +'\n';
     }
 
     void GetGeneral(const Rest::Request& request, Http::ResponseWriter response)

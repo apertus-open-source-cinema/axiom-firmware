@@ -102,26 +102,28 @@ private:
     // TODO: Move processing to a thread, so it doesn't block main thread in the future
     void Process()
     {
-        uint8_t* buf2 = new uint8_t[1024];
+        uint8_t* receivedBuffer = new uint8_t[1024];
 
         while(_running)
         {
-            memset(buf2, 0, 1024);
-            int size = read(_socketDesc, buf2, 1024);
+            memset(receivedBuffer, 0, 1024);
+
+            // Wait for packets to arrive
+            int size = read(_socketDesc, receivedBuffer, 1024);
 
             std::string message = "Received data size: " + std::to_string(size);
             sd_journal_print(LOG_INFO, message.c_str(), (unsigned long)getpid());            
 
-            auto packet = GetPacket(buf2);
+            auto packet = GetPacket(receivedBuffer);
             auto set = packet->settings();
             int size2 = set->size();
 
             for(int index = 0; index < size2; ++index)
             {
                 auto t = set->Get(index);
-                auto p = t->payload_type();
+                auto payload = t->payload_type();
 
-                switch(p)
+                switch(payload)
                 {
                 case Setting::ImageSensorSetting:
                 {

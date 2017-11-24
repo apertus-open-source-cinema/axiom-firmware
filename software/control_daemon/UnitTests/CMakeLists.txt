@@ -1,0 +1,17 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+PROJECT(DaemonTests)
+
+SET(CMAKE_GENERATOR "Unix Makefiles" CACHE INTERNAL "" FORCE)
+SET(CMAKE_VERBOSE_MAKEFILE, ON)
+
+# Required by flatbuffers also
+ADD_COMPILE_OPTIONS(-std=c++11)
+
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..)
+
+FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
+                       "../Adapter/*.cpp" "../Adapter/*.h")
+
+ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} systemd)
