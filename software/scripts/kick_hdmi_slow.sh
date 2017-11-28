@@ -10,7 +10,7 @@ cd $(dirname $(realpath $0))    # change into script dir
 
 sleep 1
 
-cat cmv_hdmi4_slow.bit >/dev/xdevcfg
+cat /opt/bitstreams/soc_main.bit >/dev/xdevcfg
 
 ./power_on.sh
 ./pac1720_info.sh
