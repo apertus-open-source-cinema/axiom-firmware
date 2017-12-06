@@ -110,7 +110,7 @@ public:
         // TODO: Dumb test, replace by more sophisticated code
         if(setting.type == "ImageSensor")
         {
-            AddSettingIS(setting.Mode, ImageSensorSettings::Gain, 2);
+            AddSettingIS(setting.Mode, setting.id, 2);
             TransferData();
             message += "|Setting applied|\n";
         }
@@ -208,9 +208,9 @@ public:
 
     // Write/read setting of image sensor
     // Fixed to 2 bytes for now, as CMV used 128 x 2 bytes registers and it should be sufficient for first tests
-    void AddSettingIS(RWMode mode, ImageSensorSettings setting, uint16_t parameter)
+    void AddSettingIS(RWMode mode, std::string setting, uint16_t parameter)
     {
-        auto settingFB = CreateImageSensorSetting(*_builder, mode, setting, parameter);
+        auto settingFB = CreateImageSensorSetting(*_builder, mode, _builder->CreateString(setting), parameter);
         auto payload = CreatePayload(*_builder, Setting::ImageSensorSetting, settingFB.Union());
 
         _settings.push_back(payload);

@@ -129,7 +129,7 @@ private:
                 {
                     sd_journal_print(LOG_INFO, "Received: Image Sensor setting", (unsigned long)getpid());
                     const ImageSensorSetting* is = t->payload_as_ImageSensorSetting();
-                    _cmvAdapter->SetConfigRegister((u_int8_t)is->setting(), is->parameter());
+                    _cmvAdapter->SetParameter(is->setting()->str(), is->parameter());
                     //is->mode(); // Just a dummy call to supress "unused" warning
                     /*Mode mode = is->mode();
                     uint16_t parameter = is->parameter();

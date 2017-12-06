@@ -17,13 +17,15 @@ CMV12000Adapter::~CMV12000Adapter()
 unsigned int gain[] = {0, 1, 3, 7, 11};
 unsigned int adcRAnge[] = {0x3eb, 0x3d5, 0x3d5, 0x3d5, 0x3e9};
 
-void CMV12000Adapter::SetGain(int gainValue)
+bool CMV12000Adapter::SetGain(int gainValue)
 {
+    std::string message = "SetGain() | Value: " + std::to_string(gainValue);
+    JournalLogger::Log(message);
     // TODO: Add handling of 3/3 gain value
     if(gainValue < 0 || gainValue > 4)
     {
         // TODO: Log error for unsuitable parameter
-        return;
+        return false;
     }
 
 
@@ -39,11 +41,14 @@ void CMV12000Adapter::SetGain(int gainValue)
     SetConfigRegister(100, 1);
     SetConfigRegister(87, 2000);
     SetConfigRegister(88, 2000);
+
+    return true;
 }
 
 int CMV12000Adapter::GetGain()
 {
-    return 0;
+    
+    return 2;
 }
 
 // CAUTION: Deactivated this method for now, as the development/testing is done on PC and this would constantly result in SEGFAULT (or similar)
@@ -58,4 +63,38 @@ void CMV12000Adapter::SetConfigRegister(u_int8_t registerIndex, unsigned int val
 void CMV12000Adapter::Execute()
 {
     // TODO: Iterate through all added settings and apply them to SPI registers
+}
+
+bool CMV12000Adapter::SetParameter(std::string parameterName, int parameterValue)
+{
+    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName);
+    if ( got == parameterHandlers.end() )
+    {
+        JournalLogger::Log("ImageSensor: Handler not found");
+        return false;
+    }
+    else
+    {
+        JournalLogger::Log("ImageSensor: Handler found");
+
+        auto handler = got->second;
+        return handler.Setter(*this, parameterValue);
+    } 
+}
+
+int CMV12000Adapter::GetParameter(std::string parameterName)
+{
+    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName);
+    if ( got == parameterHandlers.end() )
+    {
+        JournalLogger::Log("ImageSensor: Handler not found");
+        return false;
+    }
+    else
+    {
+        JournalLogger::Log("ImageSensor: Handler found");
+
+        auto handler = got->second;
+        return handler.Getter(*this);
+    } 
 }

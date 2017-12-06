@@ -20,7 +20,7 @@ class CMV12000Adapter //: public IImageSensorAdapter
 
     // TODO: Evaluate to move to a base class
     typedef std::function<int(CMV12000Adapter&)> GetterFunc;
-    typedef std::function<void(CMV12000Adapter&, int)> SetterFunc;
+    typedef std::function<bool(CMV12000Adapter&, int)> SetterFunc;
 
     struct ParameterHandler
     {
@@ -31,18 +31,22 @@ class CMV12000Adapter //: public IImageSensorAdapter
     std::unordered_map<std::string, ParameterHandler> parameterHandlers;
 
     //ILogger* _logger = new JournalLogger();
+
+    bool SetGain(int gainValue);
+
+    int GetGain();
+
 public:
     CMV12000Adapter();
 
     ~CMV12000Adapter();
 
-    void SetGain(int gainValue);
-
-    int GetGain();
-
     virtual void SetConfigRegister(u_int8_t registerIndex, unsigned int value);
 
     void Execute();
+
+    bool SetParameter(std::string parameterName, int parameterValue);
+    int GetParameter(std::string parameterName);
 };
 
 #endif // CMVADAPTER_H

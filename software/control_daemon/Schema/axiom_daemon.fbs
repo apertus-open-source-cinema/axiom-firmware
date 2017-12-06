@@ -8,10 +8,17 @@ enum ImageSensorSettings:ubyte {WhiteBalance, Offset1 = 87, Offset2 = 88, ADCRan
 
 union Setting { ImageSensorSetting, SPISetting }
 
-table ImageSensorSetting
+/*table ImageSensorSetting
 {
     mode:RWMode;
     setting:ImageSensorSettings;
+    parameter:ushort;
+}*/
+
+table ImageSensorSetting
+{
+    mode:RWMode;
+    setting:string;
     parameter:ushort;
 }
 
