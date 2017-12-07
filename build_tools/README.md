@@ -16,13 +16,13 @@ The build scripts are intendet to be run inside a docker container with `ubuntu:
 
 First you have to get a shell in your docker container:
 ```
-docker run -it ubuntu:17.04 /bin/bash
+docker run -it --privileged ubuntu:17.04 /bin/bash
 ```
 After this, install git and clone this repo inside the container:
 ```
 apt get update && apt install -y git
 git clone https://github.com/apertus-open-source-cinema/beta-software
-cd beta software
+cd beta-software
 ```
 Then install the missing dependencies and start the build process:
 ```
