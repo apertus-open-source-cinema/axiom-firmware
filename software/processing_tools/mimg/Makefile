@@ -11,7 +11,7 @@ LDLIBS += -lm
 
 install:
 	$(STRIP) $(TARGETS)
-	for TARGET in $(TARGETS); do ln -sf $(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
 	ln -sf $(pwd)/overlays/ /opt/overlays
 
 clean:
