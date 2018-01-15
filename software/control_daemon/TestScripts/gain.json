@@ -2,5 +2,6 @@
 	"id" : "gain",
 	"value" : 4,
 	"mode" : "write",
-	"type" : "ImageSensor"
+	"type" : "ImageSensor",
+	"message" : ""
 }
