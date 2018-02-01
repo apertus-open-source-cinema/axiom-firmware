@@ -6,26 +6,27 @@ var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200"];
 var SelectedShutterOptionsindex = 0;
 var WBOptions = ["3200K", "4000K", "5600K"];
 var SelectedWBOptionsindex = 0;
-var Pages = ["home-page", "menu-page", "shutter-page"];
+var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
 
 function startUp() {
+    // Init Values
     $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
     $('#isoValue').text(ISOOptions[SelectedISOOptionsindex]);
 
-    $("#MenuBtn").mouseup(function () {
+    //Buttons
+    $("#MenuBtn").click(function () {
         SwitchMenuPage("menu-page");
     });
 
-    $("#MenuBtnClose").mouseup(function () {
+    $("#MenuBtnClose").click(function () {
         SwitchMenuPage("home-page");
     });
 
-    $("#ShutterMenuBtnClose").mouseup(function () {
+    $("#ShutterMenuBtnClose").click(function () {
         SwitchMenuPage("home-page");
     });
 
-    $("#ShutterBtn").mouseup(function () {
-        
+    $("#ShutterBtn").click(function () {
         SwitchMenuPage("shutter-page");
     });
 }
@@ -35,20 +36,6 @@ function SwitchMenuPage(page) {
         $('#'+element).css("display", "none");
     });
     $('#'+page).css("display", "inline");
-/*
-    if (page == "home-page") {
-        $('#home-page').css("display", "inline");
-        $('#menu-page').css("display", "none");
-        $('#shutter-page').css("display", "none")
-    } else if (page == "menu-page") {
-        $('#home-page').css("display", "none");
-        $('#menu-page').css("display", "inline");
-        $('#shutter-page').css("display", "none");
-    } else if (page == "shutter-page") {
-        $('#home-page').css("display", "none");
-        $('#menu-page').css("display", "none");
-        $('#shutter-page').css("display", "inline")
-    }*/
 }
 
 function sendSettings(settingName, value) {
