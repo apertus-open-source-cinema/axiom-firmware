@@ -2,9 +2,15 @@
 var ServerIP = "127.0.0.1";
 var ISOOptions = ["100", "200", "400", "800"];
 var SelectedISOOptionsindex = 0;
-var ShutterOptions = ["1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/100", "1/200", "1/400"];
+
+//Shutter Page
+var ShutterOptions = ["1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/60", "1/80",
+    "1/100", "1/125", "1/160", "1/200", "1/250", "1/320", "1/400"];
 var SelectedShutterOptionsindex = 0;
 var ShutterSetAndClose = true;
+var ShutterPagesButtons = ["ShutterListBtn1_25", "ShutterListBtn1_50", "ShutterListBtn1_30", "ShutterPresetBtn1_50", "ShutterPresetBtn1_100", "ShutterPresetBtn1_200", "ShutterPresetBtn1_400"];
+
+
 var WBOptions = ["3200K", "4000K", "5600K"];
 var SelectedWBOptionsindex = 0;
 var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
@@ -69,6 +75,8 @@ function startUp() {
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
         if (ShutterSetAndClose) {
             SwitchMenuPage("home-page");
+        } else {
+            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn1_50");
         }
     });
     $("#ShutterListBtn1_25").click(function () {
@@ -76,6 +84,8 @@ function startUp() {
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
         if (ShutterSetAndClose) {
             SwitchMenuPage("home-page");
+        } else {
+            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn1_25");
         }
     });
     $("#ShutterListBtn1_30").click(function () {
@@ -84,7 +94,7 @@ function startUp() {
         if (ShutterSetAndClose) {
             SwitchMenuPage("home-page");
         } else {
-            $("#ShutterListBtn1_30").addClass("menuButton-currentvalue");
+            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn1_30");
         }
     });
     $("#ShutterSetAndCloseBtn").click(function () {
@@ -100,6 +110,12 @@ function BoolToReadable(variable) {
     } else if (variable == false) {
         return "OFF";
     }
+}
+function HighlightSelectedValue(allbuttons, selectedbutton) {
+    allbuttons.forEach(function (element) {
+        $('#' + element).removeClass("menuButton-currentvalue");
+    });
+    $('#' + selectedbutton).addClass("menuButton-currentvalue");
 }
 
 function SwitchMenuPage(page) {
