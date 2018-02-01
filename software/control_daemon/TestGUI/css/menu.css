@@ -75,3 +75,6 @@
     align-self: center;
     object-fit: contain;
 }
+#menu-page{
+    display: none;
+}

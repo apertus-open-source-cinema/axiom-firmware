@@ -3,7 +3,7 @@ var serverIP = "127.0.0.1";
 var ISOOptions = ["100", "200", "400", "800"];
 var selectedISOOptionsindex = 0;
 var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200"];
-var selectedShutterOptionsindex = 0;   
+var selectedShutterOptionsindex = 0;
 var WBOptions = ["3200K", "4000K", "5600K"];
 var selectedWBOptionsindex = 0;
 
@@ -13,15 +13,21 @@ function startUp() {
     $('#IP').text(serverIP);
     $('#serverIP').val(serverIP);
 
-    $("#MenuBtn").mouseup(function() {
-        alert( "Handler for .mouseup() called." );
+    $("#MenuBtn").mouseup(function () {
+        $('#home-page').css( "display", "none" )
+        $('#menu-page').css( "display", "inline" )
+    });
+
+    $("#MenuBtnClose").mouseup(function () {
+        $('#home-page').css( "display", "inline" )
+        $('#menu-page').css( "display", "none" )
     });
 }
 
 function sendSettings(settingName, value) {
     var setName = settingName;
     var JSONObject = {
-        id : settingName,
+        id: settingName,
         value: value
     };
 

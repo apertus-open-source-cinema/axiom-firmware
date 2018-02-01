@@ -6,8 +6,7 @@
     <title>Example</title>
     <meta name="keywords" content="" />
     <meta name="description" content="" />
-    <meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
 
     <!-- JQuery / JQueryUI -->
     <script src="js/jquery-3.2.1.min.js"></script>
@@ -22,59 +21,86 @@
 </head>
 
 <body>
-    <div class="header">
-        <div class="menu">
-            <div class="menuButton">
-                <div class="buttonCaption roundedBottom">Shutter</div>
-                <div class="currentValue roundedBottom" id="shutterValue">123</div>
-            </div>
+    <div id="home-page">
+        <div class="header">
+            <div class="menu">
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">Shutter</div>
+                    <div class="currentValue roundedBottom" id="shutterValue">123</div>
+                </div>
 
-            <div class="menuButton">
-                <div class="buttonCaption roundedBottom">ISO</div>
-                <div class="currentValue roundedBottom" id="isoValue">456</div>
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">ISO</div>
+                    <div class="currentValue roundedBottom" id="isoValue">456</div>
+                </div>
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">HDR</div>
+                    <div class="currentValue roundedBottom" id="hdrValue">789</div>
+                </div>
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">Guides</div>
+                    <div class="currentValue roundedBottom" id=guidesValue>
+                        <img src="images/capture_area.svg" style="width: 100%; align-self: center; object-fit:contain;"></img>
+                    </div>
+                </div>
             </div>
-            <div class="menuButton">
-                <div class="buttonCaption roundedBottom">HDR</div>
-                <div class="currentValue roundedBottom" id="hdrValue">789</div>
+        </div>
+        <div class="content">
+            <div class="content-box">
+                <div class="box">?</div>
+                <div class="pageIndicator">
+                    <div class="dot dot-active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
             </div>
-            <div class="menuButton">
-                <div class="buttonCaption roundedBottom">Guides</div>
-                <div class="currentValue roundedBottom" id=guidesValue>
-                    <img src="images/capture_area.svg" style="width: 100%; align-self: center; object-fit:contain;"></img>
+        </div>
+        <div class="footer">
+            <div class="menuBottom">
+                <div class="menuButton menuButtonInverted roundedTop">
+                    <div class="buttonCaption roundedTop" id="MenuBtn">Menu</div>
+                </div>
+                <div class="menuButton">
+                    <div class="currentValue roundedTop" id="shutterValue">Pre3</div>
+                    <div class="buttonCaption roundedTop">Color</div>
+                </div>
+                <div class="menuButton">
+                    <div class="currentValue roundedTop" id="shutterValue">24</div>
+                    <div class="buttonCaption roundedTop">FPS</div>
+                </div>
+                <div class="menuButton">
+                    <div class="currentValue roundedTop" id="shutterValue">3200K</div>
+                    <div class="buttonCaption roundedTop">WB</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="content">
-        <div class="content-box">
-            <div class="box">?</div>
-            <div class="pageIndicator">
-                <div class="dot dot-active"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+    </div>
+    <div id="menu-page">
+        <div class="header">
+            <div class="menu"></div>
+        </div>
+        <div class="content">
+            <div class="content-box">
+                test!!!
             </div>
         </div>
-    </div>
-    <div class="footer">
-        <div class="menuBottom">
-            <div class="menuButton menuButtonInverted roundedTop">
-                <div class="buttonCaption roundedTop" id="MenuBtn">Menu</div>
-            </div>
-            <div class="menuButton">
-                <div class="currentValue roundedTop" id="shutterValue">Pre3</div>
-                <div class="buttonCaption roundedTop">Color</div>
-            </div>
-            <div class="menuButton">
-                <div class="currentValue roundedTop" id="shutterValue">24</div>
-                <div class="buttonCaption roundedTop">FPS</div>
-            </div>
-            <div class="menuButton">
-                <div class="currentValue roundedTop" id="shutterValue">3200K</div>
-                <div class="buttonCaption roundedTop">WB</div>
+        <div class="footer">
+            <div class="menuBottom">
+                <div class="menuButton menuButtonInverted roundedTop">
+                    <div class="buttonCaption roundedTop" id="MenuBtnClose">Close</div>
+                </div>
+                <div class="menuButton">
+
+                </div>
+                <div class="menuButton">
+
+                </div>
+                <div class="menuButton">
+
+                </div>
             </div>
         </div>
-    </div>
-    </div>
 </body>
 
 </html>
