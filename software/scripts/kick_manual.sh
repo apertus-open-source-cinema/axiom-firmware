@@ -8,7 +8,7 @@ cd $(dirname $(realpath $0))    # change into script dir
 ./fclk_init.sh
 ./zynq_info.sh
 
-cat cmv_hdmi3.bit >/dev/xdevcfg
+cat /opt/bitstreams/soc_main.bit >/dev/xdevcfg
 
 devmem 0xF8006210 32 0x00001
 devmem 0xF8006214 32 0x00001

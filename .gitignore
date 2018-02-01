@@ -1,14 +1,11 @@
 
 *.user
 
-axiom_beta_control_daemon/Schema/axiom_daemon_generated\.h
+build/
 
-axiom_beta_control_daemon/build/
-
-axiom_beta_control_daemon/.vscode/*
-axiom_beta_control_daemon/.vs/
-axiom_beta_control_daemon/CMakeSettings.json
-axiom_beta_control_daemon/CppProperties.json
+software/control_daemon/.vscode/*
+software/control_daemon/.vs/
+software/control_daemon/CMakeSettings.json
+software/control_daemon/CppProperties.json
 
 **/.DS_Store
-build/

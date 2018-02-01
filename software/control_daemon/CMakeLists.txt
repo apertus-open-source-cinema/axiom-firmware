@@ -4,13 +4,13 @@ PROJECT(axiom_daemon)
 include(ExternalProject)
 
 SET(CMAKE_GENERATOR "Unix Makefiles" CACHE INTERNAL "" FORCE)
-SET(CMAKE_VERBOSE_MAKEFILE, ON)
+#SET(CMAKE_VERBOSE_MAKEFILE, ON)
 
 # Required by flatbuffers also
 ADD_COMPILE_OPTIONS(-std=c++11)
 
 # Make GCC more strict
-SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
+#SET(CMAKE_CXX_FLAGS "-Wall -Wextra")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -48,7 +48,8 @@ FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
      "Adapter/*.cpp" "Adapter/*.h"
      "Daemon/*.cpp" "Daemon/*.h"
      "Schema/*.fbs"
-     "Helpers/*.h")
+     "Helpers/*.cpp" "Helpers/*.h"
+     "Log/*.cpp" "Log/*.h")
 
 FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
 
@@ -64,6 +65,12 @@ FILE(COPY ${CMAKE_SOURCE_DIR}/systemd/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 # Client example should be build separately for now
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/API/)
 #ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
+
+# Catch2 (unit test framework)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/3rdParty/catch/)
+
+# Unit tests 
+ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/UnitTests/)
 
 # Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)

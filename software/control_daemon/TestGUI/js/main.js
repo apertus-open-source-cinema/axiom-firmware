@@ -26,7 +26,7 @@ function sendSettings(settingName, value) {
     };
 
     $.ajax({
-        url: "http://" + serverIP + ":7070/settings",
+        url: "http://" + serverIP + "/api/settings",
         type: "PUT",
         data: JSON.stringify(JSONObject),
         crossDomain: true,
