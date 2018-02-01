@@ -17,26 +17,32 @@ var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
 
 // Initial values
 var settings = {
+    Shutter: 4,
     HDR: 9
 }
 
 // Bindings
 var manifest = {
     ui: {
-        "#hdrValue": { bind: "HDR" }
+        "#hdrValue": { bind: "HDR" },
+        "#shutterValue": {
+            bind: function () {
+                return ShutterOptions[settings.Shutter];
+            }
+        }
     }
 };
 
 function startUp() {
     // Init Values
-    $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-    $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+    //$('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+    //$('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
     $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
 
     // Just a test for data binding
     // On click it changes HDR value from 9 to 1
     $('#fpsValue').click(function () {
-        $("#home-page").my("data", {HDR : 1});
+        $("#home-page").my("data", { HDR: 1 });
     });
 
     //Buttons
