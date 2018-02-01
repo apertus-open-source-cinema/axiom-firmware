@@ -2,7 +2,7 @@
 var ServerIP = "127.0.0.1";
 var ISOOptions = ["100", "200", "400", "800"];
 var SelectedISOOptionsindex = 0;
-var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200"];
+var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200", "1/400"];
 var SelectedShutterOptionsindex = 0;
 var WBOptions = ["3200K", "4000K", "5600K"];
 var SelectedWBOptionsindex = 0;
@@ -22,12 +22,50 @@ function startUp() {
         SwitchMenuPage("home-page");
     });
 
-    $("#ShutterMenuBtnClose").click(function () {
-        SwitchMenuPage("home-page");
-    });
+
 
     $("#ShutterBtn").click(function () {
         SwitchMenuPage("shutter-page");
+    });
+
+    //Shutter Page
+    $("#ShutterMenuBtnClose").click(function () {
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterPresetBtn1_50").click(function () {
+        SelectedShutterOptionsindex = 2;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterPresetBtn1_100").click(function () {
+        SelectedShutterOptionsindex = 3;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterPresetBtn1_200").click(function () {
+        SelectedShutterOptionsindex = 4;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterPresetBtn1_400").click(function () {
+        SelectedShutterOptionsindex = 5;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterListBtn1_50").click(function () {
+        SelectedShutterOptionsindex = 2;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterListBtn1_25").click(function () {
+        SelectedShutterOptionsindex = 0;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
+    });
+    $("#ShutterListBtn1_30").click(function () {
+        SelectedShutterOptionsindex = 1;
+        $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+        SwitchMenuPage("home-page");
     });
 }
 
