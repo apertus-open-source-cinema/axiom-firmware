@@ -79,6 +79,9 @@
 #menu-page{
     display: none;
 }
+#shutter-page {
+    display: none;
+}
 .row-option{
     background:white;
     color: black;
@@ -92,4 +95,8 @@
 }
 .row-option-option{
     float: right;
+}
+.row-option-item {
+    text-align: center;
+    font-size: 2em;
 }

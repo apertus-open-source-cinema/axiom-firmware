@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Example</title>
+    <title>AXIOM Beta Control</title>
     <meta name="keywords" content="" />
     <meta name="description" content="" />
     <meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
@@ -24,9 +24,9 @@
     <div id="home-page">
         <div class="header">
             <div class="menu">
-                <div class="menuButton">
-                    <div class="buttonCaption roundedBottom">Shutter</div>
-                    <div class="currentValue roundedBottom" id="shutterValue">123</div>
+                <div class="menuButton" id="ShutterBtn">
+                    <div class="buttonCaption roundedBottom" id="ShutterBtn">Shutter</div>
+                    <div class="currentValue roundedBottom" id="shutterValue">1</div>
                 </div>
 
                 <div class="menuButton">
@@ -75,7 +75,6 @@
             </div>
         </div>
     </div>
-    </div>
     <div id="menu-page">
         <div class="header">
             <div class="menu"></div>
@@ -106,6 +105,59 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="shutter-page">
+        <div class="header">
+            <div class="menu">
+                <div class="menuButton" id="ShutterBtn">
+                    <div class="buttonCaption roundedBottom" id="ShutterBtn">Preset</div>
+                    <div class="currentValue roundedBottom" id="shutterValue">1/50</div>
+                </div>
+
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">Preset</div>
+                    <div class="currentValue roundedBottom" id="isoValue">1/100</div>
+                </div>
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">Preset</div>
+                    <div class="currentValue roundedBottom" id="hdrValue">1/200</div>
+                </div>
+                <div class="menuButton">
+                    <div class="buttonCaption roundedBottom">Preset</div>
+                    <div class="currentValue roundedBottom" id="hdrValue">1/400</div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="row-option menuButton">
+                <div class="row-option-item">1/50</div>
+            </div>
+            <div class="row-option menuButton">
+                <div class="row-option-item">1/30</div>
+            </div>
+            <div class="row-option menuButton">
+                <div class="row-option-item">1/25</div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer">
+                <div class="menuBottom">
+                    <div class="menuButton menuButtonInverted roundedTop">
+                        <div class="buttonCaption roundedTop" id="ShutterMenuBtnClose">Close</div>
+                    </div>
+                    <div class="menuButton">
+
+                    </div>
+                    <div class="menuButton">
+
+                    </div>
+                    <div class="menuButton">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

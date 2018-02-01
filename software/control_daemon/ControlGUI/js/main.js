@@ -1,17 +1,18 @@
 // Default address
-var serverIP = "127.0.0.1";
+var ServerIP = "127.0.0.1";
 var ISOOptions = ["100", "200", "400", "800"];
-var selectedISOOptionsindex = 0;
+var SelectedISOOptionsindex = 0;
 var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200"];
-var selectedShutterOptionsindex = 0;
+var SelectedShutterOptionsindex = 0;
 var WBOptions = ["3200K", "4000K", "5600K"];
-var selectedWBOptionsindex = 0;
+var SelectedWBOptionsindex = 0;
+var Pages = ["home-page", "menu-page", "shutter-page"];
 
 function startUp() {
-    $('#demo').text("Test123");
-    $("#slider").slider();
-    $('#IP').text(serverIP);
-    $('#serverIP').val(serverIP);
+    //alert("test");
+    //$('#IP').text(serverIP);
+    //$('#serverIP').val(serverIP);
+    $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
 
     $("#MenuBtn").mouseup(function () {
         SwitchMenuPage("menu-page");
@@ -20,14 +21,35 @@ function startUp() {
     $("#MenuBtnClose").mouseup(function () {
         SwitchMenuPage("home-page");
     });
+
+    $("#ShutterMenuBtnClose").mouseup(function () {
+        SwitchMenuPage("home-page");
+    });
+
+    $("#ShutterBtn").mouseup(function () {
+        
+        SwitchMenuPage("shutter-page");
+    });
 }
+
 function SwitchMenuPage(page) {
+    /*Pages.forEach(function (element) {
+        alert(element);
+        //$('#element').css("display", "none")
+    });*/
+
     if (page == "home-page") {
-        $('#home-page').css("display", "inline")
-        $('#menu-page').css("display", "none")
+        $('#home-page').css("display", "inline");
+        $('#menu-page').css("display", "none");
+        $('#shutter-page').css("display", "none")
     } else if (page == "menu-page") {
-        $('#home-page').css("display", "none")
-        $('#menu-page').css("display", "inline")
+        $('#home-page').css("display", "none");
+        $('#menu-page').css("display", "inline");
+        $('#shutter-page').css("display", "none");
+    } else if (page == "shutter-page") {
+        $('#home-page').css("display", "none");
+        $('#menu-page').css("display", "none");
+        $('#shutter-page').css("display", "inline")
     }
 }
 
