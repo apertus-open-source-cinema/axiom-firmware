@@ -9,10 +9,8 @@ var SelectedWBOptionsindex = 0;
 var Pages = ["home-page", "menu-page", "shutter-page"];
 
 function startUp() {
-    //alert("test");
-    //$('#IP').text(serverIP);
-    //$('#serverIP').val(serverIP);
     $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+    $('#isoValue').text(ISOOptions[SelectedISOOptionsindex]);
 
     $("#MenuBtn").mouseup(function () {
         SwitchMenuPage("menu-page");
@@ -33,11 +31,11 @@ function startUp() {
 }
 
 function SwitchMenuPage(page) {
-    /*Pages.forEach(function (element) {
-        alert(element);
-        //$('#element').css("display", "none")
-    });*/
-
+    Pages.forEach(function (element) {
+        $('#'+element).css("display", "none");
+    });
+    $('#'+page).css("display", "inline");
+/*
     if (page == "home-page") {
         $('#home-page').css("display", "inline");
         $('#menu-page').css("display", "none");
@@ -50,7 +48,7 @@ function SwitchMenuPage(page) {
         $('#home-page').css("display", "none");
         $('#menu-page').css("display", "none");
         $('#shutter-page').css("display", "inline")
-    }
+    }*/
 }
 
 function sendSettings(settingName, value) {
