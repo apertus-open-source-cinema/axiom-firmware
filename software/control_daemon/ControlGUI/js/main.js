@@ -9,11 +9,29 @@ var WBOptions = ["3200K", "4000K", "5600K"];
 var SelectedWBOptionsindex = 0;
 var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
 
+// Initial values
+var settings = {
+    HDR: 9
+}
+
+// Bindings
+var manifest = {
+    ui: {
+        "#hdrValue": { bind: "HDR" }
+    }
+};
+
 function startUp() {
     // Init Values
     $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
     $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
     $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
+
+    // Just a test for data binding
+    // On click it changes HDR value from 9 to 1
+    $('#fpsValue').click(function () {
+        $("#home-page").my("data", {HDR : 1});
+    });
 
     //Buttons
     $("#MenuBtn").click(function () {
@@ -138,22 +156,22 @@ function sendSettings(settingName, value) {
 }
 
 // input: on release, change: immediately, e.g. when dragging
-$(document).on("change", '#gain', function () {
-    var value = $('#gain').val();
-    var valueText = value;
+// $(document).on("change", '#gain', function () {
+//     var value = $('#gain').val();
+//     var valueText = value;
 
-    if (value == 4) {
-        valueText = "3/3";
-    }
+//     if (value == 4) {
+//         valueText = "3/3";
+//     }
 
-    $('#gainValue').text(valueText);
-    sendSettings("gain", value);
-});
+//     $('#gainValue').text(valueText);
+//     sendSettings("gain", value);
+// });
 
-$(document).on("change, input", '#serverIP', function () {
-    serverIP = $('#serverIP').val();
-    $('#IP').text(serverIP);
-});
+// $(document).on("change, input", '#serverIP', function () {
+//     serverIP = $('#serverIP').val();
+//     $('#IP').text(serverIP);
+// });
 
 
 function testFunc() {
@@ -162,5 +180,7 @@ function testFunc() {
 
 // Executes when page is loaded
 $(document).ready(function () {
+    $("#home-page").my(manifest, settings);
+
     startUp();
 });
