@@ -30,8 +30,12 @@
 }
 
 .menuButton:active {
-    background-color: orange;
-    color: black;
+    background-color:#FA8756;
+    color: #171615;
+}
+.menuButton-currentvalue  {
+    background-color:#3b5ddb !important;
+    color: #171615 !important;
 }
 
 .roundedTop {

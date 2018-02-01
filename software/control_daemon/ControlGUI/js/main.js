@@ -2,8 +2,9 @@
 var ServerIP = "127.0.0.1";
 var ISOOptions = ["100", "200", "400", "800"];
 var SelectedISOOptionsindex = 0;
-var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200", "1/400"];
+var ShutterOptions = ["1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/100", "1/200", "1/400"];
 var SelectedShutterOptionsindex = 0;
+var ShutterSetAndClose = true;
 var WBOptions = ["3200K", "4000K", "5600K"];
 var SelectedWBOptionsindex = 0;
 var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
@@ -11,7 +12,8 @@ var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
 function startUp() {
     // Init Values
     $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-    $('#isoValue').text(ISOOptions[SelectedISOOptionsindex]);
+    $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
+    $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
 
     //Buttons
     $("#MenuBtn").click(function () {
@@ -33,47 +35,82 @@ function startUp() {
         SwitchMenuPage("home-page");
     });
     $("#ShutterPresetBtn1_50").click(function () {
-        SelectedShutterOptionsindex = 2;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/50");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
     });
     $("#ShutterPresetBtn1_100").click(function () {
-        SelectedShutterOptionsindex = 3;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/100");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
     });
     $("#ShutterPresetBtn1_200").click(function () {
-        SelectedShutterOptionsindex = 4;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/200");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
     });
     $("#ShutterPresetBtn1_400").click(function () {
-        SelectedShutterOptionsindex = 5;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/400");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        } else {
+            $("#ShutterPresetBtn1_400").css("menuButton-currentvalue");
+        }
     });
     $("#ShutterListBtn1_50").click(function () {
-        SelectedShutterOptionsindex = 2;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/50");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
     });
     $("#ShutterListBtn1_25").click(function () {
-        SelectedShutterOptionsindex = 0;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/25");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
     });
     $("#ShutterListBtn1_30").click(function () {
-        SelectedShutterOptionsindex = 1;
+        SelectedShutterOptionsindex = GetIndexfromValue(ShutterOptions, "1/30");
         $('#shutterValue').text(ShutterOptions[SelectedShutterOptionsindex]);
-        SwitchMenuPage("home-page");
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        } else {
+            $("#ShutterListBtn1_30").addClass("menuButton-currentvalue");
+        }
     });
+    $("#ShutterSetAndCloseBtn").click(function () {
+        ShutterSetAndClose = !ShutterSetAndClose;
+        $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
+    });
+
+}
+
+function BoolToReadable(variable) {
+    if (variable == true) {
+        return "ON";
+    } else if (variable == false) {
+        return "OFF";
+    }
 }
 
 function SwitchMenuPage(page) {
     Pages.forEach(function (element) {
-        $('#'+element).css("display", "none");
+        $('#' + element).css("display", "none");
     });
-    $('#'+page).css("display", "inline");
+    $('#' + page).css("display", "inline");
+}
+
+function GetIndexfromValue(targetarray, arrayvalue) {
+    return targetarray.findIndex(function (search) { return (search == arrayvalue); })
 }
 
 function sendSettings(settingName, value) {
