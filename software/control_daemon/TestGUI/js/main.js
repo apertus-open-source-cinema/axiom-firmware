@@ -14,14 +14,21 @@ function startUp() {
     $('#serverIP').val(serverIP);
 
     $("#MenuBtn").mouseup(function () {
-        $('#home-page').css( "display", "none" )
-        $('#menu-page').css( "display", "inline" )
+        SwitchMenuPage("menu-page");
     });
 
     $("#MenuBtnClose").mouseup(function () {
-        $('#home-page').css( "display", "inline" )
-        $('#menu-page').css( "display", "none" )
+        SwitchMenuPage("home-page");
     });
+}
+function SwitchMenuPage(page) {
+    if (page == "home-page") {
+        $('#home-page').css("display", "inline")
+        $('#menu-page').css("display", "none")
+    } else if (page == "menu-page") {
+        $('#home-page').css("display", "none")
+        $('#menu-page').css("display", "inline")
+    }
 }
 
 function sendSettings(settingName, value) {

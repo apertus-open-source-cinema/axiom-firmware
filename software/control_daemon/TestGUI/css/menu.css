@@ -30,7 +30,8 @@
 }
 
 .menuButton:active {
-    opacity: 0.5;
+    background-color: orange;
+    color: black;
 }
 
 .roundedTop {
@@ -77,4 +78,18 @@
 }
 #menu-page{
     display: none;
+}
+.row-option{
+    background:white;
+    color: black;
+    text-align: left;
+    border-radius: 0.3em;
+    padding:2em;
+    margin:2em;
+}
+.row-option-label{
+    display:inline;
+}
+.row-option-option{
+    float: right;
 }
