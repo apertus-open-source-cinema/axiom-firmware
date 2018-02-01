@@ -1,11 +1,21 @@
 // Default address
 var serverIP = "127.0.0.1";
+var ISOOptions = ["100", "200", "400", "800"];
+var selectedISOOptionsindex = 0;
+var ShutterOptions = ["1/25", "1/30", "1/50", "1/100", "1/200"];
+var selectedShutterOptionsindex = 0;   
+var WBOptions = ["3200K", "4000K", "5600K"];
+var selectedWBOptionsindex = 0;
 
 function startUp() {
     $('#demo').text("Test123");
     $("#slider").slider();
     $('#IP').text(serverIP);
     $('#serverIP').val(serverIP);
+
+    $("#MenuBtn").mouseup(function() {
+        alert( "Handler for .mouseup() called." );
+    });
 }
 
 function sendSettings(settingName, value) {
@@ -49,6 +59,7 @@ $(document).on("change, input", '#serverIP', function () {
     serverIP = $('#serverIP').val();
     $('#IP').text(serverIP);
 });
+
 
 function testFunc() {
     console.log($('#inc_gain').data("name"));

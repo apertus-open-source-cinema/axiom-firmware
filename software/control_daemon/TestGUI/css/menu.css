@@ -36,11 +36,15 @@
 .roundedTop {
     border-top-left-radius: 0.3em;
     border-top-right-radius: 0.3em;
+    margin-bottom: -6px;
+    padding-bottom: 8px;
 }
 
 .roundedBottom {
     border-bottom-left-radius: 0.3em;
     border-bottom-right-radius: 0.3em;
+    margin-top: -6px;
+    padding-top: 8px;
 }
 
 .currentValue {
@@ -51,13 +55,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: -1;
     /* flex-grow: 2; */
 }
 
 .buttonCaption {
     background: black;
     color: white;
-    /* font-size: 1em; */
+    font-size: 2em;
     /* font-size: 1.7em; */
     /* height: 1.7em; */
     /* line-height: 1.7em; */
