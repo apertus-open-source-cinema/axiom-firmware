@@ -37,12 +37,12 @@ var manifest = {
 
 function startUp() {
     // Init Values
-    $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
+    $("#ShutterSetAndCloseValue").text(BoolToReadable(ShutterSetAndClose));
     FillShutterBtnList(ShutterOptions);
 
     // Just a test for data binding
     // On click it changes HDR value from 9 to 1
-    $('#fpsValue').click(function () {
+    $("#fpsValue").click(function () {
         $("#home-page").my("data", { HDR: 1 });
     });
 
@@ -156,9 +156,19 @@ function FillShutterBtnList(btnarray) {
     var fillreturn = "";
     btnarray.forEach(function (element) {
         if (element != "custom") {
-            fillreturn += '<div class="row-option menuButton" id="ShutterListBtn' + element.replace("/","-") + '">';
+            fillreturn += '<div class="row-option menuButton" id="ShutterListBtn' + element.replace("/", "-") + '">';
             fillreturn += '<div class="row-option-item">' + element + '</div>';
             fillreturn += '</div >';
+
+            $("#" + element.replace("/", "-")).click(function () {
+                $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, element) });
+
+                if (ShutterSetAndClose) {
+                    SwitchMenuPage("home-page");
+                } else {
+                    HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + element.replace("/", "-"));
+                }
+            });
         }
     });
     $('#ShutterBtnList').append(fillreturn);
