@@ -98,10 +98,14 @@ function startUp() {
         if (Settings.SelectedShutterOptionsIndex > 1) {
             $("#home-page").my("data", { SelectedShutterOptionsIndex: Settings.SelectedShutterOptionsIndex - 1 });
 
+
             if (ShutterSetAndClose) {
                 SwitchMenuPage("home-page");
             }
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex].replace("/", "-"));
+            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex]
+                .replace("/", "-"));
+
+            scrollToElement("ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex].replace("/", "-"), "ShutterBtnList");
         }
     });
 
@@ -112,7 +116,10 @@ function startUp() {
             if (ShutterSetAndClose) {
                 SwitchMenuPage("home-page");
             }
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex].replace("/", "-"));
+            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex]
+                .replace("/", "-"));
+
+            scrollToElement("ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex].replace("/", "-"), "ShutterBtnList");
         }
     });
 
@@ -121,6 +128,11 @@ function startUp() {
         $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
     });
 
+}
+
+function scrollToElement(object, container) {
+    var topPos = document.getElementById(object).offsetTop;
+    document.getElementById(container).scrollTop = topPos - 100;
 }
 
 function BoolToReadable(variable) {
