@@ -34,10 +34,10 @@
 }*/
 .menuButton:active div.buttonCaption {
     background-color:#FA8756;
-    color: #171615;
+    color: #3D3B39;
 }
 .menuButton:active div.Value {
-    background-color:#171615;
+    background-color:#3D3B39;
     color: #FA8756;
 }
 
@@ -64,7 +64,7 @@
 
 .Value {
     background: white;
-    color:black;
+    color:#3D3B39;
     font-size: 2.0rem;
     /* height: 60%; */
     /*display: flex;*/
@@ -75,7 +75,7 @@
 }
 
 .buttonCaption {
-    background: black;
+    background: #3D3B39;
     color:#d5d5d5;
     font-weight: bold;
     font-size: 1.5rem;
@@ -99,7 +99,7 @@
 }
 .row-option{
     background:white;
-    color: black;
+    color: #3D3B39;
     text-align: left;
     border-radius: 0.2em;
     padding:1em;
