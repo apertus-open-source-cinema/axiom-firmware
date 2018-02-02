@@ -127,7 +127,6 @@ function startUp() {
         ShutterSetAndClose = !ShutterSetAndClose;
         $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
     });
-
 }
 
 function scrollToElement(object, container) {
