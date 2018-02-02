@@ -69,9 +69,8 @@ function startUp() {
 
         if (ShutterSetAndClose) {
             SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterPresetBtn1_50");
         }
+        HighlightSelectedValue(ShutterPagesButtons, this.id);
     });
 
     $("#ShutterPresetBtn1_100").click(function () {
@@ -79,9 +78,8 @@ function startUp() {
 
         if (ShutterSetAndClose) {
             SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterPresetBtn1_100");
         }
+        HighlightSelectedValue(ShutterPagesButtons, this.id);
     });
 
     $("#ShutterPresetBtn1_200").click(function () {
@@ -89,9 +87,8 @@ function startUp() {
 
         if (ShutterSetAndClose) {
             SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterPresetBtn1_200");
         }
+        HighlightSelectedValue(ShutterPagesButtons, this.id);
     });
 
     $("#ShutterSetAndCloseBtn").click(function () {
@@ -142,14 +139,13 @@ function FillShutterBtnList(btnarray) {
     btnarray.forEach(function (element) {
         if (element != "custom") {
             btnname = "ShutterListBtn" + element.replace("/", "-");
-            $("#" + btnname).on( "click", function() {
+            $("#" + btnname).on("click", function () {
                 $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, element) });
 
                 if (ShutterSetAndClose) {
                     SwitchMenuPage("home-page");
-                } else {
-                    HighlightSelectedValue(ShutterPagesButtons, (btnname));
                 }
+                HighlightSelectedValue(ShutterPagesButtons, this.id);
             });
         }
     });
