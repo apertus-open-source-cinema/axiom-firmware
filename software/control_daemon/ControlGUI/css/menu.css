@@ -24,7 +24,7 @@
     /* align-items: flex-end; */
     height: 75%;
     margin-top: auto;
-    font-size: 1.7em;
+    font-size: 1.5em;
     justify-content: center;
 }
 /*
@@ -65,9 +65,9 @@
 .Value {
     background: white;
     color:black;
-    font-size: 2.5rem;
+    font-size: 2.0rem;
     /* height: 60%; */
-    display: flex;
+    /*display: flex;*/
     justify-content: center;
     align-items: center;
     z-index: -1;
@@ -78,7 +78,7 @@
     background: black;
     color:#d5d5d5;
     font-weight: bold;
-    font-size: 2.0rem;
+    font-size: 1.5rem;
     /* font-size: 1.7em; */
     /* height: 1.7em; */
     /* line-height: 1.7em; */
@@ -101,9 +101,10 @@
     background:white;
     color: black;
     text-align: left;
-    border-radius: 0.3em;
-    padding:2em;
-    margin:2em;
+    border-radius: 0.2em;
+    padding:1em;
+    margin:1em;
+    z-index: -10;
 }
 .row-option-label{
     display:inline;
