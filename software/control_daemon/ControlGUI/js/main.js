@@ -8,7 +8,7 @@ var SelectedISOOptionsindex = 0;
 var ShutterOptions = ["custom", "1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/60", "1/80",
     "1/100", "1/125", "1/160", "1/200", "1/250", "1/320", "1/400"];
 var ShutterSetAndClose = true;
-var ShutterPagesButtons = ["ShutterListBtn1_25", "ShutterListBtn1_50", "ShutterListBtn1_30", "ShutterPresetBtn1_50", "ShutterPresetBtn1_100", "ShutterPresetBtn1_200"];
+var ShutterPagesButtons = ["ShutterPresetBtn1_50", "ShutterPresetBtn1_100", "ShutterPresetBtn1_200"];
 
 
 var WBOptions = ["3200K", "4000K", "5600K"];
@@ -94,36 +94,6 @@ function startUp() {
         }
     });
 
-    $("#ShutterListBtn1_50").click(function () {
-        $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, "1/50") });
-
-        if (ShutterSetAndClose) {
-            SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn1_50");
-        }
-    });
-
-    $("#ShutterListBtn1_25").click(function () {
-        $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, "1/25") });
-
-        if (ShutterSetAndClose) {
-            SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn1_25");
-        }
-    });
-
-    $("#ShutterListBtn1_30").click(function () {
-        $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, "1/30") });
-
-        if (ShutterSetAndClose) {
-            SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn1_30");
-        }
-    });
-
     $("#ShutterSetAndCloseBtn").click(function () {
         ShutterSetAndClose = !ShutterSetAndClose;
         $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
@@ -140,16 +110,20 @@ function BoolToReadable(variable) {
 }
 function HighlightSelectedValue(allbuttons, selectedbutton) {
     allbuttons.forEach(function (element) {
-        if ($('#' + element).attr('class').includes("row-option")) {
-            $('#' + element).removeClass("menuButton-currentvalue");
-        } else {
-            $('#' + element).children(".Value").removeClass("menuButton-currentvalue");
+        if (typeof $('#' + element).attr('class') !== 'undefined') {
+            if ($('#' + element).attr('class').includes("row-option")) {
+                $('#' + element).removeClass("menuButton-currentvalue");
+            } else {
+                $('#' + element).children(".Value").removeClass("menuButton-currentvalue");
+            }
         }
     });
-    if ($('#' + selectedbutton).attr('class').includes("row-option")) {
-        $('#' + selectedbutton).addClass("menuButton-currentvalue");
-    } else {
-        $('#' + selectedbutton).children(".Value").addClass("menuButton-currentvalue");
+    if (typeof $('#' + selectedbutton).attr('class') !== 'undefined') {
+        if ($('#' + selectedbutton).attr('class').includes("row-option")) {
+            $('#' + selectedbutton).addClass("menuButton-currentvalue");
+        } else {
+            $('#' + selectedbutton).children(".Value").addClass("menuButton-currentvalue");
+        }
     }
 }
 function FillShutterBtnList(btnarray) {
@@ -159,19 +133,26 @@ function FillShutterBtnList(btnarray) {
             fillreturn += '<div class="row-option menuButton" id="ShutterListBtn' + element.replace("/", "-") + '">';
             fillreturn += '<div class="row-option-item">' + element + '</div>';
             fillreturn += '</div >';
+            ShutterPagesButtons.push("ShutterListBtn" + element.replace("/", "-"));
+        }
+    });
 
-            $("#" + element.replace("/", "-")).click(function () {
+    $('#ShutterBtnList').append(fillreturn);
+
+    btnarray.forEach(function (element) {
+        if (element != "custom") {
+            btnname = "ShutterListBtn" + element.replace("/", "-");
+            $("#" + btnname).on( "click", function() {
                 $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, element) });
 
                 if (ShutterSetAndClose) {
                     SwitchMenuPage("home-page");
                 } else {
-                    HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + element.replace("/", "-"));
+                    HighlightSelectedValue(ShutterPagesButtons, (btnname));
                 }
             });
         }
     });
-    $('#ShutterBtnList').append(fillreturn);
 }
 
 function SwitchMenuPage(page) {
