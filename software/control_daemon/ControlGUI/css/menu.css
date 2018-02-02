@@ -97,6 +97,9 @@
 #shutter-page {
     display: none;
 }
+#iso-page {
+    display: none;
+}
 .row-option{
     background:white;
     color: #3D3B39;

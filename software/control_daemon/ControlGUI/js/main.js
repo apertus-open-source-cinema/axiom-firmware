@@ -1,8 +1,9 @@
 // Default address
 var ServerIP = "127.0.0.1";
 
-var ISOOptions = ["100", "200", "400", "800"];
-var SelectedISOOptionsindex = 0;
+// ISO Page
+var ISOOptions = ["200", "400", "800"];
+var ISOPagesButtons = ["ISOBtn200", "ISOBtn400", "ISOBtn800"];
 
 // Shutter Page
 var ShutterOptions = ["custom", "1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/60", "1/80",
@@ -20,6 +21,7 @@ var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
 // Initial values
 var Settings = {
     SelectedShutterOptionsIndex: 4,
+    SelectedISOOptionsindex: 0,
     HDR: 9
 }
 
@@ -30,6 +32,11 @@ var manifest = {
         "#shutterValue": {
             bind: function () {
                 return ShutterOptions[Settings.SelectedShutterOptionsIndex];
+            }
+        },
+        "#isoValue": {
+            bind: function () {
+                return ISOOptions[Settings.SelectedISOOptionsindex];
             }
         }
     }
@@ -60,6 +67,10 @@ function startUp() {
 
     $("#ShutterBtn").click(function () {
         SwitchMenuPage("shutter-page");
+    });
+
+    $("#ISOBtn").click(function () {
+        SwitchMenuPage("iso-page");
     });
 
     //Shutter Page
@@ -126,6 +137,26 @@ function startUp() {
     $("#ShutterSetAndCloseBtn").click(function () {
         ShutterSetAndClose = !ShutterSetAndClose;
         $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
+    });
+
+    // ISO Page
+    $("#ISOMenuBtnClose").click(function () {
+        SwitchMenuPage("home-page");
+    });
+    $("#ISOBtn200").click(function () {
+        $("#home-page").my("data", { SelectedISOOptionsindex: GetIndexfromValue(ISOOptions, "200") });
+        HighlightSelectedValue(ISOPagesButtons, this.id);
+        SwitchMenuPage("home-page");
+    });
+    $("#ISOBtn400").click(function () {
+        $("#home-page").my("data", { SelectedISOOptionsindex: GetIndexfromValue(ISOOptions, "400") });
+        HighlightSelectedValue(ISOPagesButtons, this.id);
+        SwitchMenuPage("home-page");
+    });
+    $("#ISOBtn800").click(function () {
+        $("#home-page").my("data", { SelectedISOOptionsindex: GetIndexfromValue(ISOOptions, "800") });
+        HighlightSelectedValue(ISOPagesButtons, this.id);
+        SwitchMenuPage("home-page");
     });
 }
 
