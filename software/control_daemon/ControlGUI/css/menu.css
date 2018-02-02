@@ -28,11 +28,20 @@
     justify-content: center;
     background: black;
 }
-
+/*
 .menuButton:active {
     background-color:#FA8756;
     color: #171615;
+}*/
+.menuButton:active div.buttonCaption {
+    background-color:#FA8756;
+    color: #171615;
 }
+.menuButton:active div.Value {
+    background-color:#171615;
+    color: #FA8756;
+}
+
 .menuButton-currentvalue  {
     background-color:#3b5ddb !important;
     color: #171615 !important;
@@ -41,21 +50,23 @@
 .roundedTop {
     border-top-left-radius: 0.3em;
     border-top-right-radius: 0.3em;
-    margin-bottom: -6px;
-    padding-bottom: 8px;
+    margin-bottom: -14px;
+    padding-bottom: 25px;
+    padding-top: 10px;
 }
 
 .roundedBottom {
     border-bottom-left-radius: 0.3em;
     border-bottom-right-radius: 0.3em;
-    margin-top: -6px;
-    padding-top: 8px;
+    margin-top: -14px;
+    padding-top: 25px;
+    padding-bottom: 10px;
 }
 
 .Value {
     background: white;
-    color: black;
-    font-size: 3.5em;
+    color:black;
+    font-size: 4.5em;
     /* height: 60%; */
     display: flex;
     justify-content: center;
@@ -66,8 +77,9 @@
 
 .buttonCaption {
     background: black;
-    color: white;
-    font-size: 2em;
+    color:#d5d5d5;
+    font-weight: bold;
+    font-size: 3.5em;
     /* font-size: 1.7em; */
     /* height: 1.7em; */
     /* line-height: 1.7em; */
