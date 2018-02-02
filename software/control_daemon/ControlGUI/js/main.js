@@ -91,6 +91,25 @@ function startUp() {
         HighlightSelectedValue(ShutterPagesButtons, this.id);
     });
 
+    $("#ShutterIncEV").click(function () {
+        $("#home-page").my("data", { SelectedShutterOptionsIndex: Settings.SelectedShutterOptionsIndex - 1 });
+
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
+        HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex].replace("/", "-"));
+    });
+
+    $("#ShutterDecEV").click(function () {
+        $("#home-page").my("data", { SelectedShutterOptionsIndex: Settings.SelectedShutterOptionsIndex + 1 });
+
+        if (ShutterSetAndClose) {
+            SwitchMenuPage("home-page");
+        }
+        HighlightSelectedValue(ShutterPagesButtons, "ShutterListBtn" + ShutterOptions[Settings.SelectedShutterOptionsIndex].replace("/", "-"));
+    });
+
+
     $("#ShutterSetAndCloseBtn").click(function () {
         ShutterSetAndClose = !ShutterSetAndClose;
         $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
