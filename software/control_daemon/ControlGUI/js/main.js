@@ -49,6 +49,9 @@ function startUp() {
     //Buttons
     $("#MenuBtn").click(function () {
         SwitchMenuPage("menu-page");
+
+        //Go fullscreen on mobile
+        document.documentElement.webkitRequestFullScreen();
     });
 
     $("#MenuBtnClose").click(function () {

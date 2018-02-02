@@ -65,7 +65,7 @@
 .Value {
     background: white;
     color:black;
-    font-size: 3.5em;
+    font-size: 2.5rem;
     /* height: 60%; */
     display: flex;
     justify-content: center;
@@ -78,7 +78,7 @@
     background: black;
     color:#d5d5d5;
     font-weight: bold;
-    font-size: 3.0em;
+    font-size: 2.0rem;
     /* font-size: 1.7em; */
     /* height: 1.7em; */
     /* line-height: 1.7em; */
