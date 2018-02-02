@@ -8,7 +8,7 @@ var SelectedISOOptionsindex = 0;
 var ShutterOptions = ["custom", "1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/60", "1/80",
     "1/100", "1/125", "1/160", "1/200", "1/250", "1/320", "1/400"];
 var ShutterSetAndClose = true;
-var ShutterPagesButtons = ["ShutterListBtn1_25", "ShutterListBtn1_50", "ShutterListBtn1_30", "ShutterPresetBtn1_50", "ShutterPresetBtn1_100", "ShutterPresetBtn1_200", "ShutterPresetBtn1_400"];
+var ShutterPagesButtons = ["ShutterListBtn1_25", "ShutterListBtn1_50", "ShutterListBtn1_30", "ShutterPresetBtn1_50", "ShutterPresetBtn1_100", "ShutterPresetBtn1_200"];
 
 
 var WBOptions = ["3200K", "4000K", "5600K"];
@@ -38,6 +38,7 @@ var manifest = {
 function startUp() {
     // Init Values
     $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
+    FillShutterBtnList(ShutterOptions);
 
     // Just a test for data binding
     // On click it changes HDR value from 9 to 1
@@ -90,16 +91,6 @@ function startUp() {
             SwitchMenuPage("home-page");
         } else {
             HighlightSelectedValue(ShutterPagesButtons, "ShutterPresetBtn1_200");
-        }
-    });
-
-    $("#ShutterPresetBtn1_400").click(function () {
-        $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, "1/400") });
-
-        if (ShutterSetAndClose) {
-            SwitchMenuPage("home-page");
-        } else {
-            HighlightSelectedValue(ShutterPagesButtons, "ShutterPresetBtn1_400");
         }
     });
 
@@ -160,6 +151,17 @@ function HighlightSelectedValue(allbuttons, selectedbutton) {
     } else {
         $('#' + selectedbutton).children(".Value").addClass("menuButton-currentvalue");
     }
+}
+function FillShutterBtnList(btnarray) {
+    var fillreturn = "";
+    btnarray.forEach(function (element) {
+        if (element != "custom") {
+            fillreturn += '<div class="row-option menuButton" id="ShutterListBtn' + element.replace("/","-") + '">';
+            fillreturn += '<div class="row-option-item">' + element + '</div>';
+            fillreturn += '</div >';
+        }
+    });
+    $('#ShutterBtnList').append(fillreturn);
 }
 
 function SwitchMenuPage(page) {
