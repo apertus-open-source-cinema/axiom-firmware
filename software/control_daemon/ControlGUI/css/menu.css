@@ -22,7 +22,7 @@
 
 .menuButtonInverted {
     /* align-items: flex-end; */
-    height: 75%;
+    /*height: 75%;*/
     margin-top: auto;
     font-size: 1.5em;
     justify-content: center;
@@ -50,7 +50,7 @@
     border-top-left-radius: 0.3em;
     border-top-right-radius: 0.3em;
     margin-bottom: -14px;
-    padding-bottom: 25px;
+    padding-bottom: 35px;
     padding-top: 10px;
 }
 
@@ -58,7 +58,7 @@
     border-bottom-left-radius: 0.3em;
     border-bottom-right-radius: 0.3em;
     margin-top: -14px;
-    padding-top: 25px;
+    padding-top: 35px;
     padding-bottom: 10px;
 }
 
@@ -105,9 +105,13 @@
     color: #3D3B39;
     text-align: left;
     border-radius: 0.2em;
-    padding:1em;
-    margin:1em;
+    padding:1.5em;
+    margin:1.5em;
     z-index: -10;
+}
+.row-option:active {
+    color:#3D3B39;
+    background-color: #FA8756;
 }
 .row-option-label{
     display:inline;

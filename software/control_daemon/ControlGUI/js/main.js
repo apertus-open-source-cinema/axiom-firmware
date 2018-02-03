@@ -158,6 +158,17 @@ function startUp() {
         HighlightSelectedValue(ISOPagesButtons, this.id);
         SwitchMenuPage("home-page");
     });
+
+    // Menu Page
+    $("#Test2SwitchBtn").click(function () {
+        var checkBox = $("#Test2Switch");
+        checkBox.prop("checked", !checkBox.prop("checked"));
+    });
+
+    $("#Test1SwitchBtn").click(function () {
+        var checkBox = $("#Test1Switch");
+        checkBox.prop("checked", !checkBox.prop("checked"));
+    });
 }
 
 function scrollToElement(object, container) {
