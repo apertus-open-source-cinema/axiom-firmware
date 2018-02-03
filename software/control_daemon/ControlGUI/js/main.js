@@ -22,13 +22,12 @@ var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
 var Settings = {
     SelectedShutterOptionsIndex: 4,
     SelectedISOOptionsindex: 0,
-    HDR: 9
+    HDR: "todo"
 }
 
 // Bindings
 var manifest = {
     ui: {
-        "#hdrValue": { bind: "HDR" },
         "#shutterValue": {
             bind: function () {
                 return ShutterOptions[Settings.SelectedShutterOptionsIndex];

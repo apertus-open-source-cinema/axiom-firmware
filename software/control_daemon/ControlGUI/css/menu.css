@@ -49,17 +49,17 @@
 .roundedTop {
     border-top-left-radius: 0.3em;
     border-top-right-radius: 0.3em;
-    margin-bottom: -14px;
-    padding-bottom: 35px;
-    padding-top: 10px;
+    margin-bottom: -8px;
+    padding-bottom: 20px;
+    padding-top: 5px;
 }
 
 .roundedBottom {
     border-bottom-left-radius: 0.3em;
     border-bottom-right-radius: 0.3em;
-    margin-top: -14px;
-    padding-top: 35px;
-    padding-bottom: 10px;
+    margin-top: -8px;
+    padding-top: 20px;
+    padding-bottom: 5px;
 }
 
 .Value {
