@@ -5,26 +5,29 @@ input[type=checkbox]{
 }
 
 label {
-    bottom:2.3rem;
+    bottom:1.1rem;
 	cursor: pointer;
 	text-indent: -9999px;
-	width: 90px;
+	/*width: 90px;
 	height: 50px;
+	border-radius: 100px;*/
+	width: 2rem;
+	height: 1rem;
+	border-radius: 3rem;
 	background: grey;
 	display: block;
-	border-radius: 100px;
 	position: relative;
 }
 
 label:after {
 	content: '';
 	position: absolute;
-	top: 5px;
-	left: 5px;
-	width: 40px;
-	height: 40px;
+	top: 1px;
+	left: 1px;
+	width: 0.9rem;
+	height: 0.9rem;
 	background: #fff;
-	border-radius: 40px;
+	border-radius: 0.9rem;
 	transition: 0.3s;
 }
 
@@ -38,5 +41,5 @@ input:checked + label:after {
 }
 
 label:active:after {
-	width: 60px;
+	width: 0.6rem;
 }

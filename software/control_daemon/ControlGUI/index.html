@@ -29,23 +29,22 @@
     <div id="home-page">
         <div class="header">
             <div class="menu">
-                <div class="menuButton" id="ShutterBtn">
-                    <div class="buttonCaption roundedBottom" id="ShutterBtn">Shutter</div>
-                    <div class="Value roundedBottom" id="shutterValue">loading...</div>
+                <div class="menuButton roundedBottom" id="ShutterBtn">
+                    <div class="buttonCaption">Shutter</div>
+                    <div class="Value" id="shutterValue">loading...</div>
                 </div>
 
-                <div class="menuButton" id="ISOBtn">
-                    <div class="buttonCaption roundedBottom">ISO</div>
-                    <div class="Value roundedBottom" id="isoValue">loading...</div>
+                <div class="menuButton roundedBottom" id="ISOBtn">
+                    <div class="buttonCaption">ISO</div>
+                    <div class="Value" id="isoValue">loading...</div>
                 </div>
-                <div class="menuButton">
-                    <div class="buttonCaption roundedBottom">HDR</div>
-                    <div class="Value roundedBottom" id="hdrValue">todo</div>
+                <div class="menuButton roundedBottom">
+                    <div class="buttonCaption">HDR</div>
+                    <div class="Value" id="hdrValue">todo</div>
                 </div>
-                <div class="menuButton">
-                    <div class="buttonCaption roundedBottom">Guides</div>
-                    <div class="Value roundedBottom" id=guidesValue>
-                        <img src="images/capture_area.svg" style="width: 100%; align-self: center; object-fit:contain;"></img>
+                <div class="menuButton roundedBottom">
+                    <div class="buttonCaption">Guides</div>
+                    <div class="Value" id=guidesValue>
                     </div>
                 </div>
             </div>
@@ -62,20 +61,20 @@
         </div>
         <div class="footer">
             <div class="menuBottom">
-                <div class="menuButton menuButtonInverted" id="MenuBtn">
-                    <div class="buttonCaption roundedTop">Menu</div>
+                <div class="menuButton roundedTop" id="MenuBtn">
+                    <div class="buttonCaption "><b>Menu</b><br /><br /></div>
                 </div>
-                <div class="menuButton">
-                    <div class="Value roundedTop">todo</div>
-                    <div class="buttonCaption roundedTop">Color</div>
+                <div class="menuButton roundedTop">
+                    <div class="Value">todo</div>
+                    <div class="buttonCaption">Color</div>
                 </div>
-                <div class="menuButton" id="fpsValue">
-                    <div class="Value roundedTop">todo</div>
-                    <div class="buttonCaption roundedTop">FPS</div>
+                <div class="menuButton roundedTop" id="fpsValue">
+                    <div class="Value">todo</div>
+                    <div class="buttonCaption">FPS</div>
                 </div>
-                <div class="menuButton">
-                    <div class="Value roundedTop">todo</div>
-                    <div class="buttonCaption roundedTop">WB</div>
+                <div class="menuButton roundedTop">
+                    <div class="Value">todo</div>
+                    <div class="buttonCaption">WB</div>
                 </div>
             </div>
         </div>
@@ -87,17 +86,23 @@
         <div class="content">
             <div class="row-option" id="Test1SwitchBtn">
                 <div class="row-option-label">Test1</div>
-                <div class="row-option-option"><input type="checkbox" id="Test1Switch" /><label for="Test1Switch">Test1</label></div>
+                <div class="row-option-option">
+                    <input type="checkbox" id="Test1Switch" />
+                    <label for="Test1Switch">Test1</label>
+                </div>
             </div>
             <div class="row-option Btn" id="Test2SwitchBtn">
                 <div class="row-option-label">Test2</div>
-                <div class="row-option-option"><input type="checkbox" id="Test2Switch" /><label for="Test2Switch">Test2</label></div>
+                <div class="row-option-option">
+                    <input type="checkbox" id="Test2Switch" />
+                    <label for="Test2Switch">Test2</label>
+                </div>
             </div>
         </div>
         <div class="footer">
             <div class="menuBottom">
-                <div class="menuButton menuButtonInverted" id="MenuBtnClose">
-                    <div class="buttonCaption roundedTop">Close</div>
+                <div class="menuButton roundedTop" id="MenuBtnClose">
+                    <div class="buttonCaption">Close</div>
                 </div>
                 <div class="menuButton">
                 </div>
@@ -140,22 +145,25 @@
     <div id="shutter-page">
         <div class="header">
             <div class="menu">
-                <div class="menuButton" id="ShutterPresetBtn1_50">
-                    <div class="buttonCaption roundedBottom">Preset</div>
-                    <div class="Value roundedBottom">1/50</div>
+                <div class="menuButton roundedBottom" id="ShutterPresetBtn1_50">
+                    <div class="buttonCaption">P1:
+                        <div class="Value">1/50</div>
+                    </div>
                 </div>
-                <div class="menuButton" id="ShutterPresetBtn1_100">
-                    <div class="buttonCaption roundedBottom">Preset</div>
-                    <div class="Value roundedBottom">1/100</div>
+                <div class="menuButton roundedBottom" id="ShutterPresetBtn1_100">
+                    <div class="buttonCaption">P2:
+                        <div class="Value">1/100</div>
+                    </div>
                 </div>
-                <div class="menuButton" id="ShutterPresetBtn1_200">
-                    <div class="buttonCaption roundedBottom">Preset</div>
-                    <div class="Value roundedBottom">1/200</div>
+                <div class="menuButton roundedBottom" id="ShutterPresetBtn1_200">
+                    <div class="buttonCaption">P3:
+                        <div class="Value">1/200</div>
+                    </div>
                 </div>
-                <div class="menuButton" id="ShutterCustomBtn">
-                    <div class="buttonCaption roundedBottom">Custom</div>
-                    <div class="Value roundedBottom">Value</div>
+                <div class="menuButton roundedBottom" id="ShutterIncEV">
+                    <div class="buttonCaption" id="">+ 1/3 EV</div>
                 </div>
+
             </div>
         </div>
         <div class="content" id="ShutterBtnList">
@@ -163,20 +171,20 @@
         <div class="footer">
             <div class="footer">
                 <div class="menuBottom">
-                    <div class="menuButton menuButtonInverted" id="ShutterMenuBtnClose">
-                        <div class="buttonCaption roundedTop">Close</div>
+                    <div class="menuButton roundedTop" id="ShutterMenuBtnClose">
+                        <div class="buttonCaption">Close</div>
                     </div>
-                    <div class="menuButton" id="ShutterSetAndCloseBtn">
-                        <div class="Value roundedTop" id="ShutterSetAndCloseValue">Loading...</div>
-                        <div class="buttonCaption roundedTop">Set &amp; Close</div>
+                    <div class="menuButton roundedTop" id="ShutterSetAndCloseBtn">
+                        <div class="buttonCaption">Set &amp; Close:
+                            <div class="Value" id="ShutterSetAndCloseValue">Loading...</div>
+                        </div>
                     </div>
-                    <div class="menuButton" id="ShutterDecEV">
-                        <div class="Value roundedTop">-</div>
-                        <div class="buttonCaption roundedTop" id="">1/3 EV</div>
+
+                    <div class="menuButton roundedTop" id="ShutterCustomBtn">
+                        <div class="buttonCaption">Custom Value</div>
                     </div>
-                    <div class="menuButton" id="ShutterIncEV">
-                        <div class="Value roundedTop">+</div>
-                        <div class="buttonCaption roundedTop" id="">1/3 EV</div>
+                    <div class="menuButton roundedTop" id="ShutterDecEV">
+                        <div class="buttonCaption" id="">- 1/3 EV</div>
                     </div>
                 </div>
             </div>

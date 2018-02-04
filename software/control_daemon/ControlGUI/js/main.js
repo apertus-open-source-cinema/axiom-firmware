@@ -183,24 +183,21 @@ function BoolToReadable(variable) {
     }
 }
 function HighlightSelectedValue(allbuttons, selectedbutton) {
+    // remove highlight from all buttons
     allbuttons.forEach(function (element) {
         if (typeof $('#' + element).attr('class') !== 'undefined') {
-            if ($('#' + element).attr('class').includes("row-option")) {
-                $('#' + element).removeClass("menuButton-currentvalue");
-            } else {
-                $('#' + element).children(".Value").removeClass("menuButton-currentvalue");
-            }
+            $('#' + element).removeClass("menuButton-currentvalue");
         }
     });
+
+    // highlight the one button
     if (typeof $('#' + selectedbutton).attr('class') !== 'undefined') {
-        if ($('#' + selectedbutton).attr('class').includes("row-option")) {
-            $('#' + selectedbutton).addClass("menuButton-currentvalue");
-        } else {
-            $('#' + selectedbutton).children(".Value").addClass("menuButton-currentvalue");
-        }
+        $('#' + selectedbutton).addClass("menuButton-currentvalue");
     }
 }
 function FillShutterBtnList(btnarray) {
+    // fill the list of buttons from array automatically
+    
     var fillreturn = "";
     btnarray.forEach(function (element) {
         if (element != "custom") {
