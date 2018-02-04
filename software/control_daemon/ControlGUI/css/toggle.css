@@ -5,28 +5,28 @@ input[type=checkbox]{
 }
 
 label {
-    bottom:1.1rem;
 	cursor: pointer;
 	text-indent: -9999px;
 	/*width: 90px;
 	height: 50px;
 	border-radius: 100px;*/
-	width: 2rem;
-	height: 1rem;
+	width: 2.2rem;
+	height: 1.1rem;
 	border-radius: 3rem;
 	background: grey;
-	display: block;
+	display: inline-block;
 	position: relative;
+	margin:0.2rem;
 }
 
 label:after {
 	content: '';
 	position: absolute;
-	top: 1px;
-	left: 1px;
+	top: 0.1rem;
+	left: 0.1rem;
 	width: 0.9rem;
 	height: 0.9rem;
-	background: #fff;
+	background: #ffffff;
 	border-radius: 0.9rem;
 	transition: 0.3s;
 }
@@ -36,10 +36,10 @@ input:checked + label {
 }
 
 input:checked + label:after {
-	left: calc(100% - 5px);
+	left: calc(100% - 0.1rem);
 	transform: translateX(-100%);
 }
 
 label:active:after {
-	width: 0.6rem;
+	width: 0.8rem;
 }

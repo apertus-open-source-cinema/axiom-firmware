@@ -2,13 +2,11 @@
     display: flex;
     /*height: 3rem;*/
 }
-
 .menuBottom {
     display: flex;
     height: 100%;
     align-items: flex-end;
 }
-
 .menuButton {
     flex-grow: 1;
     flex-basis: 0;
@@ -21,7 +19,6 @@
     background-color:#3D3B39;
     color:#d5d5d5;
 }
-
 .menuButtonInverted {
     /* align-items: flex-end; */
     /*height: 75%;*/
@@ -29,42 +26,28 @@
     font-size: 1rem;
     justify-content: center;
 }
-/*
-.menuButton:active {
-    background-color:#FA8756;
-    color: #171615;
-}*/
 .menuButton:active {
     background-color:#FA8756;
     color: #3D3B39;
 }
-/*
-.menuButton:active div.Value {
-    background-color:#3D3B39;
-    color: #FA8756;
-}*/
-
 .menuButton-currentvalue  {
     background-color:#7ebcc6 !important;
     color: #171615 !important;
 }
-
 .roundedTop {
-    border-top-left-radius: 0.3em;
-    border-top-right-radius: 0.3em;
+    border-top-left-radius: 0.5em;
+    border-top-right-radius: 0.5em;
     /*margin-bottom: -8px;
     padding-bottom: 20px;*/
     padding-top: 5px;
 }
-
 .roundedBottom {
-    border-bottom-left-radius: 0.3em;
-    border-bottom-right-radius: 0.3em;
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
    /* margin-top: -8px;
     padding-top: 20px;*/
     padding-bottom: 5px;
 }
-
 .Value {
     display:inline;
     /*background: white;
@@ -76,14 +59,26 @@
     align-items: center;
     z-index: -1;
     flex-grow: 2; */
-}*/
+}
+.Home-Value {
+    background: white;
+    color:#3D3B39;
+    font-size: 2rem;
+    /*margin-top:0.5rem;
+    height: 60%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 2;
+}
 
 .buttonCaption {
-    background: #3D3B39;
+    /*background: #3D3B39;
     color:#d5d5d5;
+    margin:0.5rem;
     font-weight: bold;
     font-size: 1.0rem;
-    /* font-size: 1.7em; */
+     font-size: 1.7em; */
     /* height: 1.7em; */
     /* line-height: 1.7em; */
     /* flex-grow: 1; */
