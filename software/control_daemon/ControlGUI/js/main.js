@@ -16,7 +16,7 @@ var WBOptions = ["3200K", "4000K", "5600K"];
 var SelectedWBOptionsindex = 0;
 
 // Menu Navigation
-var Pages = ["home-page", "menu-page", "shutter-page", "iso-page"];
+var Pages = ["home-page", "menu-page", "shutter-page", "iso-page", "shutter-preferences-page"];
 
 // Initial values
 var Settings = {
@@ -86,7 +86,7 @@ function startUp() {
         HighlightSelectedValue(ShutterPagesButtons, this.id);
     });
 
-    $("#ShutterPresetBtn1_100").click(function () {
+    $("#ShutterPreset1Btn").click(function () {
         $("#home-page").my("data", { SelectedShutterOptionsIndex: GetIndexfromValue(ShutterOptions, "1/100") });
 
         if (ShutterSetAndClose) {
@@ -137,6 +137,21 @@ function startUp() {
         ShutterSetAndClose = !ShutterSetAndClose;
         $('#ShutterSetAndCloseValue').text(BoolToReadable(ShutterSetAndClose));
     });
+    $("#SetPresetBtn").click(function () {
+        SaveLocalStorage();
+    });
+    $("#ShutterPreferencesBtn").click(function () {
+        SwitchMenuPage("shutter-preferences-page");
+    });
+
+    // Shutter Preferences Page
+    $("#radiogroup").click(function () {
+        SwitchMenuPage("shutter-preferences-page");
+    });
+    $("#ShutterPreferencesCloseBtn").click(function () {
+        SwitchMenuPage("shutter-page");
+    });
+
 
     // ISO Page
     $("#ISOMenuBtnClose").click(function () {
@@ -170,6 +185,15 @@ function startUp() {
     });
 }
 
+function LoadLocalStorage() {
+    var ShutterPreset1 = localStorage.ShutterPreset1;
+    $("#ShutterPreset1Btn").children(".buttonCaption").children(".Value").text(ShutterPreset1);
+    var ShutterPreset2 = localStorage.ShutterPreset2;
+    var ShutterPreset3 = localStorage.ShutterPreset3;
+}
+function SaveLocalStorage() {
+    localStorage.ShutterPreset1 = 1;
+}
 function scrollToElement(object, container) {
     var topPos = document.getElementById(object).offsetTop;
     document.getElementById(container).scrollTop = topPos - 100;
@@ -197,7 +221,7 @@ function HighlightSelectedValue(allbuttons, selectedbutton) {
 }
 function FillShutterBtnList(btnarray) {
     // fill the list of buttons from array automatically
-    
+
     var fillreturn = "";
     btnarray.forEach(function (element) {
         if (element != "custom") {
@@ -288,4 +312,5 @@ $(document).ready(function () {
     $("#home-page").my(manifest, Settings);
 
     startUp();
+    LoadLocalStorage();
 });

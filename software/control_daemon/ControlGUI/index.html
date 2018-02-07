@@ -90,14 +90,14 @@
                 <div class="row-option-label">Test1</div>
                 <div class="row-option-option">
                     <input type="checkbox" id="Test1Switch" />
-                    <label for="Test1Switch">Test1</label>
+                    <label for="Test1Switch" class="toggle">Test1</label>
                 </div>
             </div>
             <div class="row-option Btn" id="Test2SwitchBtn">
                 <div class="row-option-label">Test2</div>
                 <div class="row-option-option">
                     <input type="checkbox" id="Test2Switch" />
-                    <label for="Test2Switch">Test2</label>
+                    <label for="Test2Switch" class="toggle">Test2</label>
                 </div>
             </div>
         </div>
@@ -144,12 +144,41 @@
             </div>
         </div>
     </div>
+    <div id="shutter-preferences-page">
+        <div class="header">
+            <div class="menu"></div>
+        </div>
+        <div class="content">
+            <div class="RadioBtn-label">Shutter Values:</div>
+            <div class="radio-group">
+                <input type="radio" id="option-one" name="selector">
+                <label for="option-one" class="radiogrp">Fractions</label>
+                <input type="radio" id="option-two" name="selector">
+                <label for="option-two" class="radiogrp">Degrees</label>
+                <input type="radio" id="option-three" name="selector">
+                <label for="option-three" class="radiogrp">Percentages</label>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="menuBottom">
+                <div class="menuButton roundedTop" id="ShutterPreferencesCloseBtn">
+                    <div class="buttonCaption">Close</div>
+                </div>
+                <div class="menuButton">
+                </div>
+                <div class="menuButton">
+                </div>
+                <div class="menuButton">
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="shutter-page">
         <div class="header">
             <div class="menu">
-                <div class="menuButton roundedBottom" id="ShutterPresetBtn1_50">
+                <div class="menuButton roundedBottom" id="ShutterPreset1Btn">
                     <div class="buttonCaption">P1:
-                        <div class="Value">1/50</div>
+                        <div class="Value">empty</div>
                     </div>
                 </div>
                 <div class="menuButton roundedBottom" id="ShutterPresetBtn1_100">
@@ -166,7 +195,15 @@
 
             </div>
         </div>
-        <div class="content" id="ShutterBtnList">
+        <div class="content">
+            <div class="coloumn-flex-layout">
+                <div id="ShutterBtnList"></div>
+                <div class="" style="flex-grow: 1;">
+                    <div class="menuButton roundedBottom roundedTop" id="SetPresetBtn">Set Preset</div>
+                    <br />
+                    <div class="menuButton roundedBottom roundedTop" id="ShutterPreferencesBtn">Preferences</div>
+                </div>
+            </div>
         </div>
         <div class="footer">
             <div class="footer">

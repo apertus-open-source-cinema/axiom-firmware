@@ -34,7 +34,7 @@
         /* padding-top: 0 0 .625em; */
         position: fixed;
         width: 100%;
-        overflow:auto;
+        /*overflow:auto;*/
         top: 17%;
         bottom: 17%;
     }

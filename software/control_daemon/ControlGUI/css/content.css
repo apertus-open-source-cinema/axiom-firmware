@@ -46,7 +46,10 @@
     margin-left: auto;
     padding: 1em;
 }
-
+.coloumn-flex-layout {
+    display: flex;
+    height: 100%;
+}
 
 
 /* .point-a {

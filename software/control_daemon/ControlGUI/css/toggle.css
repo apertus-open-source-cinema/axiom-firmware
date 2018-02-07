@@ -4,7 +4,7 @@ input[type=checkbox]{
 	visibility: hidden;
 }
 
-label {
+label.toggle {
 	cursor: pointer;
 	text-indent: -9999px;
 	/*width: 90px;
@@ -19,7 +19,7 @@ label {
 	margin:0.2rem;
 }
 
-label:after {
+label.toggle:after {
 	content: '';
 	position: absolute;
 	top: 0.1rem;
