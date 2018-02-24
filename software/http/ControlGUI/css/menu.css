@@ -30,15 +30,14 @@ input[type=radio] {
     display: none;
 }
 label.radiogrp {
-    color: #3D3B39;
     display: inline-block;
     cursor: pointer;
     font-weight: bold;
-    padding: 0.5rem 2rem;
+    padding: 0.2rem 2rem;
 }
 input[type=radio]:checked + label.radiogrp{
-    color: #d5d5d5;
-    background: #3D3B39;
+    color: #3D3B39;
+    background: #FA8756;
 }
 label.radiogrp + input[type=radio] + label.radiogrp {
     border-left: solid 3px #3D3B39;
@@ -48,9 +47,10 @@ label.radiogrp + input[type=radio] + label.radiogrp {
     display: inline-block;
     border-radius: 0.5rem;
     overflow: hidden;
-    top: 0.8rem;
     position: relative;
     margin-left: 1rem;
+    background: #3D3B39;
+    color: #d5d5d5;
 }
 .menuButtonInverted {
     /* align-items: flex-end; */
@@ -145,7 +145,7 @@ label.radiogrp + input[type=radio] + label.radiogrp {
     color: #3D3B39;
     text-align: left;
     border-radius: 0.2em;
-    padding:0.2rem;
+    padding: 0.6rem;
     margin:0.5rem;
     z-index: -10;
 }

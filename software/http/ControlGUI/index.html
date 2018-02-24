@@ -87,17 +87,18 @@
         </div>
         <div class="content">
             <div class="row-option" id="Test1SwitchBtn">
-                <div class="row-option-label">Test1</div>
+                <div class="row-option-label">On/Off Toggle Option</div>
                 <div class="row-option-option">
                     <input type="checkbox" id="Test1Switch" />
-                    <label for="Test1Switch" class="toggle">Test1</label>
+                    <label for="Test1Switch" class="toggle"></label>
                 </div>
             </div>
-            <div class="row-option Btn" id="Test2SwitchBtn">
-                <div class="row-option-label">Test2</div>
+            <div class="row-option" id="Test2SwitchBtn">
+                <div class="row-option-label">Selection with 3 Options:</div>
                 <div class="row-option-option">
-                    <input type="checkbox" id="Test2Switch" />
-                    <label for="Test2Switch" class="toggle">Test2</label>
+                    <div class="radio-group">
+                        <input type="radio" id="option-one" name="selector"><label for="option-one" class="radiogrp">Option 1</label><input type="radio" id="option-two" name="selector"><label for="option-two" class="radiogrp">Option 2</label><input type="radio" id="option-three" name="selector"><label for="option-three" class="radiogrp">Option 3</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,10 +150,13 @@
             <div class="menu"></div>
         </div>
         <div class="content">
-            <div class="RadioBtn-label">Shutter Values:</div>
-            <div class="radio-group">
-                <input type="radio" id="option-one" name="selector">
-                <label for="option-one" class="radiogrp">Fractions</label><input type="radio" id="option-two" name="selector"><label for="option-two" class="radiogrp">Degrees</label><input type="radio" id="option-three" name="selector"><label for="option-three" class="radiogrp">Percentages</label>
+            <div class="row-option" id="ShutterValuesSwitchBtn">
+                <div class="row-option-label">Shutter Values:</div>
+                <div class="row-option-option">
+                    <div class="radio-group">
+                        <input type="radio" id="option-fractions" name="selector"><label for="option-fractions" class="radiogrp">Fractions</label><input type="radio" id="option-degrees" name="selector"><label for="option-degrees" class="radiogrp">Degrees</label><input type="radio" id="option-percentages" name="selector"><label for="option-percentages" class="radiogrp">Percentages</label>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="footer">

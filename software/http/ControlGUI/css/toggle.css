@@ -10,10 +10,10 @@ label.toggle {
 	/*width: 90px;
 	height: 50px;
 	border-radius: 100px;*/
-	width: 2.2rem;
-	height: 1.1rem;
+	width: 4rem;
+	height: 2rem;
 	border-radius: 3rem;
-	background: grey;
+	background: #3D3B39;
 	display: inline-block;
 	position: relative;
 	margin:0.2rem;
@@ -24,11 +24,11 @@ label.toggle:after {
 	position: absolute;
 	top: 0.1rem;
 	left: 0.1rem;
-	width: 0.9rem;
-	height: 0.9rem;
-	background: #ffffff;
-	border-radius: 0.9rem;
-	transition: 0.3s;
+	width: 1.8rem;
+	height: 1.8rem;
+	background: #d5d5d5;
+	border-radius: 1.8rem;
+	transition: 0.2s;
 }
 
 input:checked + label {
@@ -38,6 +38,7 @@ input:checked + label {
 input:checked + label:after {
 	left: calc(100% - 0.1rem);
 	transform: translateX(-100%);
+	background: #3D3B39;
 }
 
 label:active:after {
