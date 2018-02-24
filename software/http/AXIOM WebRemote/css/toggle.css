@@ -13,7 +13,6 @@ label.toggle {
 	background: #3D3B39;
 	display: inline-block;
 	position: relative;
-	margin:0.2rem;
 }
 
 label.toggle:after {

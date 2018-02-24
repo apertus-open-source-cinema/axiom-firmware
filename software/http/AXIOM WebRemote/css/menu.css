@@ -44,7 +44,6 @@ label.radiogrp + input[type=radio] + label.radiogrp {
 }
 .radio-group {
     border: solid 3px #3D3B39;
-    display: inline-block;
     border-radius: 0.5rem;
     overflow: hidden;
     position: relative;
@@ -148,6 +147,9 @@ label.radiogrp + input[type=radio] + label.radiogrp {
     padding: 0.6rem;
     margin:0.5rem;
     z-index: -10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 .row-option:active {
     color:#3D3B39;
