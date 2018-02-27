@@ -9,3 +9,5 @@ software/control_daemon/CMakeSettings.json
 software/control_daemon/CppProperties.json
 
 **/.DS_Store
+
+.idea/

@@ -9,10 +9,10 @@ cval=${3:-0x111}
 rval=${4:-0x222}
 
 ../cmv_tools/cmv_snap3/cmv_snap3 -t -p -e 100n -d >/tmp/test00.raw16
-devmem $cadr 16 $cval
+devmem2 $cadr h $cval
 ../cmv_tools/cmv_snap3/cmv_snap3 -t -p -e 100n -d >/tmp/test01.raw16
-devmem $radr 16 $rval
+devmem2 $radr h $rval
 ../cmv_tools/cmv_snap3/cmv_snap3 -t -p -e 100n -d >/tmp/test11.raw16
-devmem $cadr 16 0x0
+devmem2 $cadr h 0x0
 ../cmv_tools/cmv_snap3/cmv_snap3 -t -p -e 100n -d >/tmp/test10.raw16
-devmem $radr 16 0x0
+devmem2 $radr h 0x0
