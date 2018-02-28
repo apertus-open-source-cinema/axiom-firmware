@@ -3,27 +3,27 @@
 scn_reg() {
     addr=$(( 0x80000100 + ($1 * 2) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 16 $2 \
-	|| /sbin/devmem $addr 16
+	&& devmem2 $addr h $2 \
+	|| devmem2 $addr h
 }
 
 gen_reg() {
     addr=$(( 0x80100100 + ($1 * 4) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 32 $2 \
-	|| /sbin/devmem $addr 32
+	&& devmem2 $addr w $2 \
+	|| devmem2 $addr w
 }
 
 mat_reg() {
     addr=$(( 0x80200100 + ($1 * 4) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 32 $2 \
-	|| /sbin/devmem $addr 32
+	&& devmem2 $addr w $2 \
+	|| devmem2 $addr w
 }
 
 pll_reg() {
     addr=$(( 0x80400000 + ($1 * 4) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 32 $2 \
-	|| /sbin/devmem $addr 32
+	&& devmem2 $addr w $2 \
+	|| devmem2 $addr w
 }

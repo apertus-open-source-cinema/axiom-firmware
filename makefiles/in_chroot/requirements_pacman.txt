@@ -10,6 +10,7 @@ figlet
 python
 devmem
 cmake
+bc
 
 # convenience tools
 vim

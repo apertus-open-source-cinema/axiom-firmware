@@ -1,14 +1,10 @@
-image: ubuntu:17.04
+image: jatha/axiom-build-container
 
 stages:
   - build
   - assemble
   - test
   - deploy
-
-before_script:
-   - apt-get update -qq
-   - apt-get install -y -qq $(grep -vE "^\s*#" build_tools/outside/dependencies.txt | tr "\n" " ") > /dev/null
 
 variables:
   GIT_STRATEGY: clone
@@ -17,24 +13,24 @@ variables:
 
 
 
-# build the ROOT.fs and the BOOT.fs. Aditionally build qemu for testing.
+# build the ROOT.fs and the BOOT.fs. Additionally build qemu for testing.
 build_kernel:
   stage: build
   script:
-    - build_tools/outside/build_kernel.sh
-    - tar -cpf build/kernel_modules.tar build/kernel_modules
+    - make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) build/linux-xlnx.git/arch/arm/boot/zImage
+    - tar -cpf build/kernel_modules.tar build/kernel_modules.fs
   artifacts:
     paths:
       - build/linux-xlnx.git/arch/arm/boot/zImage
       - build/kernel_modules.tar
+      - build/devicetree.dtb
 
 build_u_boot:
   stage: build
   script:
-    - build_tools/outside/build_u_boot.sh
+    - make -f makefiles/host/main.mk -I makefiles/host build/u-boot-xlnx.git/u-boot.elf 
   artifacts:
     paths:
-      - build/BOOT.bin
       - build/u-boot-xlnx.git/u-boot.elf
 
 build_rootfs:
@@ -42,23 +38,23 @@ build_rootfs:
   script:
     - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
     - git branch --set-upstream-to=origin/$CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME
-    - build_tools/outside/build_rootfs.sh
-    - tar -cpf build/ROOT.fs.tar build/ROOT.fs
+    - make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) build/root.fs/etc/motd
+    - tar -cpf build/rootfs.tar build/root.fs
   artifacts:
     paths:
-      - build/ROOT.fs.tar
-  retry: 2
+      - build/rootfs.tar
+  retry: 1
 
 build_qemu:
   stage: build
   script:
-      - build_tools/outside/build_qemu.sh
+    - make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64
   artifacts:
     paths:
       - build/qemu-xlnx.git
 
 
-# build apertus tools inside qemu with the image
+# assemble the parts to a single disk image
 assemble_image:
   stage: assemble
   dependencies:
@@ -67,11 +63,13 @@ assemble_image:
     - build_rootfs
   script:
     - tar --same-owner -xf build/kernel_modules.tar
-    - tar --same-owner -xf build/ROOT.fs.tar
-    - build_tools/outside/assemble_image.sh
+    - tar --same-owner -xf build/rootfs.tar
+    - touch build/u-boot-xlnx.git/u-boot.elf build/root.fs/etc/motd build/linux-xlnx.git/arch/arm/boot/zImage build/axiom.img # hack to avoid rebuilding deps
+    - make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) build/axiom.img
   artifacts:
+    name: "axiom-firmware-${CI_COMMIT_SHA}"
     paths:
-      - build/IMAGE.dd
+      - build/axiom.img
 
 
 # Test the image using qemu
@@ -82,19 +80,5 @@ test_qemu:
     - build_u_boot
     - assemble_image
   script:
-    - cd build/ && ../build_tools/outside/run_qemu.expect
-
-
-# create final artifacts
-final_artifacts:
-  stage: deploy
-  dependencies:
-    - assemble_image
-  before_script:
-    - echo "no install"
-  script:
-    - cp build/IMAGE.dd axiom-beta-$CI_COMMIT_SHA.img
-  artifacts:
-    paths:
-      - "*.img"
-    name: "axiom-beta-${CI_COMMIT_SHA}"
+    - touch build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 build/u-boot-xlnx.git/u-boot.elf build/axiom.img # hack to avoid rebuilding deps
+    - make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) ci-test
