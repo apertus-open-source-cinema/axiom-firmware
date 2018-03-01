@@ -2,3 +2,9 @@ sudo: required
 
 services:
   - docker
+
+before_install:
+- ./makefiles/docker_make.sh
+
+script:
+- bundle exec rake test
