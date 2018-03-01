@@ -4,6 +4,9 @@ sudo: required
 
 services:
   - docker
-
+  
+before_install:
+  - apt-get install realpath
+  
 script:
   - ./makefiles/docker_make.sh
