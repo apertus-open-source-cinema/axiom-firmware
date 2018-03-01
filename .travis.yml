@@ -11,3 +11,7 @@ before_script:
   
 script:
   - ./makefiles/docker_make.sh
+
+after_script
+  - ./makefiles/docker_make.sh test
+  
