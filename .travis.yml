@@ -5,7 +5,7 @@ sudo: required
 services:
   - docker
   
-before_install:
+before_script:
   - sudo apt-get -qq update
   - sudo apt-get install -y realpath
   
