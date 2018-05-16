@@ -19,7 +19,7 @@
 class MemoryAdapter : public IAdapter
 {
 protected:
-    void* baseAddress;
+    uintptr_t baseAddress;
 
 public:
     void ReadDescriptions(std::string descriptionFile)
@@ -56,9 +56,9 @@ public:
         UNUSED(length);
     }
 
-    void* MemoryMap(uint32_t address, uint32_t size)
+    void* MemoryMap(uintptr_t address, uint32_t size)
     {
-        baseAddress = (uint32_t *)address;
+        baseAddress = address;
 
         std::string message = "";
         
@@ -79,7 +79,7 @@ public:
             JournalLogger::Log(message);
         }
 		
-		baseAddress = result;
+        baseAddress = (uintptr_t)result;
 
         return result;
     }

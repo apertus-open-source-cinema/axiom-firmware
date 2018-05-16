@@ -1,4 +1,4 @@
-#include <catch.hpp>
+#include <catch/catch.hpp>
 
 #include "../Adapter/CMV12000Adapter.h"
 

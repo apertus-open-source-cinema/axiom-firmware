@@ -12,7 +12,7 @@
 class CMV12000Adapter //: public IImageSensorAdapter
 {
     //uint32_t address = 0x60000000;
-    uint32_t address = 0x18000000;
+    uintptr_t address = 0x18000000;
     uint32_t memorySize = 0x00020000;
 
     std::shared_ptr<MemoryAdapter> _memoryAdapter;

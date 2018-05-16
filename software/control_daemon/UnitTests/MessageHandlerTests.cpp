@@ -1,6 +1,6 @@
-#include <catch.hpp>
+#include <catch/catch.hpp>
 
-#include "../API/MessageHandler.h"
+#include "../API_WS/MessageHandler.h"
 
 TEST_CASE( "Process message", "[MessageHandler]" ) 
 {

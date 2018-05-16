@@ -12,19 +12,19 @@ IF(ENABLE_MOCK)
     ADD_DEFINITIONS(-DENABLE_MOCK)
 ENDIF(ENABLE_MOCK)
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/..)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 # Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
 
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
                        "../Adapter/*.cpp" "../Adapter/*.h"
-                       "../API/*.cpp" "../API/*.h")
+                       "../API_WS/*.cpp" "../API_WS/*.h")
 
-list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../API/Main.cpp")
+list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../API_WS/Main.cpp")
 message("${SOURCE_FILES}")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_FILES})
 ADD_DEPENDENCIES(${PROJECT_NAME} flatc_cpp_gen)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} systemd pistache)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} systemd)
