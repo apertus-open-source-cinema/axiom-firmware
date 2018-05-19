@@ -2,7 +2,8 @@
 
 int main()
 {
-    WSServer server;
+    int port = 7070;
+    WSServer server(port);
     server.Start();
 
     return 0;

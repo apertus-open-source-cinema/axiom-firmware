@@ -44,6 +44,7 @@ MessageHandler::~MessageHandler()
 
 bool MessageHandler::ProcessMessage(std::string message, std::string& response)
 {
+    std::cout << "Received message: " + message + "\n";
     if(message == "Test")
     {
         return "OK";
@@ -51,7 +52,17 @@ bool MessageHandler::ProcessMessage(std::string message, std::string& response)
     
     std::string receivedContent  = message;
     //std::string message = "Received (raw): " + receivedContent + '\n';
-    ns::JSONSetting setting = json::parse(receivedContent);
+    ns::JSONSetting setting;
+    try 
+    {
+        setting = json::parse(receivedContent);
+    }
+    catch(std::exception& ex)
+    {
+        response = "Invalid format";
+        return false;
+    }
+    
     // JSONSetting setting = receivedJSON;
     
     std::string receivedData = "";
@@ -132,9 +143,9 @@ void MessageHandler::AddSettingIS(RWMode mode, std::string setting, uint16_t par
 
 void MessageHandler::OutputReceivedData(ns::JSONSetting setting, std::string& message)
 {
-    message += "Received (JSON): " + '\n';
-    message += "JSON ID: " + setting.id + '\n';
-    message += "JSON Value: " + std::to_string(setting.value) + '\n';
-    message += "JSON Type: " + setting.type +'\n';
-    message += "JSON Message: " + setting.message +'\n';
+    message += "Received (JSON):\n";
+    message += "JSON ID: " + setting.id + "\n";
+    message += "JSON Value: " + std::to_string(setting.value) + "\n";
+    message += "JSON Type: " + setting.type + "\n";
+    message += "JSON Message: " + setting.message + "\n";
 }

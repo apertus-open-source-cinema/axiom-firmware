@@ -19,7 +19,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
 
 FILE(GLOB SOURCE_FILES "*.cpp" "*.h"
                        "../Adapter/*.cpp" "../Adapter/*.h"
-                       "../API_WS/*.cpp" "../API_WS/*.h")
+                       "../API_WS/MessageHandler.cpp" "../API_WS/MessageHandler.h")
 
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../API_WS/Main.cpp")
 message("${SOURCE_FILES}")
