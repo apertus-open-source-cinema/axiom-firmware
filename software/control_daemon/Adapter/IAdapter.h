@@ -2,6 +2,7 @@
 #define IADAPTER_H
 
 #include <iostream>
+#include <vector>
 
 class IAdapter
 {
@@ -27,5 +28,3 @@ public:
 };
 
 #endif // IADAPTER_H
-
-

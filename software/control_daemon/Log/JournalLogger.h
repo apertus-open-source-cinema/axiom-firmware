@@ -1,5 +1,8 @@
 #include "ILogger.h"
 
+#include <string>
+#include <unistd.h>
+
 #include <systemd/sd-journal.h>
 
 class JournalLogger : public ILogger

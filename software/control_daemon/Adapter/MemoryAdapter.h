@@ -61,7 +61,7 @@ public:
         baseAddress = address;
 
         std::string message = "";
-        
+
         // TODO: Check if alignment is required
         int fd = open("/dev/mem", O_RDWR | O_SYNC);
         if (fd == -1)
@@ -71,7 +71,10 @@ public:
             return (void*)-1;
         }
 
-        void* result = mmap((void*)address, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
+        void* result = nullptr;
+        
+        #ifndef ENABLE_MOCK   
+        result = mmap((void*)address, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
         if(result == (void*)-1)
         {
             // TODO: Add error log
@@ -80,6 +83,7 @@ public:
         }
 		
         baseAddress = (uintptr_t)result;
+        #endif
 
         return result;
     }
@@ -92,6 +96,15 @@ public:
     virtual void Execute()
     {
 
+    }
+
+    std::vector<std::string> GetAvailableMethods()
+    {
+        std::vector<std::string> availableMethods;
+        availableMethods.push_back("Test1");
+        availableMethods.push_back("Test2");
+
+        return availableMethods;
     }
 };
 

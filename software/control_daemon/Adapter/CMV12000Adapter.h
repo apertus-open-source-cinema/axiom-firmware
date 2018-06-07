@@ -8,8 +8,9 @@
 
 #include "MemoryAdapter.h"
 #include "IImageSensorAdapter.h"
+#include "IDaemonModule.h"
 
-class CMV12000Adapter //: public IImageSensorAdapter
+class CMV12000Adapter : IDaemonModule//: public IImageSensorAdapter
 {
     //uint32_t address = 0x60000000;
     uintptr_t address = 0x18000000;
@@ -47,6 +48,15 @@ public:
 
     bool SetParameter(std::string parameterName, int parameterValue);
     int GetParameter(std::string parameterName);
+
+    std::vector<std::string> GetAvailableMethods()
+    {
+        std::vector<std::string> availableMethods;
+        availableMethods.push_back("Test1");
+        availableMethods.push_back("Test2");
+
+        return availableMethods;
+    }
 };
 
 #endif // CMVADAPTER_H

@@ -4,8 +4,8 @@
 #include <fstream>
 #include <sys/syslog.h>
 
-#include <json/json.hpp>
-using json = nlohmann::json;
+// #include <json/json.hpp>
+// using json = nlohmann::json;
 
 #include "IAdapter.h"
 
@@ -14,7 +14,9 @@ using json = nlohmann::json;
 class I2CAdapter : public IAdapter
 {
 public:
-    void ReadDescriptions(std::string descriptionFile)
+    I2CAdapter();
+    
+    void ReadDescriptions(std::string descriptionFile) override
     {
         std::ifstream in(descriptionFile);
         if(!in.is_open())
@@ -24,42 +26,27 @@ public:
             return;
         }
 
-        json j;
-        in >> j;
+        //json j;
+        //in >> j;
     }
 
-    void CheckDevices() {}
+    void CheckDevices() override {}
 
-    void ReadByte(uint8_t data);
-    void WriteByte(uint8_t data);
-    void ReadBlock(uint8_t *data, unsigned int length);
-    void WriteBlock(uint8_t *data, unsigned int length);
+    void ReadByte(uint8_t data) override;
+    void WriteByte(uint8_t data) override;
+    void ReadBlock(uint8_t *data, unsigned int length) override;
+    void WriteBlock(uint8_t *data, unsigned int length) override;
 
     void Execute();
+
+    std::vector<std::string> GetAvailableMethods()
+    {
+        std::vector<std::string> availableMethods;
+        availableMethods.push_back("Test1");
+        availableMethods.push_back("Test2");
+
+        return availableMethods;
+    }
 };
 
-void I2CAdapter::ReadByte(uint8_t data)
-{
-    UNUSED(data);
-}
-
-void I2CAdapter::WriteByte(uint8_t data)
-{
-    UNUSED(data);
-}
-
-void I2CAdapter::ReadBlock(uint8_t *data, unsigned int length)
-{
-    UNUSED(data);
-    UNUSED(length);
-}
-
-void I2CAdapter::WriteBlock(uint8_t *data, unsigned int length)
-{
-    UNUSED(data);
-    UNUSED(length);
-}
-
-void I2CAdapter::Execute() {}
-
-#endif // I2CADAPTER_H
+#endif //I2CADAPTER_H

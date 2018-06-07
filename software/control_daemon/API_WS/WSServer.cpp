@@ -24,6 +24,7 @@ void WSServer::Setup()
         std::string convertedMessage = std::string(message, message + length);
         std::string responseMessage;
         bool status = _messageHandler->ProcessMessage(convertedMessage, responseMessage);
+        
         ws->send(responseMessage.c_str(), responseMessage.length(), opCode);
     };
 

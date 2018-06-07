@@ -40,4 +40,13 @@ table Packet
     settings:[Payload];
 }
 
+table DaemonRequest
+{
+    sender: string; // e.g. "WSServer" for now
+    module: string; // e.g. "image_sensor"
+    command: string; // e.g. "set_gain"
+    value: string; // e.g. "2.4"
+    status: string; // used for reply from Daemon
+}
+
 root_type Packet;
