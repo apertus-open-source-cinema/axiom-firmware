@@ -48,7 +48,7 @@ test: build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 build/devicetree.d
 	SD_INDEX=$(SD_INDEX) makefiles/host/run_qemu.expect
 
 .PHONY: ci-test 
-ci-test: makefiles/host/run_qemu.expect
+ci-test: makefiles/host/run_qemu.expect build/devicetree.dtb
 	! [ -e build/axiom.img ] && echo "axiom.img missing, maybe you should run 'make' first"
 	SD_INDEX=$(SD_INDEX) makefiles/host/run_qemu.expect
 
