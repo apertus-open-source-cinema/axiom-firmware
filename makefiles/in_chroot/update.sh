@@ -15,6 +15,8 @@ fi
 
 # configure pacman & do sysupdate
 sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
+pacman-key --init
+pacman-key --populate archlinuxarm
 pacman --noconfirm --needed -Syu
 
 # install dependencies
