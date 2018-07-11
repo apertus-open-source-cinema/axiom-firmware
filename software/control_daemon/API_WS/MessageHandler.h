@@ -39,9 +39,6 @@ public:
     void Execute();
     void TransferData(/*void* data, unsigned int length*/);
 
-    void AddSettingSPI(RWMode mode, std::string destination, ConnectionType type, uint8_t* payload, unsigned int payloadLength);
-    void AddSettingIS(RWMode mode, std::string setting, uint16_t parameter);
-
     void AddDaemonRequest(std::string sender, std::string module, std::string command, std::string value);
 
     void OutputReceivedData(ns::JSONSetting setting, std::string& message);

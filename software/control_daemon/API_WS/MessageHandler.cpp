@@ -80,9 +80,7 @@ void MessageHandler::TransferData(/*void* data, unsigned int length*/)
 {
     std::cout << "TransferData() started" << std::endl;
     auto setList = _builder->CreateVector(_settings);
-    PacketBuilder _packetBuilder(*_builder);
-    _packetBuilder.add_settings(setList.o);
-    _builder->Finish(_packetBuilder.Finish());
+    _builder->Finish(_settings[0]);
     
     send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
     std::string message = "Data size: " + std::to_string(_builder->GetSize());
@@ -103,36 +101,6 @@ void MessageHandler::SetupSocket()
     connect(clientSocket, (struct sockaddr*) &address, sizeof (address));
 }
 
-void MessageHandler::AddSettingSPI(RWMode mode, std::string destination, ConnectionType type, uint8_t* payload, unsigned int payloadLength)
-{
-    // auto destinationFB = _builder->CreateString(destination);
-    // auto payloadFB = _builder->CreateVector(payload, payloadLength);
-    
-    // auto setting = CreateSPISetting(*_builder, mode, destinationFB, type, payloadFB);
-    // auto pay = CreatePayload(*_builder, Setting::SPISetting, setting.Union());
-    // _settings.push_back(pay);
-    
-    //_settings.push_back(setting);
-}
-
-// Write/read setting of image sensor
-// Fixed to 2 bytes for now, as CMV used 128 x 2 bytes registers and it should be sufficient for first tests
-void MessageHandler::AddSettingIS(RWMode mode, std::string setting, uint16_t parameter)
-{
-    // auto settingFB = CreateImageSensorSetting(*_builder, mode, _builder->CreateString(setting), parameter);
-    // auto payload = CreatePayload(*_builder, Setting::ImageSensorSetting, settingFB.Union());
-    
-    // _settings.push_back(payload);
-}
-
-// table DaemonRequest
-// {
-//     sender: string; // e.g. "WSServer" for now
-//     module: string; // e.g. "image_sensor"
-//     command: string; // e.g. "set_gain"
-//     value: string; // e.g. "2.4"
-//     status: string; // used for reply from Daemon
-// }
 void MessageHandler::AddDaemonRequest(std::string sender, std::string module, std::string command, std::string value)
 {
     std::cout << "AddDaemonRequest()message" << std::endl;

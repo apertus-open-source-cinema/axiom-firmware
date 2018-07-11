@@ -4,6 +4,7 @@
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <string>
+#include <unordered_map>
 
 // For systemd
 #include <systemd/sd-daemon.h>
@@ -32,7 +33,10 @@ class Daemon
 
     IAdapter* _memoryAdapter = nullptr;
     IAdapter* _i2cAdapter = nullptr;
-    CMV12000Adapter* _cmvAdapter = nullptr;
+    IDaemonModule* _cmvAdapter = nullptr;
+
+    std::unordered_map<std::string, std::shared_ptr<IDaemonModule>> _modules;
+    std::unordered_map<std::string, std::shared_ptr<IDaemonModule>>::iterator _module_iterator;
 
 public:
     Daemon();

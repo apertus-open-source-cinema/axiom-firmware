@@ -68,21 +68,21 @@ public:
         {
             message = "Error (open /dev/mem): " + std::string(strerror(errno));
             JournalLogger::Log(message);
-            return (void*)-1;
+            return reinterpret_cast<void*>(-1);
         }
 
         void* result = nullptr;
         
         #ifndef ENABLE_MOCK   
-        result = mmap((void*)address, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
-        if(result == (void*)-1)
+        result = mmap(reinterpret_cast<void*>(address), size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
+        if(result == reinterpret_cast<void*>(-1))
         {
             // TODO: Add error log
             message = "Cannot map memory to address: " + std::to_string(address);
             JournalLogger::Log(message);
         }
 		
-        baseAddress = (uintptr_t)result;
+        baseAddress = reinterpret_cast<uintptr_t>(result);
         #endif
 
         return result;
@@ -90,7 +90,7 @@ public:
 
     int MemoryUnmap(uint32_t address, uint32_t size)
     {
-        return munmap((void*)address, size);
+        return munmap(reinterpret_cast<void*>(address), size);
     }
 
     virtual void Execute()

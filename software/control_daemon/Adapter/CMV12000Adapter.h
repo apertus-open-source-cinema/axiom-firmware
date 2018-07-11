@@ -10,7 +10,7 @@
 #include "IImageSensorAdapter.h"
 #include "IDaemonModule.h"
 
-class CMV12000Adapter : IDaemonModule//: public IImageSensorAdapter
+class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
 {
     //uint32_t address = 0x60000000;
     uintptr_t address = 0x18000000;
