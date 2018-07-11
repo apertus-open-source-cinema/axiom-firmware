@@ -96,8 +96,9 @@ void Daemon::Process()
 
                 switch(payload)
                 {
-                //     case Setting::DaemonRequest:
-                //     break;
+                    //  case Setting::DaemonRequest:
+                    //      sd_journal_print(LOG_INFO, "Received: DaemonRequest");
+                    //  break;
                 // case Setting::ImageSensorSetting:
                 // {
                 //     sd_journal_print(LOG_INFO, "Received: Image Sensor setting");
