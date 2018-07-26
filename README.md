@@ -1,4 +1,7 @@
 # AXIOM Beta Software
+
+**Please note that the automatic firmware image builds are NOT working on the actual AXIOM Beta hardware yet - these images is still in development. DO NOT use them unless you want to help with development.**
+
 [![pipeline status](https://gitlab.com/apertus/beta-software/badges/master/pipeline.svg)](https://gitlab.com/apertus/beta-software/pipelines/) [![download nightly image](https://img.shields.io/badge/download-nightly%20image-blue.svg)](https://gitlab.com/apertus/beta-software/-/jobs/artifacts/master/download?job=assemble_image)
 
 Pull requests: [![Build Status](https://travis-ci.org/apertus-open-source-cinema/beta-software.svg?branch=master)](https://travis-ci.org/apertus-open-source-cinema/beta-software)
