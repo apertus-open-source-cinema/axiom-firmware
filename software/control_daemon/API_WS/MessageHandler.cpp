@@ -5,51 +5,48 @@ using json = nlohmann::json;
 
 namespace ns
 {
-    struct JSONSetting
-    {
-        std::string sender;
-        std::string module;
-        std::string command;
-        std::string value;
-        std::string timestamp;
-        std::string status;
-    };
+struct JSONSetting
+{
+    std::string sender;
+    std::string module;
+    std::string command;
+    std::string value;
+    std::string timestamp;
+    std::string status;
+};
 
-    void to_json(json& j, const JSONSetting& setting) 
-    {
-        j = json{{"sender", setting.sender}, {"module", setting.module}, {"command", setting.command}, {"value", setting.value}, {"timestamp", setting.timestamp}, {"status", setting.status}};
-    }
+void to_json(json& j, const JSONSetting& setting)
+{
+    j = json{{"sender", setting.sender}, {"module", setting.module}, {"command", setting.command}, {"value", setting.value}, {"timestamp", setting.timestamp}, {"status", setting.status}};
+}
 
-    void from_json(const json& j, JSONSetting& s) 
-    {
-        s.sender = j.at("sender").get<std::string>();
-        s.module = j.at("module").get<std::string>();
-        s.command = j.at("command").get<std::string>();
-        s.value = j.at("value").get<std::string>();
-        s.timestamp = j.at("timestamp").get<std::string>();
-        s.status = j.at("status").get<std::string>();
-    }
+void from_json(const json& j, JSONSetting& s)
+{
+    s.sender = j.at("sender").get<std::string>();
+    s.module = j.at("module").get<std::string>();
+    s.command = j.at("command").get<std::string>();
+    s.value = j.at("value").get<std::string>();
+    s.timestamp = j.at("timestamp").get<std::string>();
+    s.status = j.at("status").get<std::string>();
+}
 };
 
 MessageHandler::MessageHandler() : 
-socketPath("/tmp/axiom_daemon"),
-_builder(new flatbuffers::FlatBufferBuilder())
+    socketPath("/tmp/axiom_daemon"),
+    _builder(new flatbuffers::FlatBufferBuilder())
 {
     SetupSocket();
 }
 
 MessageHandler::~MessageHandler()
 {
-    if(_builder != nullptr)
-    {
-        delete _builder;
-    }
+    delete _builder;
 }
 
 bool MessageHandler::ProcessMessage(std::string message, std::string& response)
 {
     ns::JSONSetting setting;
-    try 
+    try
     {
         setting = json::parse(message);
     }
@@ -108,7 +105,7 @@ void MessageHandler::AddDaemonRequest(std::string sender, std::string module, st
     auto senderFB = _builder->CreateString(sender);
     auto moduleFB = _builder->CreateString(module);
     auto commandFB = _builder->CreateString(command);
-    auto valueFB = _builder->CreateString(command);
+    auto valueFB = _builder->CreateString(value);
     auto statusFB = _builder->CreateString("");
 
     auto request = CreateDaemonRequest(*_builder, senderFB, moduleFB, commandFB, valueFB, statusFB);

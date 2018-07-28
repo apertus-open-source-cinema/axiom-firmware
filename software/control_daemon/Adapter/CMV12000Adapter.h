@@ -19,6 +19,9 @@ class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
     std::shared_ptr<MemoryAdapter> _memoryAdapter;
     //uint32_t* mappedAddress;
 
+    unsigned int _gain[5] = {0, 1, 3, 7, 11};
+    unsigned int _adcRAnge[5] = {0x3eb, 0x3d5, 0x3d5, 0x3d5, 0x3e9};
+
     // TODO: Evaluate to move to a base class
     typedef std::function<int(CMV12000Adapter&)> GetterFunc;
     typedef std::function<bool(CMV12000Adapter&, int)> SetterFunc;
@@ -37,6 +40,10 @@ class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
 
     int GetGain();
 
+    std::string TestMethod(std::string& value);
+
+    void RegisterAvailableMethods();
+
 public:
     CMV12000Adapter();
 
@@ -51,11 +58,7 @@ public:
 
     std::vector<std::string> GetAvailableMethods()
     {
-        std::vector<std::string> availableMethods;
-        availableMethods.push_back("Test1");
-        availableMethods.push_back("Test2");
-
-        return availableMethods;
+        return GetRegisteredMethodNames();
     }
 };
 

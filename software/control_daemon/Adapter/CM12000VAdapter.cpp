@@ -7,15 +7,19 @@ CMV12000Adapter::CMV12000Adapter()
     _memoryAdapter = std::make_shared<MemoryAdapter>();
     // Map the regions at start, to prevent repeating calls of mmap()
     _memoryAdapter->MemoryMap(address, memorySize);
+
+    RegisterAvailableMethods();
+}
+
+void CMV12000Adapter::RegisterAvailableMethods()
+{
+    RegisterMethods("set_gain", std::bind(&CMV12000Adapter::TestMethod, this, std::placeholders::_1));
 }
 
 CMV12000Adapter::~CMV12000Adapter()
 {
     _memoryAdapter->MemoryUnmap(address, memorySize);
 }
-
-unsigned int gain[] = {0, 1, 3, 7, 11};
-unsigned int adcRAnge[] = {0x3eb, 0x3d5, 0x3d5, 0x3d5, 0x3e9};
 
 bool CMV12000Adapter::SetGain(int gainValue)
 {
@@ -36,8 +40,8 @@ bool CMV12000Adapter::SetGain(int gainValue)
     //cmv_reg 87 2000        # offset 1
     //cmv_reg 88 2000        # offset 2
 
-    SetConfigRegister(115, gain[gainValue]);
-    SetConfigRegister(116, adcRAnge[gainValue]);
+    SetConfigRegister(115, _gain[gainValue]);
+    SetConfigRegister(116, _adcRAnge[gainValue]);
     SetConfigRegister(100, 1);
     SetConfigRegister(87, 2000);
     SetConfigRegister(88, 2000);
@@ -97,4 +101,11 @@ int CMV12000Adapter::GetParameter(std::string parameterName)
         auto handler = got->second;
         return handler.Getter(*this);
     } 
+}
+
+std::string CMV12000Adapter::TestMethod(std::string& value)
+{
+    int val = std::stoi(value);
+    val += 4;
+    return std::to_string(val);
 }

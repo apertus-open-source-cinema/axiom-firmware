@@ -82,13 +82,18 @@ void Daemon::Process()
 
         std::cout << "Sender: " << req->sender()->c_str() << std::endl;
         std::cout << "Module: " << moduleName << std::endl;
+        std::cout << "Command: " << req->command()->c_str() << std::endl;
+        std::cout << "Value: " << req->value()->c_str() << std::endl;
 
         _module_iterator = _modules.find(moduleName);
 
         if (_module_iterator != _modules.end())
         {
+            auto module = _module_iterator->second;
             sd_journal_print(LOG_INFO, "Received: %s", moduleName.c_str());
-            std::vector<std::string> availableMethods = _module_iterator->second->GetAvailableMethods();
+            std::vector<std::string> availableMethods = module->GetAvailableMethods();
+            std::string val = module->ProcessMethod(req->command()->c_str(), req->value()->c_str());
+            int i = 0;
         }
         else
         {
