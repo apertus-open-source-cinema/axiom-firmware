@@ -1,11 +1,5 @@
 # AXIOM Beta Software
 
-gitlab: [![pipeline status](https://gitlab.com/apertus/beta-software/badges/master/pipeline.svg)](https://gitlab.com/apertus/beta-software/pipelines/) 
-[![download nightly image](https://img.shields.io/badge/download-nightly%20image-blue.svg)](https://gitlab.com/apertus/beta-software/-/jobs/artifacts/master/download?job=assemble_image)
-
-travis: [![Build Status](https://travis-ci.org/apertus-open-source-cinema/beta-software.svg?branch=master)](https://travis-ci.org/apertus-open-source-cinema/beta-software)
-
-
 Firmware required to boot & operate the [apertus° AXIOM Beta Camera](https://www.apertus.org/axiom-beta).
 
 Detailed instructions on how to use the Firmware can be found in the [wiki](https://wiki.apertus.org/index.php/AXIOM_Beta/AXIOM_Beta_Software)
