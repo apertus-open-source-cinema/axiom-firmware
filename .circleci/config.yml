@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: jatha/axiom-build-container
+    steps:
+      - checkout
+      - run: make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc)
+      - run: tar -cvzf axiom-nightly-image.tar.gz build/axiom.img
+      - store_artifacts:
+        path: axiom-nightly-image.tar.gz
