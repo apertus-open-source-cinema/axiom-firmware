@@ -2,7 +2,7 @@
 
 Firmware required to boot & operate the [apertus° AXIOM Beta Camera](https://www.apertus.org/axiom-beta).
 
-Detailed instructions on how to use the Firmware can be found in the [wiki](https://wiki.apertus.org/index.php/AXIOM_Beta/AXIOM_Beta_Software)
+Detailed instructions on how to use the Firmware can be found in the [wiki](https://wiki.apertus.org/index.php/AXIOM_Beta/Manual)
 
 ## Download Nightly Firmware
 If you want to experiment with the latest changes and dont mind, when the camera isnt working, you try use the untested nightly firmware images.
