@@ -1,4 +1,5 @@
 # AXIOM Beta Software
+[![CircleCI](https://circleci.com/gh/apertus-open-source-cinema/beta-software.svg?style=svg)](https://circleci.com/gh/apertus-open-source-cinema/beta-software)
 
 Firmware required to boot & operate the [apertus° AXIOM Beta Camera](https://www.apertus.org/axiom-beta).
 
