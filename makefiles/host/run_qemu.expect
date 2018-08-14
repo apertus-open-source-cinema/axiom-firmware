@@ -4,7 +4,7 @@ set timeout 300
 
 spawn build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb build/devicetree.dtb -kernel build/u-boot-xlnx.git/u-boot.elf -drive if=sd,format=raw,index=$env(SD_INDEX),file=build/axiom.img -boot mode=5
 expect {
-    "login: " { }
+    "login:" { }
     timeout { puts "\ntimed out\n"; exit 1 }
 }
 send "apertus\r"
@@ -22,7 +22,7 @@ expect {
 
 send "sudo systemctl poweroff\r"
 expect {
-    "System halted" { }
+    "Reached target Final Step." { }
     timeout { puts "\ntimed out\n"; exit 1 }
 }
 

@@ -1,0 +1,82 @@
+version: 2
+
+jobs:
+  build_kernel:
+    docker:
+      - image: jatha/axiom-build-container
+    steps:
+      - checkout
+      - run: make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) DEVICE=beta build/linux-xlnx.git/arch/arm/boot/zImage
+      - run: ls -l build/linux-xlnx.git/arch/arm/boot/zImage
+      - persist_to_workspace:
+          root: build
+          paths:
+            - linux-xlnx.git/arch/arm/boot/zImage
+            - kernel_modules.fs
+            - devicetree.dtb
+
+  build_bootfs:
+    docker:
+      - image: jatha/axiom-build-container
+    steps:
+      - checkout
+      - run: make -f makefiles/host/main.mk -I makefiles/host DEVICE=beta build/u-boot-xlnx.git/u-boot.elf
+      - persist_to_workspace:
+          root: build
+          paths:
+            - u-boot-xlnx.git/u-boot.elf
+
+  build_rootfs:
+    machine: true
+    steps:
+      - checkout
+      - run: sudo apt-get update && sudo apt-get install realpath haveged -y
+      - run: haveged
+      - run: sudo makefiles/docker_make.sh DEVICE=beta build/root.fs/etc/motd
+      - run: sudo tar -cpf build/rootfs.tar build/root.fs
+      - persist_to_workspace:
+          root: build
+          paths:
+            - rootfs.tar
+
+  build_qemu:
+      docker:
+        - image: jatha/axiom-build-container
+      steps:
+        - checkout
+        - run: make -f makefiles/host/main.mk -I makefiles/host DEVICE=beta build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64
+        - persist_to_workspace:
+            root: build
+            paths:
+              - qemu-xlnx.git
+
+  assamble_test_image:
+    docker:
+      - image: jatha/axiom-build-container
+    steps:
+    - checkout
+    - attach_workspace:
+        at: build
+    - run: tar --same-owner -xf build/rootfs.tar
+    - run: ls -l build/linux-xlnx.git/arch/arm/boot/zImage
+    - run: find build/ -type f  -exec touch {} +
+    - run: make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) DEVICE=beta build/axiom.img
+    - run: gzip -c build/axiom.img > axiom-nightly-image.gz 
+    - store_artifacts: 
+        path: axiom-nightly-image.gz
+    - run: make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) DEVICE=beta ci-test
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build_kernel
+      - build_bootfs
+      - build_rootfs
+      - build_qemu
+      - assamble_test_image:
+          requires:
+            - build_kernel
+            - build_bootfs
+            - build_rootfs
+            - build_qemu

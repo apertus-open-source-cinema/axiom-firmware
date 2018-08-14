@@ -5,7 +5,7 @@ include bootfs.mk
 
 # define the layout of the image
 BLKOFFS = (8)
-BLKSIZE = (2*1024*1024*2)
+BLKSIZE = (2*1024*1024*4)
 BLKBOOT = (50*1024*2)
 BLKROOT = ($(BLKSIZE) - $(BLKBOOT) - $(BLKOFFS))
 BLKSEEK = ($(BLKSIZE) - 1)
