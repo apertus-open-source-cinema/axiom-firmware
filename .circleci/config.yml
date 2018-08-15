@@ -61,9 +61,9 @@ jobs:
     - run: ls -l build/linux-xlnx.git/arch/arm/boot/zImage
     - run: find build/ -type f  -exec touch {} +
     - run: make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) DEVICE=beta build/axiom.img
-    - run: gzip -c build/axiom.img > axiom-nightly-image.gz 
+    - run: gzip -c build/axiom.img > axiom-nightly.img.gz
     - store_artifacts: 
-        path: axiom-nightly-image.gz
+        path: axiom-nightly.img.gz
     - run: make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) DEVICE=beta ci-test
 
 workflows:
