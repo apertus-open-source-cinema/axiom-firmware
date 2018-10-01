@@ -52,6 +52,8 @@ private:
     void Process();
 
     void SetupSocket();
+
+    void RetrieveIncomingData(int socket, uint8_t* receivedBuffer, unsigned int bufferSize);
 };
 
 #endif //DAEMON_H

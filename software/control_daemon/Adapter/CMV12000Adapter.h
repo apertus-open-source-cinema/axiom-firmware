@@ -23,8 +23,11 @@ class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
     unsigned int _adcRAnge[5] = {0x3eb, 0x3d5, 0x3d5, 0x3d5, 0x3e9};
 
     // TODO: Evaluate to move to a base class
-    typedef std::function<int(CMV12000Adapter&)> GetterFunc;
-    typedef std::function<bool(CMV12000Adapter&, int)> SetterFunc;
+
+    // string& value, string& message, returns: bool - success or fail
+    typedef std::function<bool(CMV12000Adapter&, std::string&, std::string&)> GetterFunc;
+    // string value, string& message, returns: bool - success or fail
+    typedef std::function<bool(CMV12000Adapter&, std::string, std::string&)> SetterFunc;
 
     struct ParameterHandler
     {
@@ -36,11 +39,11 @@ class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
 
     //ILogger* _logger = new JournalLogger();
 
-    bool SetGain(int gainValue);
+    bool SetGain(std::string gainValue, std::string& message);
 
-    int GetGain();
+    bool GetGain(std::string& gainValue, std::string& message);
 
-    std::string TestMethod(std::string& value);
+    bool TestMethod(std::string& value);
 
     void RegisterAvailableMethods();
 
@@ -53,13 +56,15 @@ public:
 
     void Execute();
 
-    bool SetParameter(std::string parameterName, int parameterValue);
-    int GetParameter(std::string parameterName);
+    //bool SetParameter(std::string parameterName, std::string parameterValue);
+    //std::string GetParameter(std::string parameterName);
 
     std::vector<std::string> GetAvailableMethods()
     {
         return GetRegisteredMethodNames();
     }
+
+    bool HandleParameter(std::string parameterName, std::string& parameterValue, std::string& message);
 };
 
 #endif // CMVADAPTER_H

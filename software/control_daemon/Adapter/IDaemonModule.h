@@ -8,7 +8,7 @@
 
 class IDaemonModule
 {
-    typedef std::function<std::string(std::string&)> CallbackFunc;
+    typedef std::function<bool(std::string&)> CallbackFunc;
 
 protected:
     std::unordered_map<std::string, CallbackFunc> _registeredMethods;
@@ -36,7 +36,7 @@ public:
 
     virtual std::vector<std::string>GetAvailableMethods() = 0;
 
-    std::string ProcessMethod(std::string methodName, std::string value)
+    bool ProcessMethod(std::string methodName, std::string value)
     {
         it = _registeredMethods.find(methodName);
 

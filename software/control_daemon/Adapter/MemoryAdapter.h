@@ -38,9 +38,9 @@ public:
         UNUSED(data);
     }
 
-    void	WriteWord(unsigned reg, uint16_t val)
+    void WriteWord(unsigned reg, uint16_t val)
     {
-		volatile uint32_t* ptr = (uint32_t*)baseAddress;
+        volatile uint32_t* ptr = (uint32_t*)baseAddress;
         ptr[reg] = val;
     }
     
@@ -73,7 +73,7 @@ public:
 
         void* result = nullptr;
         
-        #ifndef ENABLE_MOCK   
+#ifndef ENABLE_MOCK
         result = mmap(reinterpret_cast<void*>(address), size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, address);
         if(result == reinterpret_cast<void*>(-1))
         {
@@ -81,9 +81,9 @@ public:
             message = "Cannot map memory to address: " + std::to_string(address);
             JournalLogger::Log(message);
         }
-		
+
         baseAddress = reinterpret_cast<uintptr_t>(result);
-        #endif
+#endif
 
         return result;
     }

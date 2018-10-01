@@ -2,8 +2,6 @@
 
 CMV12000Adapter::CMV12000Adapter()
 {
-    parameterHandlers.insert(std::make_pair("gain", ParameterHandler{&CMV12000Adapter::GetGain, &CMV12000Adapter::SetGain}));
-
     _memoryAdapter = std::make_shared<MemoryAdapter>();
     // Map the regions at start, to prevent repeating calls of mmap()
     _memoryAdapter->MemoryMap(address, memorySize);
@@ -13,7 +11,8 @@ CMV12000Adapter::CMV12000Adapter()
 
 void CMV12000Adapter::RegisterAvailableMethods()
 {
-    RegisterMethods("set_gain", std::bind(&CMV12000Adapter::TestMethod, this, std::placeholders::_1));
+    //RegisterMethods("set_gain", std::bind(&CMV12000Adapter::SetGain, this, std::placeholders::_1));
+    parameterHandlers.insert(std::make_pair("gain", ParameterHandler{&CMV12000Adapter::GetGain, &CMV12000Adapter::SetGain}));
 }
 
 CMV12000Adapter::~CMV12000Adapter()
@@ -21,12 +20,14 @@ CMV12000Adapter::~CMV12000Adapter()
     _memoryAdapter->MemoryUnmap(address, memorySize);
 }
 
-bool CMV12000Adapter::SetGain(int gainValue)
+bool CMV12000Adapter::SetGain(std::string gainValue, std::string& message)
 {
-    std::string message = "SetGain() | Value: " + std::to_string(gainValue);
+    message = "SetGain() | Value: " + gainValue;
     JournalLogger::Log(message);
+
+    int gainIndex = stoi(gainValue);
     // TODO: Add handling of 3/3 gain value
-    if(gainValue < 0 || gainValue > 4)
+    if(gainIndex < 0 || gainIndex > 4)
     {
         // TODO: Log error for unsuitable parameter
         return false;
@@ -40,8 +41,8 @@ bool CMV12000Adapter::SetGain(int gainValue)
     //cmv_reg 87 2000        # offset 1
     //cmv_reg 88 2000        # offset 2
 
-    SetConfigRegister(115, _gain[gainValue]);
-    SetConfigRegister(116, _adcRAnge[gainValue]);
+    SetConfigRegister(115, _gain[gainIndex]);
+    SetConfigRegister(116, _adcRAnge[gainIndex]);
     SetConfigRegister(100, 1);
     SetConfigRegister(87, 2000);
     SetConfigRegister(88, 2000);
@@ -49,10 +50,10 @@ bool CMV12000Adapter::SetGain(int gainValue)
     return true;
 }
 
-int CMV12000Adapter::GetGain()
+bool CMV12000Adapter::GetGain(std::string& gainValue, std::string& message)
 {
-    
-    return 2;
+    gainValue = 2;
+    return true;
 }
 
 // CAUTION: Deactivated this method for now, as the development/testing is done on PC and this would constantly result in SEGFAULT (or similar)
@@ -61,7 +62,10 @@ void CMV12000Adapter::SetConfigRegister(u_int8_t registerIndex, unsigned int val
     // TODO: Add implementation
     std::string message = "SetConfigRegister() - Register: " + std::to_string(registerIndex) + " | Value: " + std::to_string(value);
     JournalLogger::Log(message);
+
+#ifndef ENABLE_MOCK
     _memoryAdapter->WriteWord(registerIndex, value);
+#endif
 }
 
 void CMV12000Adapter::Execute()
@@ -69,9 +73,10 @@ void CMV12000Adapter::Execute()
     // TODO: Iterate through all added settings and apply them to SPI registers
 }
 
-bool CMV12000Adapter::SetParameter(std::string parameterName, int parameterValue)
+bool CMV12000Adapter::HandleParameter(std::string parameterName, std::string& parameterValue, std::string& message)
 {
-    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName);
+    std::string originalParameterName = parameterName;
+    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName.erase(0, 4));
     if ( got == parameterHandlers.end() )
     {
         JournalLogger::Log("ImageSensor: Handler not found");
@@ -82,30 +87,33 @@ bool CMV12000Adapter::SetParameter(std::string parameterName, int parameterValue
         JournalLogger::Log("ImageSensor: Handler found");
 
         auto handler = got->second;
-        return handler.Setter(*this, parameterValue);
-    } 
-}
+        auto method = (originalParameterName.find("set_") == 0) ? handler.Setter : handler.Getter;
+        method(*this, parameterValue, message);
 
-int CMV12000Adapter::GetParameter(std::string parameterName)
-{
-    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName);
-    if ( got == parameterHandlers.end() )
-    {
-        JournalLogger::Log("ImageSensor: Handler not found");
-        return false;
+        return true;
     }
-    else
-    {
-        JournalLogger::Log("ImageSensor: Handler found");
-
-        auto handler = got->second;
-        return handler.Getter(*this);
-    } 
 }
 
-std::string CMV12000Adapter::TestMethod(std::string& value)
+//std::string CMV12000Adapter::GetParameter(std::string parameterName)
+//{
+//    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName);
+//    if ( got == parameterHandlers.end() )
+//    {
+//        JournalLogger::Log("ImageSensor: Handler not found");
+//        return false;
+//    }
+//    else
+//    {
+//        JournalLogger::Log("ImageSensor: Handler found");
+
+//        auto handler = got->second;
+//        return handler.Getter(*this);
+//    }
+//}
+
+bool CMV12000Adapter::TestMethod(std::string& value)
 {
     int val = std::stoi(value);
     val += 4;
-    return std::to_string(val);
+    return true;
 }

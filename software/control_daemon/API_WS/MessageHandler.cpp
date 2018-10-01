@@ -1,38 +1,42 @@
 #include "MessageHandler.h"
 
+//#include <sys/socket.h>
+#include <errno.h>
+#include <unistd.h>
+
 #include <json/json.hpp>
 using json = nlohmann::json;
 
 namespace ns
 {
-struct JSONSetting
-{
-    std::string sender;
-    std::string module;
-    std::string command;
-    std::string value;
-    std::string timestamp;
-    std::string status;
-};
+    struct JSONSetting
+    {
+        std::string sender;
+        std::string module;
+        std::string command;
+        std::string value;
+        std::string timestamp;
+        std::string status;
+    };
 
-void to_json(json& j, const JSONSetting& setting)
-{
-    j = json{{"sender", setting.sender}, {"module", setting.module}, {"command", setting.command}, {"value", setting.value}, {"timestamp", setting.timestamp}, {"status", setting.status}};
-}
+    void to_json(json& j, const JSONSetting& setting)
+    {
+        j = json{{"sender", setting.sender}, {"module", setting.module}, {"command", setting.command}, {"value", setting.value}, {"timestamp", setting.timestamp}, {"status", setting.status}};
+    }
 
-void from_json(const json& j, JSONSetting& s)
-{
-    s.sender = j.at("sender").get<std::string>();
-    s.module = j.at("module").get<std::string>();
-    s.command = j.at("command").get<std::string>();
-    s.value = j.at("value").get<std::string>();
-    s.timestamp = j.at("timestamp").get<std::string>();
-    s.status = j.at("status").get<std::string>();
-}
+    void from_json(const json& j, JSONSetting& s)
+    {
+        s.sender = j.at("sender").get<std::string>();
+        s.module = j.at("module").get<std::string>();
+        s.command = j.at("command").get<std::string>();
+        s.value = j.at("value").get<std::string>();
+        s.timestamp = j.at("timestamp").get<std::string>();
+        s.status = j.at("status").get<std::string>();
+    }
 };
 
 MessageHandler::MessageHandler() : 
-    socketPath("/tmp/axiom_daemon"),
+    socketPath("/tmp/axiom_daemon.uds"),
     _builder(new flatbuffers::FlatBufferBuilder())
 {
     SetupSocket();
@@ -75,11 +79,25 @@ void MessageHandler::Execute()
 
 void MessageHandler::TransferData(/*void* data, unsigned int length*/)
 {
+    char response[1024];
+
     std::cout << "TransferData() started" << std::endl;
     auto setList = _builder->CreateVector(_settings);
     _builder->Finish(_settings[0]);
     
-    send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
+    //send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
+    socklen_t len = sizeof(struct sockaddr_un);
+    sendto(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0, (struct sockaddr *) &address, len);
+    ssize_t i = recvfrom(clientSocket, &response, 1023, 0, (struct sockaddr *) &address, &len);
+    if(i < 0)
+    {
+        printf("RECV ERROR = %s\n", strerror(errno));
+        close(clientSocket);
+        exit(1);
+        //std::cout << "Response received" << std::enerrnodl;
+    }
+
+
     std::string message = "Data size: " + std::to_string(_builder->GetSize());
     std::cout << message.c_str() << std::endl;
     
@@ -88,14 +106,23 @@ void MessageHandler::TransferData(/*void* data, unsigned int length*/)
     _builder->Clear();
 
     std::cout << "TransferData() completed" << std::endl;
+
+    std::cout << "Response: " << response << std::endl;
 }
 
 void MessageHandler::SetupSocket()
 {
-    clientSocket = socket(PF_LOCAL, SOCK_DGRAM, 0);
+    clientSocket = socket(AF_LOCAL, SOCK_SEQPACKET, 0);
     address.sun_family = AF_LOCAL;
     strcpy(address.sun_path, socketPath.c_str());
-    connect(clientSocket, (struct sockaddr*) &address, sizeof (address));
+
+    int result = connect(clientSocket, (struct sockaddr*) &address, sizeof(address));
+    if(result < 0)
+    {
+        printf("RECV ERROR = %s\n", strerror(errno));
+        close(clientSocket);
+        exit(1);
+    }
 }
 
 void MessageHandler::AddDaemonRequest(std::string sender, std::string module, std::string command, std::string value)

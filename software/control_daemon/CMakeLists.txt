@@ -6,6 +6,11 @@ include(ExternalProject)
 SET(CMAKE_GENERATOR "Unix Makefiles" CACHE INTERNAL "" FORCE)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
+OPTION(ENABLE_MOCK "Enable mock (e.g. memory-related code) implementation for developemnt" OFF) # Disabled by default
+IF(ENABLE_MOCK)
+    ADD_DEFINITIONS(-DENABLE_MOCK=ON)
+ENDIF(ENABLE_MOCK)
+
 # Required by flatbuffers also
 ADD_COMPILE_OPTIONS(-std=c++11)
 
@@ -81,7 +86,7 @@ INCLUDE_DIRECTORIES(${SOURCE_DIR}/src/)
 
 
 # Client example should be build separately for now
-ADD_SUBDIRECTORY(API_WS)
+#ADD_SUBDIRECTORY(API_WS)
 ADD_SUBDIRECTORY(CLI)
 #ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/GoAPI/)
 
@@ -89,7 +94,7 @@ ADD_SUBDIRECTORY(CLI)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/3rdParty/)
 
 # Unit tests 
-ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/UnitTests/)
+#ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/UnitTests/)
 
 # Used for loading generated headers, e.g. #include <Schema/axiom_daemon_generated.h>
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/)
