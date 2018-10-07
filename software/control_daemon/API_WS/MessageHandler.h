@@ -19,6 +19,9 @@ class MessageHandler : public IMessageHandler
     std::string socketPath;
     int clientSocket;
     struct sockaddr_un address;
+
+    // TODO (BAndiT1983): Rework, possibly shrink it, as the data is much smaller currently
+    char response[1024];
     
     // Using separate lists for now as it seems that flatbuffers does not use inheritance for unions
     std::vector<flatbuffers::Offset<DaemonRequest>> _settings;

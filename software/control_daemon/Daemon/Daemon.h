@@ -33,10 +33,20 @@ class Daemon
 
     IAdapter* _memoryAdapter = nullptr;
     IAdapter* _i2cAdapter = nullptr;
-    IDaemonModule* _cmvAdapter = nullptr;
+
+    flatbuffers::FlatBufferBuilder _builder;
 
     std::unordered_map<std::string, std::shared_ptr<IDaemonModule>> _modules;
     std::unordered_map<std::string, std::shared_ptr<IDaemonModule>>::iterator _module_iterator;
+
+    // TODO: Move processing to a thread, so it doesn't block main thread in the future
+    void Process();
+
+    void SetupSocket();
+
+    void RetrieveIncomingData(int socket, uint8_t* receivedBuffer, unsigned int bufferSize);
+
+    void ProcessReceivedData(uint8_t* receivedBuffer);
 
 public:
     Daemon();
@@ -44,16 +54,7 @@ public:
     ~Daemon();
 
     void Setup();
-
-    void Start();
-
-private:
-    // TODO: Move processing to a thread, so it doesn't block main thread in the future
-    void Process();
-
-    void SetupSocket();
-
-    void RetrieveIncomingData(int socket, uint8_t* receivedBuffer, unsigned int bufferSize);
+    void Start();    
 };
 
 #endif //DAEMON_H

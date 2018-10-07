@@ -1,6 +1,8 @@
 #include "CMV12000Adapter.h"
 
-CMV12000Adapter::CMV12000Adapter()
+CMV12000Adapter::CMV12000Adapter() :
+    address(0x60000000),
+    memorySize(0x00020000)
 {
     _memoryAdapter = std::make_shared<MemoryAdapter>();
     // Map the regions at start, to prevent repeating calls of mmap()
@@ -12,7 +14,10 @@ CMV12000Adapter::CMV12000Adapter()
 void CMV12000Adapter::RegisterAvailableMethods()
 {
     //RegisterMethods("set_gain", std::bind(&CMV12000Adapter::SetGain, this, std::placeholders::_1));
-    parameterHandlers.insert(std::make_pair("gain", ParameterHandler{&CMV12000Adapter::GetGain, &CMV12000Adapter::SetGain}));
+
+    // TODO: Add macros to simplify registering of getter and setter, e.g. GETTER_FUNC(CMV12000Adapter, GetGain)
+    AddParameterHandler("gain", std::bind(&CMV12000Adapter::GetGain, this, std::placeholders::_1, std::placeholders::_2),
+                        std::bind(&CMV12000Adapter::SetGain, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 CMV12000Adapter::~CMV12000Adapter()
@@ -30,6 +35,7 @@ bool CMV12000Adapter::SetGain(std::string gainValue, std::string& message)
     if(gainIndex < 0 || gainIndex > 4)
     {
         // TODO: Log error for unsuitable parameter
+        message = "SetGain() | Gain out of range 0 -> 4";
         return false;
     }
 
@@ -71,27 +77,6 @@ void CMV12000Adapter::SetConfigRegister(u_int8_t registerIndex, unsigned int val
 void CMV12000Adapter::Execute()
 {
     // TODO: Iterate through all added settings and apply them to SPI registers
-}
-
-bool CMV12000Adapter::HandleParameter(std::string parameterName, std::string& parameterValue, std::string& message)
-{
-    std::string originalParameterName = parameterName;
-    std::unordered_map<std::string, ParameterHandler>::const_iterator got = parameterHandlers.find (parameterName.erase(0, 4));
-    if ( got == parameterHandlers.end() )
-    {
-        JournalLogger::Log("ImageSensor: Handler not found");
-        return false;
-    }
-    else
-    {
-        JournalLogger::Log("ImageSensor: Handler found");
-
-        auto handler = got->second;
-        auto method = (originalParameterName.find("set_") == 0) ? handler.Setter : handler.Getter;
-        method(*this, parameterValue, message);
-
-        return true;
-    }
 }
 
 //std::string CMV12000Adapter::GetParameter(std::string parameterName)

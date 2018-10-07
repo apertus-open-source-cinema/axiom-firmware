@@ -15,8 +15,9 @@ namespace ns
         std::string module;
         std::string command;
         std::string value;
-        std::string timestamp;
         std::string status;
+        std::string message;
+        std::string timestamp;
     };
 
     void to_json(json& j, const JSONSetting& setting)
@@ -30,8 +31,9 @@ namespace ns
         s.module = j.at("module").get<std::string>();
         s.command = j.at("command").get<std::string>();
         s.value = j.at("value").get<std::string>();
-        s.timestamp = j.at("timestamp").get<std::string>();
         s.status = j.at("status").get<std::string>();
+        s.message = j.at("message").get<std::string>();
+        s.timestamp = j.at("timestamp").get<std::string>();
     }
 };
 
@@ -60,13 +62,6 @@ bool MessageHandler::ProcessMessage(std::string message, std::string& response)
         return false;
     }
     
-    // JSONSetting setting = receivedJSON;
-    
-    std::string receivedData = "";
-    //OutputReceivedData(setting, receivedData);
-    std::cout << "Received data: " << std::endl << receivedData << std::endl;
-
-    //AddDaemonRequest();
     TransferData();
     
     return true;
@@ -79,24 +74,26 @@ void MessageHandler::Execute()
 
 void MessageHandler::TransferData(/*void* data, unsigned int length*/)
 {
-    char response[1024];
 
     std::cout << "TransferData() started" << std::endl;
-    auto setList = _builder->CreateVector(_settings);
+    //auto setList = _builder->CreateVector(_settings);
     _builder->Finish(_settings[0]);
     
     //send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
     socklen_t len = sizeof(struct sockaddr_un);
-    sendto(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0, (struct sockaddr *) &address, len);
-    ssize_t i = recvfrom(clientSocket, &response, 1023, 0, (struct sockaddr *) &address, &len);
+    sendto(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0, reinterpret_cast<struct sockaddr*>(&address), len);
+    ssize_t i = recvfrom(clientSocket, &response, 1023, 0, reinterpret_cast<struct sockaddr*>(&address), &len);
     if(i < 0)
     {
-        printf("RECV ERROR = %s\n", strerror(errno));
+        std::cout << "RECEIVE ERROR: " << strerror(errno) << std::endl;
         close(clientSocket);
         exit(1);
         //std::cout << "Response received" << std::enerrnodl;
     }
 
+
+    auto req= UnPackDaemonRequest(response);//DaemonRequest::UnPack(req, receivedBuffer);
+    std::cout << "RESPONSE MESSAGE: " << req.get()->status << std::endl;
 
     std::string message = "Data size: " + std::to_string(_builder->GetSize());
     std::cout << message.c_str() << std::endl;
@@ -107,7 +104,8 @@ void MessageHandler::TransferData(/*void* data, unsigned int length*/)
 
     std::cout << "TransferData() completed" << std::endl;
 
-    std::cout << "Response: " << response << std::endl;
+    std::cout << "Response (message): " << req.get()->message << std::endl;
+    std::cout << "Response (status): " << req.get()->status << std::endl;
 }
 
 void MessageHandler::SetupSocket()
@@ -119,7 +117,7 @@ void MessageHandler::SetupSocket()
     int result = connect(clientSocket, (struct sockaddr*) &address, sizeof(address));
     if(result < 0)
     {
-        printf("RECV ERROR = %s\n", strerror(errno));
+        std::cout << "CONNECT ERROR: " << strerror(errno) << " [Is daemon running?]" << std::endl;
         close(clientSocket);
         exit(1);
     }
@@ -127,23 +125,12 @@ void MessageHandler::SetupSocket()
 
 void MessageHandler::AddDaemonRequest(std::string sender, std::string module, std::string command, std::string value)
 {
-    std::cout << "AddDaemonRequest()message" << std::endl;
+    DaemonRequestT request;
+    request.sender = sender;
+    request.module_ = module;
+    request.command = command;
+    request.value = value;
 
-    auto senderFB = _builder->CreateString(sender);
-    auto moduleFB = _builder->CreateString(module);
-    auto commandFB = _builder->CreateString(command);
-    auto valueFB = _builder->CreateString(value);
-    auto statusFB = _builder->CreateString("");
-
-    auto request = CreateDaemonRequest(*_builder, senderFB, moduleFB, commandFB, valueFB, statusFB);
-    _settings.push_back(request);
+    auto req = CreateDaemonRequest(*_builder, &request);
+    _settings.push_back(req);
 }
-
-// void MessageHandler::OutputReceivedData(ns::JSONSetting setting, std::string& message)
-// {
-//     message += "Received (JSON): \n" + setting;
-//     message += "JSON ID: " + setting.id + "\n";
-//     message += "JSON Value: " + std::to_string(setting.value) + "\n";
-//     message += "JSON Type: " + setting.type + "\n";
-//     message += "JSON Message: " + setting.message + "\n";
-// }

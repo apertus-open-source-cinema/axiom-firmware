@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
-std::string return_current_time_and_date()
+std::string GetCurrentTimestamp()
 {
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -23,20 +23,18 @@ Daemon::Daemon() :
     _processID = std::to_string(getpid());
     sd_journal_print(LOG_INFO, "Initialization");
 
+    // TODO (BAndiT1983): Rework to map, see image_sensor example below
+    _memoryAdapter = new MemoryAdapter();
+    _i2cAdapter = new I2CAdapter();
+
+    _modules["image_sensor"] = std::make_shared<CMV12000Adapter>();
+
     // TODO (BAndiT1983): Add real reading of revision/version
     //std::string/int?? revision = ReadRevision();
     //std::string revision = "29";
 
-    // TODO (BAndiT1983): Idea: Replace plain initialization with map of adapters, evaluation required
-    _memoryAdapter = new MemoryAdapter();
-    _i2cAdapter = new I2CAdapter();
-    _cmvAdapter = new CMV12000Adapter();
-
-    _modules["image_sensor"] = std::make_shared<CMV12000Adapter>();
-
     // TODO (BAndiT1983): Adjust paths to real ones, this ones are just for testing
     // TODO (BAndiT1983): Add fallback to older revision version if for current one no file is available
-
     //_memoryAdapter->ReadDescriptions("../Descriptions/Memory_rev" + revision + ".json");
     //_i2cAdapter->ReadDescriptions("../Descriptions/I2C_rev" + revision + ".json");
 }
@@ -45,7 +43,6 @@ Daemon::~Daemon()
 {
     delete _memoryAdapter;
     delete _i2cAdapter;
-    delete _cmvAdapter;
 }
 
 void Daemon::Setup()
@@ -64,7 +61,7 @@ void Daemon::Setup()
     else
     {
         sd_journal_print(LOG_INFO, "Number of file descriptors: %d", fdCount);
-        sd_journal_print(LOG_INFO, "legacy socket initialization");
+        sd_journal_print(LOG_INFO, "Legacy socket initialization");
         
         SetupSocket();
     }
@@ -79,65 +76,60 @@ void Daemon::Process()
 {
     uint8_t* receivedBuffer = new uint8_t[1024];
 
-    std::string moduleName;
-
-    int new_socket;
     unsigned int addrlen = sizeof (_socketDesc);
-
-    new_socket = accept (_socketDesc, (struct sockaddr*) &_socketDesc, &addrlen);
-    if(new_socket < 0)
-    {
-        printf("ACCEPT ERROR = %s\n", strerror(errno));
-        close(_socketDesc);
-        exit(1);
-
-    }
 
     while(_running)
     {
-        memset(receivedBuffer, 0, 1024);
+        // TODO (BAndiT1983): Add handling of multiple clients, e.g. each processing in new thread, also check thread-safety of STL vector, to place requests in a queue
+        int new_socket = accept (_socketDesc, reinterpret_cast<struct sockaddr*>(&new_socket), &addrlen);
+        if(new_socket < 0)
+        {
+            printf("ACCEPT ERROR = %s\n", strerror(errno));
+            close(_socketDesc);
+            exit(1);
+        }
 
         // Wait for packets to arrive
         RetrieveIncomingData(new_socket, receivedBuffer, 1024);
 
-        //sd_journal_print(LOG_INFO,  "Received data size: %lu", size);
+        ProcessReceivedData(receivedBuffer);
 
-        auto req = GetDaemonRequest(receivedBuffer);
-
-        moduleName = req->module_()->c_str();
-
-        std::cout << "Sender: " << req->sender()->c_str() << std::endl;
-        std::cout << "Module: " << moduleName << std::endl;
-        std::cout << "Command: " << req->command()->c_str() << std::endl;
-        std::cout << "Value: " << req->value()->c_str() << std::endl;
-
-        _module_iterator = _modules.find(moduleName);
-
-        if (_module_iterator != _modules.end())
+        ssize_t error = send(new_socket, _builder.GetBufferPointer(), _builder.GetSize(), 0);
+        if(error < 0)
         {
-            auto module = _module_iterator->second;
-            sd_journal_print(LOG_INFO, "Received: %s", moduleName.c_str());
-            std::vector<std::string> availableMethods = module->GetAvailableMethods();
-            std::string value = req->value()->c_str();
-            std::string message = "";
-            bool result = ((CMV12000Adapter*)_cmvAdapter)->HandleParameter(req->command()->c_str(), value, message);
-
-            std::cout << "Send response" << std::endl;
-            std::string response = return_current_time_and_date();
-            ssize_t error = send(new_socket, response.c_str(), response.length(), 0);
-            if(error < 0)
-            {
-                std::cout << "Error while sending response." << std::endl;
-                printf("SEND ERROR = %s\n", strerror(errno));
-            }
-
-            int i = 0;
+            std::cout << "Error while sending response." << std::endl;
+            printf("SEND ERROR = %s\n", strerror(errno));
         }
-        else
-        {
-            sd_journal_print(LOG_INFO, "Received: Unknown setting");
-        }
+
+        //close(new_socket);
     }
+}
+
+void Daemon::ProcessReceivedData(uint8_t* receivedBuffer)
+{
+    auto req= UnPackDaemonRequest(receivedBuffer);
+
+    std::string moduleName = req.get()->module_;
+    _module_iterator = _modules.find(moduleName);
+    if (_module_iterator == _modules.end())
+    {
+        sd_journal_print(LOG_INFO, "Received: Unknown setting");
+        return;
+    }
+
+    auto module = _module_iterator->second;
+
+    std::string value = req->value;
+    std::string message = "";
+    bool result = module->HandleParameter(req->command, value, message);
+
+    // TODO (BAndiT1983):Check if assignments are really required, or if it's suitable of just passing reference to req attirbutes
+    req.get()->status = result == true ? "success" : "fail";
+    req.get()->timestamp = GetCurrentTimestamp();
+    req.get()->message = message;
+    req.get()->value = value;
+
+    _builder.Finish(CreateDaemonRequest(_builder, req.get()));
 }
 
 void Daemon::SetupSocket()

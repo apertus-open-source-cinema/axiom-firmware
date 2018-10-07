@@ -1,3 +1,6 @@
+#ifndef JOURNALLOGGER_H
+#define JOURNALLOGGER_H
+
 #include "ILogger.h"
 
 #include <string>
@@ -13,3 +16,5 @@ public:
         sd_journal_print(LOG_INFO, "%s", message.c_str(), (unsigned long)getpid());
     }
 };
+
+#endif //JOURNALLOGGER_H

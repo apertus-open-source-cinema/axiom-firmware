@@ -7,14 +7,12 @@
 #include <utility>
 
 #include "MemoryAdapter.h"
-#include "IImageSensorAdapter.h"
 #include "IDaemonModule.h"
 
-class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
+class CMV12000Adapter : public IDaemonModule
 {
-    //uint32_t address = 0x60000000;
-    uintptr_t address = 0x18000000;
-    uint32_t memorySize = 0x00020000;
+    uint32_t address;
+    uint32_t memorySize;
 
     std::shared_ptr<MemoryAdapter> _memoryAdapter;
     //uint32_t* mappedAddress;
@@ -24,28 +22,12 @@ class CMV12000Adapter : public IDaemonModule//: public IImageSensorAdapter
 
     // TODO: Evaluate to move to a base class
 
-    // string& value, string& message, returns: bool - success or fail
-    typedef std::function<bool(CMV12000Adapter&, std::string&, std::string&)> GetterFunc;
-    // string value, string& message, returns: bool - success or fail
-    typedef std::function<bool(CMV12000Adapter&, std::string, std::string&)> SetterFunc;
-
-    struct ParameterHandler
-    {
-        GetterFunc Getter;
-        SetterFunc Setter;
-    };
-
-    std::unordered_map<std::string, ParameterHandler> parameterHandlers;
-
     //ILogger* _logger = new JournalLogger();
 
     bool SetGain(std::string gainValue, std::string& message);
-
     bool GetGain(std::string& gainValue, std::string& message);
 
     bool TestMethod(std::string& value);
-
-    void RegisterAvailableMethods();
 
 public:
     CMV12000Adapter();
@@ -59,12 +41,8 @@ public:
     //bool SetParameter(std::string parameterName, std::string parameterValue);
     //std::string GetParameter(std::string parameterName);
 
-    std::vector<std::string> GetAvailableMethods()
-    {
-        return GetRegisteredMethodNames();
-    }
-
-    bool HandleParameter(std::string parameterName, std::string& parameterValue, std::string& message);
+protected:
+    void RegisterAvailableMethods();
 };
 
 #endif // CMVADAPTER_H

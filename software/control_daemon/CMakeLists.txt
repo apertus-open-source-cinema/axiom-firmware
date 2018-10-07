@@ -61,7 +61,7 @@ FILE(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/)
 
 # C/C++schema
 ADD_CUSTOM_TARGET(flatc_cpp_gen
-    COMMAND ${FLATC} --scoped-enums --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
+    COMMAND ${FLATC} --scoped-enums --gen-object-api --no-prefix --cpp ${PROJECT_SOURCE_DIR}/Schema/axiom_daemon.fbs
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/Schema/
     COMMENT "Running flatc_cpp_gen action" DEPENDS flatbuffers_project)
 
