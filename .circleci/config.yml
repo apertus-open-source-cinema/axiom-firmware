@@ -50,7 +50,7 @@ jobs:
             paths:
               - qemu-xlnx.git
 
-  assamble_test_image:
+  assemble_test_image:
     docker:
       - image: jatha/axiom-build-container
     steps:
@@ -74,7 +74,7 @@ workflows:
       - build_bootfs
       - build_rootfs
       - build_qemu
-      - assamble_test_image:
+      - assemble_test_image:
           requires:
             - build_kernel
             - build_bootfs
