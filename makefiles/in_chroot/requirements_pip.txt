@@ -1,0 +1,6 @@
+# This file contains a list of all the pip  packages, that are needed inside the image
+# install them via: pip install -r requirements_pip.txt
+
+pypng
+bitarray
+pyserial

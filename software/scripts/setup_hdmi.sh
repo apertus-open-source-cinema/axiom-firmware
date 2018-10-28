@@ -5,7 +5,7 @@ DISP=${1:-1080p60}
 
 . ./hdmi.func
 
-# devmem 0x80010018 32 0x00000
+# devmem 0x80010018 w 0x00000
 
 bash -x ./gen_init.sh $DISP
 ./data_init.sh

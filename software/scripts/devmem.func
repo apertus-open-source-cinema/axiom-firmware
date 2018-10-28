@@ -1,0 +1,5 @@
+#!/bin/sh
+
+function devmem {
+    devmem2 $1 $2 $3 | grep "Value" | awk '{ print $6 }'
+}

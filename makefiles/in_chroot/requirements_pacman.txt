@@ -9,7 +9,9 @@ figlet
 # dependencies of tools
 python
 devmem
+i2c-tools
 cmake
+bc
 
 # convenience tools
 vim
@@ -19,3 +21,6 @@ python-numpy
 
 # webserver
 lighttpd
+
+# python-stuff
+python-numpy

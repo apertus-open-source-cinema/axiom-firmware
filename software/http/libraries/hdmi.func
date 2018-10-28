@@ -1,29 +1,30 @@
 #!/bin/sh
+. ./devmem.func
 
 scn_reg() {
     addr=$(( 0x80000100 + ($1 * 2) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 16 $2 \
-	|| /sbin/devmem $addr 16
+	&& devmem $addr h $2 \
+	|| devmem $addr h
 }
 
 gen_reg() {
     addr=$(( 0x80100100 + ($1 * 4) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 32 $2 \
-	|| /sbin/devmem $addr 32
+	&& devmem $addr w $2 \
+	|| devmem $addr w
 }
 
 mat_reg() {
     addr=$(( 0x80200100 + ($1 * 4) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 32 $2 \
-	|| /sbin/devmem $addr 32
+	&& devmem $addr w $2 \
+	|| devmem $addr w
 }
 
 pll_reg() {
     addr=$(( 0x80400000 + ($1 * 4) ))
     [ $# -gt 1 ] \
-	&& /sbin/devmem $addr 32 $2 \
-	|| /sbin/devmem $addr 32
+	&& devmem $addr w $2 \
+	|| devmem $addr w
 }

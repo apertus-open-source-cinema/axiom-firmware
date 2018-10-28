@@ -26,7 +26,7 @@ ExternalProject_Add(flatbuffers_project
                     GIT_TAG "master"
                     UPDATE_COMMAND ""
                     INSTALL_COMMAND ""
-                    CMAKE_ARGS -DFLATBUFFERS_BUILD_TESTS=OFF -DFLATBUFFERS_INSTALL=OFF -DFLATBUFFERS_BUILD_FLATLIB=OFF -DFLATBUFFERS_BUILD_FLATHASH=OFF)
+                    CMAKE_ARGS -DFLATBUFFERS_BUILD_TESTS=OFF -DCMAKE_CXX_FLAGS=-Wno-ignored-qualifiers -DFLATBUFFERS_INSTALL=OFF -DFLATBUFFERS_BUILD_FLATLIB=OFF -DFLATBUFFERS_BUILD_FLATHASH=OFF)
 
 ExternalProject_Get_Property(flatbuffers_project BINARY_DIR)
 MESSAGE(STATUS "flatbuffers binary dir: ${BINARY_DIR}")

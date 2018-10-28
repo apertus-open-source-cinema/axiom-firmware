@@ -42,8 +42,8 @@ gen_reg 10 $(( CC/16 - 2 ))
 DH=$(( `scn_reg 15` - `scn_reg 14` ))
 RC=$(( DH ))
 
-# devmem 0x80000030 32 0xFEFE5031		# single
-# devmem 0x80000030 32 0x4050FE31		# flip
+# devmem 0x80000030 w 0xFEFE5031		# single
+# devmem 0x80000030 w 0x4050FE31		# flip
 
 scn_reg 24 0xFE31		# switch
 scn_reg 25 0x5050		# switch

@@ -1,5 +1,6 @@
 #!/bin/bash
 cd $(dirname $(realpath $0))    # change into script dir
+. ./cmv.func
 
 
 . ./cmv.func
@@ -10,9 +11,9 @@ cd $(dirname $(realpath $0))    # change into script dir
 
 cat /opt/bitstreams/soc_main.bit >/dev/xdevcfg
 
-devmem 0xF8006210 32 0x00001
-devmem 0xF8006214 32 0x00001
-devmem 0xF8000600 32 0x84
+devmem 0xF8006210 w 0x00001
+devmem 0xF8006214 w 0x00001
+devmem 0xF8000600 w 0x84
 
 ./power_init.sh
 ./power_on.sh
