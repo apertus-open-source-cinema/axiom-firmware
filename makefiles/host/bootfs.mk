@@ -1,30 +1,18 @@
 ARCH = arm
 CROSS = arm-linux-gnueabi-
 
-build/boot.fs/BOOT.bin: build/BOOT-$(DEVICE).bin
-	cp $< $@
-
-build/BOOT-beta.bin: build/linux-xlnx.git/arch/arm/boot/zImage build/u-boot-xlnx.git/u-boot.elf build/devicetree.dtb \
+build/boot.fs/BOOT.bin: build/linux-xlnx.git/arch/arm/boot/zImage build/u-boot-xlnx.git/u-boot.elf build/boot.fs/devicetree.dtb \
 			   build/zynq-mkbootimage.git/mkbootimage \
-			   boot/boot.bif boot/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt
-	mkdir -p build/boot.fs
-	cp boot/boot.bif build/boot.fs/
-	cp boot/fsbl.elf build/boot.fs/
-	cp boot/axiom-$(DEVICE)/uEnv.txt build/boot.fs/
-	cp build/devicetree.dtb build/boot.fs/
+			   boot/boot.bif boot/fsbl.elf boot/uEnv.txt
+	@mkdir -p $(@D)
+	
+	cp boot/uEnv.txt boot/fsbl.elf boot/boot.bif build/u-boot-xlnx.git/u-boot.elf build/linux-xlnx.git/arch/arm/boot/zImage $(@D) 
 
-	cp build/u-boot-xlnx.git/u-boot.elf build/boot.fs/
-	cp build/linux-xlnx.git/arch/arm/boot/zImage build/boot.fs
-
-	(cd build/boot.fs/; ../zynq-mkbootimage.git/mkbootimage boot.bif ../BOOT-beta.bin)
-
-build/BOOT-micro.bin: boot/axiom-micro/BOOT.bin
-	cp $< $@ # this is a dirty hack; TODO: really build to BOOT.bin
-
+	(cd  $(@D); ../zynq-mkbootimage.git/mkbootimage boot.bif BOOT.bin)
+	[ "$(DEVICE)" = "micro" ] && echo "micro" && cp boot/axiom-micro/BOOT.bin $@ # evil hack; TODO: remove
 
 
 ### Kernel
-
 build/linux-xlnx.git: boot/axiom-$(DEVICE)/kernel.config
 	git clone --branch xilinx-v2016.4 --depth 1 https://github.com/Xilinx/linux-xlnx.git build/linux-xlnx.git
 	cp boot/axiom-$(DEVICE)/kernel.config build/linux-xlnx.git/.config
@@ -60,6 +48,6 @@ build/zynq-mkbootimage.git/mkbootimage:
 
 
 
-build/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
-	mkdir -p build/
+build/boot.fs/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
+	@mkdir -p $(@D)
 	dtc -I dts -O dtb -o $@ $<

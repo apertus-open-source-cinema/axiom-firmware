@@ -41,10 +41,6 @@ fi
 # configure ssh
 grep -x 'XPermitRootLogin no' build/root.fs/etc/ssh/sshd_config || echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 grep -x 'X11Forwarding yes' build/root.fs/etc/ssh/sshd_config || echo "X11Forwarding yes" >> /etc/ssh/sshd_config
-
-# adapt fstab to correct device for axiom-micro
-if [[ $(cat /etc/hostname) == 'axiom-micro' ]]; then
-    sed -i 's/mmcblk0/mmcblk1/' /etc/fstab
 fi
 
 # build all the tools

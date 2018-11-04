@@ -49,5 +49,5 @@ build/root.fs: build/ArchLinuxARM-zedboard-latest.tar.gz
 
 
 build/ArchLinuxARM-zedboard-latest.tar.gz:
-	mkdir -p build
+	@mkdir -p $(@D)
 	(cd build; wget -c -nv http://archlinuxarm.org/os/ArchLinuxARM-zedboard-latest.tar.gz)

@@ -1,5 +1,5 @@
 build/qemu-xlnx.git:
-	mkdir -p build
+	@mkdir -p $(@D)
 	git clone --depth 1 https://github.com/Xilinx/qemu.git build/qemu-xlnx.git
 	(cd build/qemu-xlnx.git; git submodule update --init dtc)
 
