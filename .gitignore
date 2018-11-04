@@ -1,15 +1,10 @@
+# user overlay
+overlay/
 
+# build output
 *.user
-
 build/
 
-software/control_daemon/.vscode/*
-software/control_daemon/.vs/
-software/control_daemon/CMakeSettings.json
-software/control_daemon/CppProperties.json
-
+# misc files
 **/.DS_Store
-
 .idea/
-
-resolv.conf

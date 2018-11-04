@@ -5,6 +5,9 @@
 base-devel
 git
 figlet
+wget
+hashdeep
+pacman-contrib
 
 # dependencies of tools
 python
@@ -18,9 +21,13 @@ vim
 nano
 python-pip
 python-numpy
+dtc
 
 # webserver
 lighttpd
 
 # python-stuff
 python-numpy
+
+# control daemon
+clang

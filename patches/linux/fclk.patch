@@ -1,0 +1,219 @@
+--- a/drivers/clk/zynq/fclk.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/clk/zynq/fclk.c	2018-08-21 19:07:06.730655330 +0200
+@@ -0,0 +1,209 @@
++#include <linux/types.h>
++#include <linux/kdev_t.h>
++#include <linux/clk.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/sysctl.h>
++#include <linux/slab.h>
++
++#define DRIVER_NAME "fclk"
++
++static const char * const fclk_name[] = {
++	"fclk0",
++	"fclk1",
++	"fclk2",
++	"fclk3"
++};
++#define NUMFCLKS ARRAY_SIZE(fclk_name)
++
++struct fclk_data {
++    int enabled;
++    struct clk * clk;
++};
++
++struct fclk_drvdata {
++    struct clk * fclk[NUMFCLKS];
++    struct class * class;
++    struct device * fclk_dev[NUMFCLKS];
++};
++
++static ssize_t fclk_enable_show(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	struct fclk_data *pdata = dev_get_drvdata(dev);
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", pdata->enabled);
++}
++
++static ssize_t fclk_enable_store(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	unsigned long enable;
++	int ret;
++	struct fclk_data *pdata = dev_get_drvdata(dev);
++
++	ret = kstrtoul(buf, 0, &enable);
++	if (ret)
++		return -EINVAL;
++
++	enable = !!enable;
++	if (enable == pdata->enabled)
++		return count;
++
++	if (enable)
++		ret = clk_enable(pdata->clk);
++	else
++		clk_disable(pdata->clk);
++
++	if (ret)
++		return ret;
++
++	pdata->enabled = enable;
++	return count;
++}
++
++static DEVICE_ATTR(enable, 0644, fclk_enable_show, fclk_enable_store);
++
++static ssize_t fclk_set_rate_show(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	struct fclk_data *pdata = dev_get_drvdata(dev);
++
++	return scnprintf(buf, PAGE_SIZE, "%lu\n", clk_get_rate(pdata->clk));
++}
++
++static ssize_t fclk_set_rate_store(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	int ret = 0;
++	unsigned long rate;
++	struct fclk_data *pdata = dev_get_drvdata(dev);
++
++	ret = kstrtoul(buf, 0, &rate);
++	if (ret)
++		return -EINVAL;
++
++	rate = clk_round_rate(pdata->clk, rate);
++	ret = clk_set_rate(pdata->clk, rate);
++
++	return ret ? ret : count;
++}
++
++static DEVICE_ATTR(set_rate, 0644, fclk_set_rate_show, fclk_set_rate_store);
++
++static const struct attribute *fclk_attrs[] = {
++	&dev_attr_enable.attr,
++	&dev_attr_set_rate.attr,
++	NULL,
++};
++
++static const struct attribute_group fclk_attr_grp = {
++    .attrs = (struct attribute **) fclk_attrs,
++};
++
++static int fclk_drv_probe(struct platform_device *pdev) {
++    struct fclk_drvdata *drvdata;
++    struct fclk_data * fdata;
++    int i, ret;
++
++    drvdata = devm_kzalloc(&pdev->dev, sizeof(*drvdata), GFP_KERNEL);
++    if(!drvdata) return -ENOMEM;
++
++    platform_set_drvdata(pdev, drvdata);
++
++    drvdata->class = class_create(THIS_MODULE, "fclk");
++    if (IS_ERR(drvdata->class)) {
++        dev_warn(&pdev->dev, "failed to create fclk class\n");
++    }
++
++    for (i = 0; i < NUMFCLKS; i++) {
++        drvdata->fclk[i] = devm_clk_get(&pdev->dev, fclk_name[i]); 
++        if (IS_ERR(drvdata->fclk[i])) {
++            dev_err(&pdev->dev, "clock not found\n");
++            return PTR_ERR(drvdata->fclk[i]);
++        }
++
++        ret = clk_prepare(drvdata->fclk[i]);
++        if (ret) {
++            dev_err(&pdev->dev, "unable to prepare clock\n");
++            return ret;
++        }
++
++        drvdata->fclk_dev[i] = device_create(drvdata->class, &pdev->dev, MKDEV(0, 0), NULL, fclk_name[i]);
++
++        fdata = kzalloc(sizeof(*fdata), GFP_KERNEL);
++        if (!fdata) {
++            ret = -ENOMEM;
++            goto unprepare;
++        }
++
++        fdata->clk = drvdata->fclk[i];
++        dev_set_drvdata(drvdata->fclk_dev[i], fdata);
++
++        if ((ret = sysfs_create_group(&drvdata->fclk_dev[i]->kobj, &fclk_attr_grp))) {
++            dev_warn(&pdev->dev, "failed to create sysfs entries");
++            goto free;
++        }
++
++        continue;
++        
++free:
++        kfree(fdata);
++unprepare:
++        clk_unprepare(drvdata->fclk[i]);
++
++        return ret;
++    }
++
++    return 0;
++}
++
++static int fclk_drv_remove(struct platform_device *pdev)
++{
++	struct fclk_drvdata *drvdata;
++    int i;
++
++	drvdata = platform_get_drvdata(pdev);
++
++	if (!drvdata)
++		return -ENODEV;
++
++    for (i = 0; i < NUMFCLKS; i++) {
++        clk_disable(drvdata->fclk[i]);
++        clk_unprepare(drvdata->fclk[i]);
++        
++        kfree(dev_get_drvdata(drvdata->fclk_dev[i]));
++
++        device_unregister(drvdata->fclk_dev[i]);
++
++        put_device(drvdata->fclk_dev[i]);
++    }
++
++	class_destroy(drvdata->class);
++
++	return 0;
++}
++
++static struct of_device_id fclk_of_match[] = {
++	{ .compatible = "zynq-fclk", },
++	{ /* end of table */}
++};
++MODULE_DEVICE_TABLE(of, fclk_of_match);
++
++
++static struct platform_driver fclk_platform_driver = {
++	.probe = fclk_drv_probe,
++	.remove = fclk_drv_remove,
++	.driver = {
++		.owner = THIS_MODULE,
++		.name = DRIVER_NAME,
++		.of_match_table = fclk_of_match,
++	},
++};
++
++module_platform_driver(fclk_platform_driver);
++
++MODULE_AUTHOR("Robin Heinemann");
++MODULE_DESCRIPTION("Zynq fclk config driver");
++MODULE_LICENSE("GPL");
+--- a/drivers/clk/zynq/Makefile	2018-08-15 04:49:22.552147309 +0200
++++ b/drivers/clk/zynq/Makefile	2018-08-21 17:06:14.495914848 +0200
+@@ -1,3 +1,3 @@
+ # Zynq clock specific Makefile
+ 
+-obj-y	+= clkc.o pll.o
++obj-y	+= clkc.o pll.o fclk.o

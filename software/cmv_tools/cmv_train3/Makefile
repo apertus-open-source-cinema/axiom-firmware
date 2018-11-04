@@ -14,7 +14,7 @@ cmv_train3.o : cmv_train3.c cmv_reg.h
 
 install:
 	$(STRIP) $(TARGETS)
-	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; chmod u+s $$TARGET; done
 
 clean:
 	rm -f *.o
