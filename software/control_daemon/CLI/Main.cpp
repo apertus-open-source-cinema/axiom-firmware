@@ -12,9 +12,10 @@ int main(int argc, char *argv[])
 
     MessageHandler messageHandler;
     messageHandler.AddDaemonRequest("DaemonCLI", argv[1], argv[2], argv[3]);
-    messageHandler.TransferData();
+    std::unique_ptr<DaemonRequestT> req;
+    messageHandler.TransferData(req);
     
-    // TODO (balysche): Show reply
+    // TODO (balysche): Show reply using req
 
     return 0;
 }

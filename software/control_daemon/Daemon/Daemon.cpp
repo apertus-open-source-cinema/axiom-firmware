@@ -77,11 +77,11 @@ void Daemon::Process()
     uint8_t* receivedBuffer = new uint8_t[1024];
 
     unsigned int addrlen = sizeof (_socketDesc);
-
+    int new_socket = accept (_socketDesc, reinterpret_cast<struct sockaddr*>(&new_socket), &addrlen);
     while(_running)
     {
         // TODO (BAndiT1983): Add handling of multiple clients, e.g. each processing in new thread, also check thread-safety of STL vector, to place requests in a queue
-        int new_socket = accept (_socketDesc, reinterpret_cast<struct sockaddr*>(&new_socket), &addrlen);
+
         if(new_socket < 0)
         {
             printf("ACCEPT ERROR = %s\n", strerror(errno));
@@ -110,26 +110,50 @@ void Daemon::ProcessReceivedData(uint8_t* receivedBuffer)
     auto req= UnPackDaemonRequest(receivedBuffer);
 
     std::string moduleName = req.get()->module_;
-    _module_iterator = _modules.find(moduleName);
-    if (_module_iterator == _modules.end())
+
+    if(moduleName == "general")
     {
-        sd_journal_print(LOG_INFO, "Received: Unknown setting");
+        bool result = ProcessGeneralRequest(req);
+
+        req.get()->status = result == true ? "success" : "fail";
+        req.get()->timestamp = GetCurrentTimestamp();
+
+        _builder.Finish(CreateDaemonRequest(_builder, req.get()));
+
+        return;
+    }
+
+    _module_iterator = _modules.find(moduleName);
+     std::string message = "";
+    if (_module_iterator == _modules.end())
+    {        
+        message = "Received: Unknown module";
+        sd_journal_print(LOG_INFO, "Received: Unknown module");
+        req.get()->message = message;
+        _builder.Finish(CreateDaemonRequest(_builder, req.get()));
         return;
     }
 
     auto module = _module_iterator->second;
 
     std::string value = req->value;
-    std::string message = "";
-    bool result = module->HandleParameter(req->command, value, message);
+
+    bool result = module->HandleParameter(req->command, req.get()->value, req.get()->message);
 
     // TODO (BAndiT1983):Check if assignments are really required, or if it's suitable of just passing reference to req attirbutes
     req.get()->status = result == true ? "success" : "fail";
     req.get()->timestamp = GetCurrentTimestamp();
-    req.get()->message = message;
-    req.get()->value = value;
 
     _builder.Finish(CreateDaemonRequest(_builder, req.get()));
+}
+
+bool Daemon::ProcessGeneralRequest(std::unique_ptr<DaemonRequestT> &req)
+{
+    if(req.get()->command == "get_available_methods")
+    {
+        req.get()->message = "Available Methods: NONE";
+        return true;
+    }
 }
 
 void Daemon::SetupSocket()

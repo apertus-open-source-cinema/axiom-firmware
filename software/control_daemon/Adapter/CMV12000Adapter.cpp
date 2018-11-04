@@ -30,6 +30,12 @@ bool CMV12000Adapter::SetGain(std::string gainValue, std::string& message)
     message = "SetGain() | Value: " + gainValue;
     JournalLogger::Log(message);
 
+    if(gainValue.length() > 1)
+    {
+        message = "SetGain() | Gain out of range 0 -> 4";
+        return false;
+    }
+
     int gainIndex = stoi(gainValue);
     // TODO: Add handling of 3/3 gain value
     if(gainIndex < 0 || gainIndex > 4)

@@ -1,5 +1,7 @@
 #include "WSServer.h"
 
+#include <WebSocket.h>
+
 using namespace uWS;
 
 WSServer::WSServer(int port):
@@ -20,7 +22,7 @@ void WSServer::Setup()
 
     auto messageHandler = [&](uWS::WebSocket<uWS::SERVER> *ws, char *message, size_t length, uWS::OpCode opCode) 
     {
-        ws->send("ACK", 3, opCode);
+        //ws->send("ACK", 3, opCode);
         std::string convertedMessage = std::string(message, message + length);
         std::string responseMessage;
         bool status = _messageHandler->ProcessMessage(convertedMessage, responseMessage);

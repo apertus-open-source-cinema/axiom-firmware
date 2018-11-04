@@ -22,7 +22,13 @@ namespace ns
 
     void to_json(json& j, const JSONSetting& setting)
     {
-        j = json{{"sender", setting.sender}, {"module", setting.module}, {"command", setting.command}, {"value", setting.value}, {"timestamp", setting.timestamp}, {"status", setting.status}};
+        j = json{{"sender", setting.sender},
+                 {"module", setting.module},
+                 {"command", setting.command},
+                 {"value", setting.value},
+                 {"status", setting.status},
+                 {"message", setting.message},
+                 {"timestamp", setting.timestamp}};
     }
 
     void from_json(const json& j, JSONSetting& s)
@@ -56,14 +62,24 @@ bool MessageHandler::ProcessMessage(std::string message, std::string& response)
     {
         setting = json::parse(message);
     }
-    catch(std::exception& ex)
+    catch(std::exception&)
     {
         response = "Invalid format";
         return false;
     }
-    
-    TransferData();
-    
+
+    AddDaemonRequest(setting.sender, setting.module, setting.command, setting.value);
+    std::unique_ptr<DaemonRequestT> req;
+    TransferData(req);
+
+    setting.value = req.get()->value;
+    setting.message = req.get()->message;
+    setting.status = req.get()->status;
+    //setting.timestamp = req.get()->timestamp;
+
+    json j = setting;
+    response = j.dump();
+
     return true;
 }
 
@@ -72,15 +88,16 @@ void MessageHandler::Execute()
     // TODO: Implement packet to trigger applying/retrieving of settings sent to daemon
 }
 
-void MessageHandler::TransferData(/*void* data, unsigned int length*/)
-{
+socklen_t len = sizeof(struct sockaddr_un);
 
+void MessageHandler::TransferData(std::unique_ptr<DaemonRequestT>& req)
+{
     std::cout << "TransferData() started" << std::endl;
     //auto setList = _builder->CreateVector(_settings);
     _builder->Finish(_settings[0]);
     
     //send(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0);
-    socklen_t len = sizeof(struct sockaddr_un);
+
     sendto(clientSocket, _builder->GetBufferPointer(), _builder->GetSize(), 0, reinterpret_cast<struct sockaddr*>(&address), len);
     ssize_t i = recvfrom(clientSocket, &response, 1023, 0, reinterpret_cast<struct sockaddr*>(&address), &len);
     if(i < 0)
@@ -92,7 +109,7 @@ void MessageHandler::TransferData(/*void* data, unsigned int length*/)
     }
 
 
-    auto req= UnPackDaemonRequest(response);//DaemonRequest::UnPack(req, receivedBuffer);
+    req = UnPackDaemonRequest(response);//DaemonRequest::UnPack(req, receivedBuffer);
     std::cout << "RESPONSE MESSAGE: " << req.get()->status << std::endl;
 
     std::string message = "Data size: " + std::to_string(_builder->GetSize());
@@ -114,7 +131,7 @@ void MessageHandler::SetupSocket()
     address.sun_family = AF_LOCAL;
     strcpy(address.sun_path, socketPath.c_str());
 
-    int result = connect(clientSocket, (struct sockaddr*) &address, sizeof(address));
+    int result = connect(clientSocket, reinterpret_cast<struct sockaddr*>(&address), sizeof(address));
     if(result < 0)
     {
         std::cout << "CONNECT ERROR: " << strerror(errno) << " [Is daemon running?]" << std::endl;

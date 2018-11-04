@@ -48,6 +48,8 @@ class Daemon
 
     void ProcessReceivedData(uint8_t* receivedBuffer);
 
+    bool ProcessGeneralRequest(std::unique_ptr<DaemonRequestT> &req);
+
 public:
     Daemon();
 

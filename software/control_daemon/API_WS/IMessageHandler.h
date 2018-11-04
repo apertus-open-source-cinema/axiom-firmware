@@ -7,6 +7,7 @@
 class IMessageHandler
 {
 public:
+    IMessageHandler() {}
     virtual ~IMessageHandler() {}
 
     // Process JSON message and return response

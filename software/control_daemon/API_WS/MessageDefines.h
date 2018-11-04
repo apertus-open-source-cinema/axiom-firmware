@@ -1,4 +1,4 @@
-#ifndef MESSAGEDEFINES_H
+    #ifndef MESSAGEDEFINES_H
 #define MESSAGEDEFINES_H
 
 namespace MessageDefines

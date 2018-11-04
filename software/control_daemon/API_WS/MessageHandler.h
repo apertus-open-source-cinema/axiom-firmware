@@ -40,7 +40,7 @@ public:
     void SetupSocket();
 
     void Execute();
-    void TransferData(/*void* data, unsigned int length*/);
+    void TransferData(std::unique_ptr<DaemonRequestT>& req);
 
     void AddDaemonRequest(std::string sender, std::string module, std::string command, std::string value);
 
