@@ -1,0 +1,12 @@
+[Unit]
+Description="Setup the AXIOM Beta image pipeline
+
+[Service]
+Type=oneshot
+ExecStart=/opt/axiom-firmware/software/scripts/kick.sh
+RemainAfterExit=true
+ExecStop=/opt/axiom-firmware/software/scripts/halt.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

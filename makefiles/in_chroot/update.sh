@@ -7,6 +7,8 @@ cd /opt/axiom-firmware
 # first pull changes, if needed
 if [[ ! $@ == *nopull* ]]; then
     git pull
+    exec $0 nopull
+    exit
 else
     echo "to skip pulling code, use axiom-update nopull"
 fi
@@ -15,9 +17,12 @@ fi
 
 # configure pacman & do sysupdate
 sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
+pacman-key --init
+pacman-key --populate archlinuxarm
 pacman --noconfirm --needed -Syu
 
 # install dependencies
+pacman -R pkgconf --noconfirm || true
 pacman --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
 pip install -r makefiles/in_chroot/requirements_pip.txt
 
@@ -68,7 +73,7 @@ systemctl enable lighttpd
 )
 (cd software/control_daemon/build/; make -j -l$(nproc))
 (cd software/control_daemon/build/; ./install_daemon.sh)
-cp -rf software/http/AxiomWebRemote/* /srv/http/
+cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
 
@@ -87,6 +92,9 @@ mkdir -p /opt/bitstreams
 (cd /opt/bitstreams; condLoad cmv_hdmi3_dual_60.bit http://vserver.13thfloor.at/Stuff/AXIOM/BETA/cmv_hdmi3_dual_60.bit)
 (cd /opt/bitstreams; condLoad cmv_hdmi3_dual_30.bit http://vserver.13thfloor.at/Stuff/AXIOM/BETA/cmv_hdmi3_dual_30.bit)
 (cd /opt/bitstreams; ln -sf $(pwd)/cmv_hdmi3_dual_30.bit soc_main.bit)
+
+cp software/scripts/axiom-kick.service /etc/systemd/system/
+systemctl enable axiom-kick
 
 
 # finish the update

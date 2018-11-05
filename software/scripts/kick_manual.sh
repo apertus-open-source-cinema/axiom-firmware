@@ -1,5 +1,6 @@
 #!/bin/bash
 cd $(dirname $(realpath $0))    # change into script dir
+. ./cmv.func
 
 
 . ./cmv.func
@@ -10,9 +11,9 @@ cd $(dirname $(realpath $0))    # change into script dir
 
 cat /opt/bitstreams/soc_main.bit >/dev/xdevcfg
 
-devmem2 0xF8006210 w 0x00001
-devmem2 0xF8006214 w 0x00001
-devmem2 0xF8000600 w 0x84
+devmem 0xF8006210 w 0x00001
+devmem 0xF8006214 w 0x00001
+devmem 0xF8000600 w 0x84
 
 ./power_init.sh
 ./power_on.sh
@@ -45,12 +46,12 @@ fil_reg 15 0x01000100
 # scn_reg  9  2100
 # scn_reg  8  0
 
-./hdmi_init2.sh
+#./hdmi_init2.sh
 ./rf_sel.py A
 ./pic_jtag_pcie.py 0x92 0x92
 
 # ./rest_pll.sh <PLL/5000kHz.pll
 
 ./set_gain.sh 1
-./rcn_darkframe.py darkframe-x1.pgm
+#./rcn_darkframe.py darkframe-x1.pgm
 

@@ -5,7 +5,7 @@ include bootfs.mk
 
 # define the layout of the image
 BLKOFFS = (8)
-BLKSIZE = (2*1024*1024*2)
+BLKSIZE = (2*1024*1024*4)
 BLKBOOT = (50*1024*2)
 BLKROOT = ($(BLKSIZE) - $(BLKBOOT) - $(BLKOFFS))
 BLKSEEK = ($(BLKSIZE) - 1)
@@ -28,7 +28,7 @@ build/axiom.img: build/boot.part build/root.part
 		part4 : start=        0, size=        0, Id=  0
 	EOF
 
-	# assamble the partitions into the full image
+	# assemble the partitions into the full image
 	dd if=build/boot.part of=$@ bs=512 seek=$$(echo "$(BLKOFFS)" | bc) count=$$(echo "$(BLKBOOT)" | bc) conv=sparse,notrunc
 	dd if=build/root.part of=$@ bs=512 seek=$$(echo "$(BLKOFF2)" | bc) count=$$(echo "$(BLKROOT)" | bc) conv=sparse,notrunc
 

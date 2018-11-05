@@ -5,7 +5,7 @@ cd $(dirname $(realpath $0))    # change into script dir
 . ./cmv.func
 . ./hdmi.func
 
-# devmem2 0x80010018 w 0x00000
+# devmem 0x80010018 w 0x00000
 
 #./gen_init.sh 1080p60
 ./gen_init.sh SHOGUN

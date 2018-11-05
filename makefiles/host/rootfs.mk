@@ -11,7 +11,7 @@ build/root.fs/etc/motd: $(shell find software/) $(shell find makefiles/in_chroot
 
 	cat build/root.fs/etc/resolv.conf.bak || readlink -v build/root.fs/etc/resolv.conf > build/root.fs/etc/resolv.conf.bak
 	rm -f build/root.fs/etc/resolv.conf
-	echo "nameserver 185.121.177.177" > build/root.fs/etc/resolv.conf
+	echo "nameserver 8.8.8.8" > build/root.fs/etc/resolv.conf
 	echo "axiom-$(DEVICE)" > build/root.fs/etc/hostname
 	chroot build/root.fs /opt/axiom-firmware/makefiles/in_chroot/update.sh nopull
 	ln -sf $$(cat build/root.fs/etc/resolv.conf.bak) build/root.fs/etc/resolv.conf

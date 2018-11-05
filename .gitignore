@@ -11,3 +11,5 @@ software/control_daemon/CppProperties.json
 **/.DS_Store
 
 .idea/
+
+resolv.conf

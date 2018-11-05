@@ -2,3 +2,5 @@
 # install them via: pip install -r requirements_pip.txt
 
 pypng
+bitarray
+pyserial
