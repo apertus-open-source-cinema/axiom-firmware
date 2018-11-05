@@ -1,9 +1,0 @@
-[Unit]
-Description=Axiom Socket
-PartOf=axiom.service
-
-[Socket]
-ListenDatagram=/tmp/axiom_daemon
-
-[Install]
-WantedBy=sockets.target
