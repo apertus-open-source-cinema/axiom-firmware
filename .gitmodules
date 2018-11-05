@@ -1,3 +1,3 @@
-[submodule "software/control_daemon/3rdParty/uWebSockets"]
-	path = software/control_daemon/3rdParty/uWebSockets
-	url = https://github.com/uNetworking/uWebSockets.git
+[submodule "software/axiom-control-daemon"]
+	path = software/axiom-control-daemon
+	url = https://github.com/apertus-open-source-cinema/axiom-control-daemon.git
