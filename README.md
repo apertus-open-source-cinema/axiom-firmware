@@ -1,5 +1,5 @@
 # AXIOM Beta Software
-[![CircleCI](https://circleci.com/gh/apertus-open-source-cinema/beta-software.svg?style=shield)](https://circleci.com/gh/apertus-open-source-cinema/beta-software)
+[![CircleCI](https://circleci.com/gh/apertus-open-source-cinema/axiom-beta-firmware.svg?style=shield)](https://circleci.com/gh/apertus-open-source-cinema/axiom-beta-firmware)
 [![download nightly image](https://img.shields.io/badge/download-nightly%20image-blue.svg)](INSTALL.md)
 
 
