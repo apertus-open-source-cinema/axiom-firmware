@@ -28,3 +28,11 @@ run:
 * `docker_make.sh chroot-shell` to get a root shell inide a chroot of the camera
 * `docker_make.sh qemu-shell` to boot the camera image inside qemu. currently the network is not working.
 * `docker_make.sh test` to run automated tests of the image inside qemu.
+
+### Rebuild
+To run the build process again you need to first remove the current build files to start with a clean system: 
+```
+makefiles/docker_make.sh clean
+makefiles/docker_make.sh clean-all
+```
+Then again follow the above build instructions.
