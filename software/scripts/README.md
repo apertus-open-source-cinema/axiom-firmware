@@ -29,7 +29,7 @@ For this there are the *icsp_** scripts and the ICSP FPGA bitstream (*icsp.bit*)
 Over UART commands can be sent to the PICs eg. to program the PIC but also to switch between I2C and ICSP.
 The PICs can be turn off (shut down of current) individually throught the GPIO extenders allowing to also program any PIC selectively in case it behaves unexpectedly. Once the PIC is programmed it has an I2C interface containing JTAG microcode i.e. it can output bit sequences that are JTAG compatible - this is utilized by the *pic_jtag_** scripts together with *jtag.py* (JTAG state engine).
 
-The most important icsp_ commands/scripts are:
+The most important icsp_ commands/scripts are (located in bringup/):
 
 **icsp_id.py** (identify pic by reading hdid/config)
 
@@ -47,7 +47,7 @@ The most important icsp_ commands/scripts are:
 ## Programming Lattice FPGAs (2x LCMXO2-1200HC-6TG100C) on the Mainboard
 Each PIC (see above) is connected to one Lattice FPGA. The JTAG interface as described above is required to programm the FPGAs.
 
-The following scripts are relevant in this regard:
+The following scripts are relevant in this regard (located in bringup/):
 
 **pic_jtag_id** read FPGA IDs
 
