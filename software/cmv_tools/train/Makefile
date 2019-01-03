@@ -1,7 +1,7 @@
 
 .SUFFIXES: .c .o .asm .hex .bin
 
-TARGETS = cmv_perf3
+TARGETS = train
 
 all : $(TARGETS)
 
@@ -10,19 +10,15 @@ STRIP = strip
 CFLAGS += -ggdb -Wall -std=gnu99 -O2
 LDFLAGS += -lm
 
-cmv_perf3.o : cmv_perf3.c cmv_reg.h scn_reg.h
-
-cmv_perf3 : cmv_perf3.o
-	$(CC) $(CFLAGS) -lrt -o $@ $^
+train.o : train.c cmv_reg.h
 
 install:
 	$(STRIP) $(TARGETS)
-	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /opt/axiom/bin/axiom-$$TARGET; done
 
 clean:
 	rm -f *.o
 	rm -f $(TARGETS)
 	rm -f *~ *.orig
-
 
 

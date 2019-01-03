@@ -1,6 +1,6 @@
 /**********************************************************************
-**  cmv_perf3.c
-**	Performance Monitor
+**  perf.c
+**	Image Stream/Output Performance Monitor
 **	Version 1.0
 **
 **  Copyright (C) 2014 H.Poetzl

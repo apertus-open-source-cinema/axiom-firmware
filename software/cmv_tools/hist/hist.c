@@ -1,5 +1,5 @@
 /**********************************************************************
-**  cmv_hist3.c
+**  hist.c
 **	Dump Histogramm from Memory Buffer
 **	Version 1.4
 **

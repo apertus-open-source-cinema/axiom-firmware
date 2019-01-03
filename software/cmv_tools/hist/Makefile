@@ -1,7 +1,7 @@
 
 .SUFFIXES: .c .o .asm .hex .bin
 
-TARGETS = cmv_train3 
+TARGETS = hist
 
 all : $(TARGETS)
 
@@ -10,15 +10,15 @@ STRIP = strip
 CFLAGS += -ggdb -Wall -std=gnu99 -O2
 LDFLAGS += -lm
 
-cmv_train3.o : cmv_train3.c cmv_reg.h
+hist.static : hist.o
+	$(CC) $(CFLAGS) -static $(LDFLAGS) -o $@ $^
 
 install:
 	$(STRIP) $(TARGETS)
-	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; done
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /opt/axiom/bin/axiom-$$TARGET; done
 
 clean:
 	rm -f *.o
 	rm -f $(TARGETS)
 	rm -f *~ *.orig
-
 

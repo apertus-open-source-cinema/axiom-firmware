@@ -1,6 +1,6 @@
 /**********************************************************************
-**  cmv_train3.c
-**	Train CMV12K LVDS channels
+**  train.c
+**	Train image sensor (currently CMV12000) LVDS channels
 **	Version 1.3
 **
 **  Copyright (C) 2013-2014 H.Poetzl
