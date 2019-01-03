@@ -17,9 +17,9 @@ Is a script to initialize ("init" as argument) power board GPIOs and display the
 ## Programming PIC (2 microcontrollers: PIC16F1718) on the Mainboard
 Both PICs have their programming interfaces connected via the I2C bus. The programming protocoll is ICSP.
 To set a PIC into programming mode the reset (MCLR# - separate lanes) needs to be triggered followed by a programming sequence. 
-For this there are the icsp_* scripts and the ICSP FPGA bitstream (icsp.bit) running over I2C and UART.
+For this there are the *icsp_** scripts and the ICSP FPGA bitstream (*icsp.bit*) running over I2C and UART.
 Over UART commands can be sent to the PICs eg. to program the PIC but also to switch between I2C and ICSP.
-The PICs can be turn off (shut down of current) individually throught the GPIO extenders allowing to also program any PIC selectively in case it behaves unexpectedly.
+The PICs can be turn off (shut down of current) individually throught the GPIO extenders allowing to also program any PIC selectively in case it behaves unexpectedly. Once the PIC is programmed it has an I2C interface containing JTAG microcode i.e. it can output bit sequences that are JTAG compatible - this is utilized by the *pic_jtag_** scripts together with *jtag.py* (JTAG state engine).
 
 The most important icsp_ commands/scripts are:
 
@@ -36,8 +36,26 @@ The most important icsp_ commands/scripts are:
 **rf_sel.py** to select one of the PICs
 
 
+## Programming Lattice FPGAs (2x LCMXO2-1200HC-6TG100C) on the Mainboard
+Each PIC (see above) is connected to one Lattice FPGA. The JTAG interface as described above is required to programm the FPGAs.
+
+The following scripts are relevant in this regard:
+
+**pic_jtag_id** read FPGA IDs
+
+**pic_jtag_erase** erase FPGAs
+
+**pic_jtag_prog** program FPGAs
+
+**pic_jtag_dump** flash dump of the FPGAs
+
+
 ## *_conf scripts/tools 
 are used to modify memory registers in the FPGA (LUTs, Color Matrix, etc)
+
+
+## pac1720_info.sh
+outputs an overview of power sensing values on all rails 
 
 
 ## Further documentation
