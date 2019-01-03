@@ -70,7 +70,7 @@ The **prep_*** scripts are helpers to create a predefined environment for testin
 ## *_conf scripts/tools 
 are used to modify memory registers in the FPGA (LUTs, Color Matrix, etc)
 
-**svf2*.gawk** is required to convert the Lattice .svf format into two  .cfg and .ufm files (those files are used to pogram a Lattice FPGA - careful as the total programming cycles are limited).
+**svf2*.gawk** is required to convert the Lattice .svf format into two  .cfg and .ufm files (those files are used to pogram a Lattice FPGA - careful as the total programming cycles are limited). A future goal is to have a basic programm in flash only and read the active bitstream into the Lattice SRAM.
 
 
 ## pac1720_info.sh
