@@ -7,4 +7,4 @@ set -e
 docker ps > /dev/null
 
 # do the real exec
-docker run --privileged -v $(pwd):/root/axiom-firmware/ -w /root/axiom-firmware/ -it jatha/axiom-build-container:latest /bin/bash -c "make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) $*"
+docker run --privileged -v $(pwd):/root/axiom-firmware/ -w /root/axiom-firmware/ jatha/axiom-build-container:latest /bin/bash -c "make -f makefiles/host/main.mk -I makefiles/host -j -l $(nproc) $*"
