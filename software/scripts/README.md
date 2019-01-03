@@ -67,6 +67,7 @@ The **prep_*** scripts are helpers to create a predefined environment for testin
 
 **rf_*** scripts are for 'routing fabric' selection
 
+
 ## *_conf scripts/tools 
 are used to modify memory registers in the FPGA (LUTs, Color Matrix, etc)
 
@@ -79,6 +80,11 @@ outputs an overview of power sensing values on all rails
 
 ## zynq_info.sh
 display all kinds of analog values from the Zynq (temperatures, etc.)
+
+
+## rectest.sh 
+is a script used to initialize the experimental 4k raw mode
+
 
 ## Further documentation
 Have a look at the [wiki](https://wiki.apertus.org/index.php/AXIOM_Beta/Manual) for more details for some of the scripts.
