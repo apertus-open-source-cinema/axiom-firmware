@@ -14,6 +14,10 @@ are initialisation scripts
 Is a script to initialize ("init" as argument) power board GPIOs and display their states (no arguments).
 
 
+## mxo2.py
+is a library for Lattice MACH XO2 FPGA related stuff
+
+
 ## *_pll.sh
 are used to reconfigure the FPGA PLL - was an attempt to allow switching between 30/60 Hz video output without changing Zynq bitstream - did not work reliably
 
