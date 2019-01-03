@@ -1,5 +1,5 @@
 /**********************************************************************
-**  cmv_snap3.c
+**  snap.c
 **      Control Image Capture and Data Dump
 **      Version 1.10
 **
@@ -539,7 +539,7 @@ static void cmv_sem_unlock_and_cleanup()
     if (cmv_sem)
     {
         /* note: we must call sem_post exactly once */
-        /* otherwise, we will allow two other cmv_snap3 processes
+        /* otherwise, we will allow two other snap processes
          * running at the same time (and locking up the system)
          */
         sem_post(cmv_sem);
@@ -579,7 +579,7 @@ int     main(int argc, char *argv[])
         int c, err_flag = 0;
 
         /* need exclusive access to image capture hardware */
-        /* useful if we want to start multiple copies of cmv_snap3.c in parallel */
+        /* useful if we want to start multiple copies of snap.c in parallel */
         cmv_sem_init_and_lock();
 
         cmd_name = argv[0];
@@ -864,7 +864,7 @@ regs:
         uint16_t wsel = (status >> 30) & 0x3;
 
         /* save cmv sensor metadata to memory, to be saved at the end of the file */
-        /* useful if multiple copies of cmv_snap3 are pipelined */
+        /* useful if multiple copies of snap are pipelined */
         /* so each image gets the correct metadata */
         get_cmv_metadata();
 

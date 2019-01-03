@@ -1,4 +1,4 @@
-# cmv_snap3
+# snap
 
 This is a tool to capture still images and control related image sensor registers inside the AXIOM Beta.
 
