@@ -86,5 +86,21 @@ display all kinds of analog values from the Zynq (temperatures, etc.)
 is a script used to initialize the experimental 4k raw mode
 
 
+## rgbhsv.sh 
+was a matrix conversion script (outdated?)
+
+
+## ingmar.sh 
+are the cmv12000 register settings as benchmarked by Ingmar
+
+
+## kick.sh and halt.sh 
+are the scripts called by the cmv12k.service (to initialize image sensor communication - LVDS training - and video stream output) on boot up
+
+
+## kick_manual.sh and halt_manual.sh
+are the scripts called by kick.sh and halt.sh
+
+
 ## Further documentation
 Have a look at the [wiki](https://wiki.apertus.org/index.php/AXIOM_Beta/Manual) for more details for some of the scripts.
