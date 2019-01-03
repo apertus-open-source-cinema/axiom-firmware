@@ -4,7 +4,7 @@ cd "${0%/*}"		# change into script dir
 
 . ./i2c.func
 
-for id in 0x20 0x21 0x22 0x23; do
+for id in 0x21; do
     i2c_test $id || continue
 
     i2c_set $id 0x14 0x00

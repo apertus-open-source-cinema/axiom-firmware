@@ -26,9 +26,6 @@ def icsp_m2i(val):
 def icsp_i2m(val):
     return "%04X" % ((val & 0x3FFF) << 1)
 
-def icsp_i2p(val):
-    return "%06X" % ((val & 0x3FFFFF) << 1)
-
 def icsp_cmd(ser, cmd, rlen=None):
     # print("%s" % cmd)
     # FIXME: add CRC
@@ -124,8 +121,4 @@ def icsp_row_erase(ser, delay=2.5):
     
 def icsp_reset_addr(ser):
     icsp_cmd(ser, b'[16!]', 0)
-
-def icsp_load_addr(ser, addr=0):
-    val = icsp_i2p(addr).encode("ASCII")
-    icsp_cmd(ser, b'[1D!%s=%s:]' % (val[2:6], val[0:2]), 0)
 

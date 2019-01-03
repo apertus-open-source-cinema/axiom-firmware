@@ -1,6 +1,4 @@
 #!/bin/bash
-cd $(dirname $(realpath $0))    # change into script dir
-
 
 . ./i2c0.func 
 

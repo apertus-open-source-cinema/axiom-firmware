@@ -6,10 +6,6 @@
 
 cat icsp.bit >/dev/xdevcfg
 
-sleep 1
+# ./icsp_off.py /dev/ttyPS1
 
-./rf_sel.py B
-./pic_jtag_cso.py 0xF
-./rf_sel.py A
-./pic_jtag_pcie.py 0x01 0x92
-
+# i2cdetect -y -a -r 2
