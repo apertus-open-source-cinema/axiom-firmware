@@ -49,14 +49,36 @@ The following scripts are relevant in this regard:
 
 **pic_jtag_dump** flash dump of the FPGAs
 
+**pic_jtag_feat** program FPGA feature bits - dangerous!
+
+**pic_jtag_extest** FPGA pin matrix test
+
+**pic_jtag_shld/pcie/cso** scripts are extest GPIO for the corresponding lanes
+
+**power_init/on/off** turn the power board GPIOs on/off or initialize them
+
+The **prep_*** scripts are helpers to create a predefined environment for testing:
+
+**prep_icsp.sh** prepares everything for ICPS related tasks
+
+**prep_extest.sh** prepares everything for FPGA extest matrix tests related tasks 
+
+**prep_chkpin.sh** prepares everything for I/O loopback tests
+
+**rf_*** scripts are for 'routing fabric' selection
 
 ## *_conf scripts/tools 
 are used to modify memory registers in the FPGA (LUTs, Color Matrix, etc)
+
+**svf2*.gawk** is required to convert the Lattice .svf format into two  .cfg and .ufm files (those files are used to pogram a Lattice FPGA - careful as the total programming cycles are limited).
 
 
 ## pac1720_info.sh
 outputs an overview of power sensing values on all rails 
 
+
+## zynq_info.sh
+display all kinds of analog values from the Zynq (temperatures, etc.)
 
 ## Further documentation
 Have a look at the [wiki](https://wiki.apertus.org/index.php/AXIOM_Beta/Manual) for more details for some of the scripts.
