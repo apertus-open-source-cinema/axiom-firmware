@@ -65,6 +65,8 @@ The following scripts are relevant in this regard:
 
 **power_init/on/off** turn the power board GPIOs on/off or initialize them
 
+**power_sensor_off.sh** and **power_vio.sh** deal with specific power related GPIO
+
 The **prep_*** scripts are helpers to create a predefined environment for testing:
 
 **prep_icsp.sh** prepares everything for ICPS related tasks
