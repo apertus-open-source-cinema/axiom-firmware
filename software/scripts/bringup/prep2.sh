@@ -1,8 +1,8 @@
 #!/bin/bash
 
-./power_init.sh
-./power_on.sh
-./fclk_init.sh
+./../power_init.sh
+./../power_on.sh
+./../fclk_init.sh
 
 cat icsp.bit >/dev/xdevcfg
 

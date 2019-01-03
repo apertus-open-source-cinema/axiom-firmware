@@ -2,9 +2,9 @@
 cd $(dirname $(realpath $0))    # change into script dir
 
 
-./power_init.sh
-./power_on.sh
-./fclk_init.sh
+./../power_init.sh
+./../power_on.sh
+./../fclk_init.sh
 
 cat icsp.bit >/dev/xdevcfg
 

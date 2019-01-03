@@ -1,9 +1,9 @@
 #!/bin/bash
 
-./power_init.sh
-./power_on.sh
-./fclk_init.sh
-./gpio.py init
+./../power_init.sh
+./../power_on.sh
+./../fclk_init.sh
+./../gpio.py init
 
 cat icsp.bit >/dev/xdevcfg
 sleep 0.2

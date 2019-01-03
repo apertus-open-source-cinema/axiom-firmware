@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./power_init.sh
+./../power_init.sh
 ./icsp_off.py /dev/ttyPS1
 sleep 1
 ./power_on.sh
