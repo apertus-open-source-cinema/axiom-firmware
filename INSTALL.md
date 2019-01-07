@@ -7,7 +7,5 @@ If you want to experiment with the latest changes and dont mind, when the camera
 
 To try this anyway, you
 1. Have to [download etcher](https://etcher.io/) & install it
-2. [Go to circleci](https://circleci.com/gh/apertus-open-source-cinema/beta-software) & log in
-    1. click on the last successful build job of type `assemble_test_image`
-    2. select the `artifacts` tab and download the `axiom-nightly.img.gz`
-3. Select the `axiom-nightly.img.gz` file of the image in etcher and flash it on a microsd card with at least 8GB.
+2. go to the [github releases page](https://github.com/apertus-open-source-cinema/axiom-beta-firmware/releases) and dowload the latest image (it might not be the first in the list).
+2. Select the `axiom-nightly.img.gz` file of the image in etcher and flash it on a microsd card with at least 8GB.

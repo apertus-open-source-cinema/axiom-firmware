@@ -1,7 +1,7 @@
 docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:
-    TOKEN: ENCRYPTED[4b9a30c4a8e33fb0bad665362e5df532a227ff3acb36827d9f3618dea229d21a4726957e7a42067418a13a3cbf47af81]
+    TOKEN: ENCRYPTED[475dccbf786af8c4c8bcedfdf7c507e9686192569f3be0c1d4dff35c6b6b1e36fedc29d489c75a75af515c84bd3c34ac]
     matrix:
       DEVICE: beta
       DEVICE: micro
@@ -18,9 +18,9 @@ docker_builder:
       wget https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
       tar -xf linux-amd64-github-release.tar.bz2
       # create the release and upload the compressed image
-      ./bin/linux/amd64/github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Nightly $(git describe --always --abbrev=8)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \
+      ./bin/linux/amd64/github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Unstable Development Snapshot $(github-release info -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME | grep "Build on" | wc -l)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \
       A development snapshot of the axiom firmware.
-      Build on $(date).
+      Build on $(date) for commit $(git describe --always --abbrev=8).
 
       \`\`\`diff
       - Warning! The nightly images are not veryfied by a human and might damage your camera permanently. 
