@@ -2,17 +2,17 @@
 puts stdout "starting qemu!\n\n"
 set timeout 300
 
-spawn build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb build/devicetree.dtb -kernel build/u-boot-xlnx.git/u-boot.elf -drive if=sd,format=raw,index=$env(SD_INDEX),file=build/axiom.img -boot mode=5
+spawn $env(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb build/boot.fs/devicetree.dtb -kernel build/boot.fs/u-boot.elf -drive if=sd,format=raw,index=0,file=build/axiom.img -boot mode=5
 expect {
     "login:" { }
     timeout { puts "\ntimed out\n"; exit 1 }
 }
-send "apertus\r"
+send "operator\n"
 expect {
     "Password: " { }
     timeout { puts "\ntimed out\n"; exit 1 }
 }
-send "axiom\r"
+send "axiom\n"
 expect {
     "$ " { }
     timeout { puts "\ntimed out\n"; exit 1 }

@@ -1,65 +1,82 @@
 ARCH = arm
 CROSS = arm-linux-gnueabi-
 
-build/boot.fs/BOOT.bin: build/BOOT-$(DEVICE).bin
-	cp $< $@
+LINUX_VERSION = v4.17.19
+LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
 
-build/BOOT-beta.bin: build/linux-xlnx.git/arch/arm/boot/zImage build/u-boot-xlnx.git/u-boot.elf build/devicetree.dtb \
+UBOOT_VERSION = 714418bebb8b4343b1f06fd46a31295f59edb56f
+UBOOT_SOURCE = build/u-boot-xlnx-$(UBOOT_VERSION).git
+
+build/boot.fs/BOOT.bin: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.elf build/boot.fs/devicetree.dtb \
 			   build/zynq-mkbootimage.git/mkbootimage \
-			   boot/boot.bif boot/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt
-	mkdir -p build/boot.fs
-	cp boot/boot.bif build/boot.fs/
-	cp boot/fsbl.elf build/boot.fs/
-	cp boot/axiom-$(DEVICE)/uEnv.txt build/boot.fs/
-	cp build/devicetree.dtb build/boot.fs/
+			   boot/boot.bif boot/axiom-$(DEVICE)/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt
+	mkdir -p $(@D)
 
-	cp build/u-boot-xlnx.git/u-boot.elf build/boot.fs/
-	cp build/linux-xlnx.git/arch/arm/boot/zImage build/boot.fs
+ifeq ($(DEVICE),micro)
+	cp -a boot/axiom-micro/bitstream.bit build/boot.fs/bitstream.bit
+endif
 
-	(cd build/boot.fs/; ../zynq-mkbootimage.git/mkbootimage boot.bif ../BOOT-beta.bin)
+	cp boot/axiom-$(DEVICE)/uEnv.txt boot/axiom-$(DEVICE)/fsbl.elf boot/boot.bif $(UBOOT_SOURCE)/u-boot.elf $(LINUX_SOURCE)/arch/arm/boot/zImage $(@D)
 
-build/BOOT-micro.bin: boot/axiom-micro/BOOT.bin
-	cp $< $@ # this is a dirty hack; TODO: really build to BOOT.bin
-
+	(cd $(@D) && ../zynq-mkbootimage.git/mkbootimage boot.bif BOOT.bin)
 
 
 ### Kernel
+KERNEL_MAKE = $(MAKE) -C $(LINUX_SOURCE) CROSS_COMPILE=$(CROSS) ARCH=$(ARCH)
+LINUX_PATCHES = $(wildcard patches/linux/*.patch)
 
-build/linux-xlnx.git: boot/axiom-$(DEVICE)/kernel.config
-	git clone --branch xilinx-v2016.4 --depth 1 https://github.com/Xilinx/linux-xlnx.git build/linux-xlnx.git
-	cp boot/axiom-$(DEVICE)/kernel.config build/linux-xlnx.git/.config
+$(LINUX_SOURCE): $(LINUX_PATCHES)
+	@mkdir -p $(@D)
+	rm -rf $@
+	git clone --branch $(LINUX_VERSION) --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git $@
 
-KERNEL_MAKE = make CROSS_COMPILE=$(CROSS) ARCH=$(ARCH)
-build/linux-xlnx.git/arch/arm/boot/zImage: build/linux-xlnx.git build/devicetree.dtb
-	(cd build/linux-xlnx.git; yes "" | $(KERNEL_MAKE) oldconfig || true)
-	(cd build/linux-xlnx.git; $(KERNEL_MAKE) -j -l $$(nproc) )
-	(cd build/linux-xlnx.git; $(KERNEL_MAKE) ../../build/devicetree.dtb )
-	(cd build/linux-xlnx.git; $(KERNEL_MAKE) -j -l $$(nproc) modules)
+	./makefiles/host/patch_wrapper.sh $@ $(LINUX_PATCHES) 
 
+$(LINUX_SOURCE)/arch/arm/boot/zImage: boot/kernel.config $(LINUX_SOURCE)
+	# first configure the kernel
+	cp $< $(LINUX_SOURCE)/.config
+	+$(KERNEL_MAKE) olddefconfig
+
+	# then build the kernel
+	+$(KERNEL_MAKE)
+	+$(KERNEL_MAKE) modules
+
+	# finally install the kernel modules
 	mkdir -p build/kernel_modules.fs
-	(cd build/linux-xlnx.git; $(KERNEL_MAKE) INSTALL_MOD_PATH=../kernel_modules.fs modules_install )
+	+$(KERNEL_MAKE) INSTALL_MOD_PATH=../kernel_modules.fs modules_install
+
 	touch $@
 
+# u-boot
+# TODO use mainline uboot -> profit (use `--depth 1` again)
+U_BOOT_MAKE = $(MAKE) -C $(UBOOT_SOURCE) CROSS_COMPILE=$(CROSS) ARCH=$(ARCH)
+$(UBOOT_SOURCE): boot/axiom-micro/devicetree_uboot.dts boot/axiom-beta/devicetree_uboot.dts
+	@mkdir -p $(@D)
+	git clone https://github.com/Xilinx/u-boot-xlnx $@
+	(cd $@ && git reset --hard $(UBOOT_VERSION))
+	cp boot/axiom-micro/devicetree_uboot.dts $(UBOOT_SOURCE)/arch/arm/dts/zynq-zturn-myir.dts
+	cp boot/axiom-beta/devicetree_uboot.dts $(UBOOT_SOURCE)/arch/arm/dts/zynq-microzed.dts
 
-### u-boot
+$(UBOOT_SOURCE)/u-boot.elf: boot/axiom-$(DEVICE)/u-boot.config $(UBOOT_SOURCE)
+	# configure u-boot
+	cp $< $(UBOOT_SOURCE)/.config
+	+$(U_BOOT_MAKE) olddefconfig
 
-build/u-boot-xlnx.git: boot/axiom-$(DEVICE)/u-boot.config
-	git clone --depth 1 https://github.com/Xilinx/u-boot-xlnx $@
-	cp boot/axiom-$(DEVICE)/u-boot.config build/u-boot-xlnx.git/.config
+	# finally make it
+	+$(U_BOOT_MAKE) u-boot.elf
+	touch $@
 
-U_BOOT_MAKE = make CROSS_COMPILE=$(CROSS) ARCH=$(ARCH)
-build/u-boot-xlnx.git/u-boot.elf: build/u-boot-xlnx.git
-	(cd build/u-boot-xlnx.git; $(U_BOOT_MAKE) olddefconfig)
-	(cd build/u-boot-xlnx.git; $(U_BOOT_MAKE) u-boot.elf)
+build/boot.fs/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
+	@mkdir -p $(@D)
+	dtc -I dts -O dtb -o $@ $<
 
+build/boot.fs/devicetree.dts: boot/axiom-$(DEVICE)/devicetree.dts
+	@mkdir -p $(@D)
+	cp $< $@
 
+# tool for generating BOOT.bin
 build/zynq-mkbootimage.git/mkbootimage:
 	git clone --depth 1 https://github.com/antmicro/zynq-mkbootimage build/zynq-mkbootimage.git
+	+$(MAKE) -C $(@D) 
 
-	(cd build/zynq-mkbootimage.git; make -j -l $$(nproc))
-
-
-
-build/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
-	mkdir -p build/
-	dtc -I dts -O dtb -o $@ $<
+	touch $@

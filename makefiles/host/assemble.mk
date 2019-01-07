@@ -1,48 +1,46 @@
 # This makefile creates images for the Apertus AXIOM cameras
 
 include rootfs.mk
-include bootfs.mk
+
+SHELL := /bin/bash
 
 # define the layout of the image
-BLKOFFS = (8)
-BLKSIZE = (2*1024*1024*4)
-BLKBOOT = (50*1024*2)
-BLKROOT = ($(BLKSIZE) - $(BLKBOOT) - $(BLKOFFS))
-BLKSEEK = ($(BLKSIZE) - 1)
-BLKOFF2 = ($(BLKOFFS) + $(BLKBOOT))
+IMGSIZE = 2248MiB
+BOOTSIZE = 50MiB
+ROOTSIZE = 2048MiB
+LABEL_ID = f37043ff
+
+define SFDISK_SCRIPT
+label: dos
+label-id: $(LABEL_ID)
+part1 : size= $(BOOTSIZE), Id=  c 
+part2 : Id= 83
+endef
+export SFDISK_SCRIPT
 
 
-.ONESHELL:
 build/axiom.img: build/boot.part build/root.part
-	echo "building image for AXIOM $(DEVICE)"
+	echo "building image for AXIOM $(DEVICE) with $(nproc) cores (not nesscessarily jobs)"
 
 	# create the image file
 	rm -rf $@
-	dd if=/dev/zero of=$@ bs=512 seek=$$(echo "$(BLKSEEK)" | bc) count=1
+	fallocate -l $(IMGSIZE) $@
 
 	# write the partition table
-	sfdisk -uS $@ << EOF
-		part1 : start= $$(echo "$(BLKOFFS)" | bc), size= $$(echo "$(BLKBOOT)" | bc), Id=  c
-		part2 : start= $$(echo "$(BLKOFF2)" | bc), size= $$(echo "$(BLKROOT)" | bc), Id= 83
-		part3 : start=        0, size=        0, Id=  0
-		part4 : start=        0, size=        0, Id=  0
-	EOF
+	echo "$$SFDISK_SCRIPT"
+	sfdisk $@ <<<"$$SFDISK_SCRIPT"
 
 	# assemble the partitions into the full image
-	dd if=build/boot.part of=$@ bs=512 seek=$$(echo "$(BLKOFFS)" | bc) count=$$(echo "$(BLKBOOT)" | bc) conv=sparse,notrunc
-	dd if=build/root.part of=$@ bs=512 seek=$$(echo "$(BLKOFF2)" | bc) count=$$(echo "$(BLKROOT)" | bc) conv=sparse,notrunc
-
+	dd if=build/boot.part of=$@ bs=512 seek=$$(sfdisk -l build/axiom.img -o start -q | sed -n "2p" | sed 's/ //g') conv=sparse,notrunc
+	dd if=build/root.part of=$@ bs=512 seek=$$(sfdisk -l build/axiom.img -o start -q | sed -n "3p" | sed 's/ //g') conv=sparse,notrunc
 
 build/boot.part: build/boot.fs/BOOT.bin
 	rm -f build/boot.part
-	dd if=/dev/zero of=build/boot.part bs=512 seek=$$(echo "$(BLKBOOT) - 1" | bc) count=1
-	mkfs.vfat -n "BOOT" -F 32 build/boot.part $$(echo "$(BLKBOOT) / 2" | bc)
+	fallocate -l $(BOOTSIZE) build/boot.part
+	mkfs.vfat -n "BOOT" -F 32 build/boot.part
 	mcopy -i build/boot.part build/boot.fs/* ::
 
-build/root.part: build/root.fs/etc/motd build/linux-xlnx.git/arch/arm/boot/zImage
-	rsync -aK build/kernel_modules.fs/ build/root.fs
+build/root.part: build/root.fs/.install_stamp
 	rm -f build/root.part
-	echo $$(echo "$(BLKROOT) - 1" | bc)
-	echo $$(echo "$(BLKROOT) / 2" | bc)
-	dd if=/dev/zero of=build/root.part bs=512 seek=$$(echo "$(BLKROOT) - 1" | bc) count=1
-	mkfs.ext4 -d build/root.fs build/root.part $$(echo "$(BLKROOT) / 2" | bc)
+	fallocate -l $(ROOTSIZE) build/root.part
+	mkfs.ext4 -d build/root.fs build/root.part

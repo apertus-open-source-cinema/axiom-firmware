@@ -15,6 +15,7 @@ hist.static : hist.o
 
 install:
 	$(STRIP) $(TARGETS)
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; chmod u+s $$TARGET; done
 	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /opt/axiom/bin/axiom-$$TARGET; done
 
 clean:

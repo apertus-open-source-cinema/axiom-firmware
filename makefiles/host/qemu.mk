@@ -1,8 +1,14 @@
-build/qemu-xlnx.git:
-	mkdir -p build
-	git clone --depth 1 https://github.com/Xilinx/qemu.git build/qemu-xlnx.git
-	(cd build/qemu-xlnx.git; git submodule update --init dtc)
+QEMU_VERSION = xilinx-v2018.3
+QEMU_SOURCE = build/qemu-$(QEMU_VERSION).git
 
-build/qemu-xlnx.git/aarch64-softmmu/qemu-system-aarch64: build/qemu-xlnx.git
-	(cd build/qemu-xlnx.git; ./configure --target-list="aarch64-softmmu" --enable-fdt --disable-kvm --disable-xen)
-	(cd build/qemu-xlnx.git; make -j -l $$(nproc))
+QEMU_MAKE = $(MAKE) -C $(QEMU_SOURCE)
+
+$(QEMU_SOURCE):
+	@mkdir -p $(@D)
+	git clone --branch $(QEMU_VERSION) --depth 1 https://github.com/Xilinx/qemu.git $@
+	(cd $(QEMU_SOURCE) && git submodule update --init dtc)
+
+$(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64: $(QEMU_SOURCE)
+	# disable werror due to upstream bugs
+	(cd $(QEMU_SOURCE) && ./configure --target-list="aarch64-softmmu" --enable-fdt --disable-kvm --disable-xen --disable-werror)
+	+$(QEMU_MAKE)
