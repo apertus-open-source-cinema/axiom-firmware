@@ -43,11 +43,15 @@ grep -x 'X11Forwarding yes' build/root.fs/etc/ssh/sshd_config || echo "X11Forwar
 function cdmake () {
     [[ -d "$1" ]] && make -C "$1" && make -C "$1" install
 }
+
+mkdir -p /opt/axiom/bin/
 for dir in $(ls -d software/cmv_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
-for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script | sed "s/_/-/g"); done
-for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/local/bin/axiom-$(basename $script | sed "s/_/-/g"); chmod u+s $script; done
+echo 'PATH=$PATH:/opt/axiom/bin' >> /etc/profile
+
+for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /opt/axiom/bin/axiom-$(basename $script | sed "s/_/-/g"); done
+for script in software/scripts/*.py; do ln -sf $(pwd)/$script /opt/axiom/bin/axiom-$(basename $script | sed "s/_/-/g"); done
 
 
 # build and install the control daemon
