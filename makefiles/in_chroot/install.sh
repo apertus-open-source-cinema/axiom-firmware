@@ -44,25 +44,24 @@ function cdmake () {
     [[ -d "$1" ]] && make -C "$1" && make -C "$1" install
 }
 
-mkdir -p /opt/axiom/bin/
-echo 'PATH=$PATH:/opt/axiom/bin' >> /etc/profile
+mkdir -p /usr/axiom/bin/
+echo 'PATH=$PATH:/usr/axiom/bin' >> /etc/profile
 for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
-mkdir -p /opt/axiom/script/
-echo 'PATH=$PATH:/opt/axiom/script' >> /etc/profile
-for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /opt/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
-for script in software/scripts/*.py; do ln -sf $(pwd)/$script /opt/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
+mkdir -p /usr/axiom/script/
+echo 'PATH=$PATH:/usr/axiom/script' >> /etc/profile
+for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
+for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 
 
 # build and install the control daemon
 (cd software/axiom-control-daemon/
     [ -d build ] || mkdir -p build
     cd build
-    [ ../CMakeLists.txt -nt Makefile ] && cmake .. &&
-    make -j $(nproc) &&
+    cmake ..
+    make -j $(nproc)
     ./install_daemon.sh
-    true
 )
 
 # configure lighttpd

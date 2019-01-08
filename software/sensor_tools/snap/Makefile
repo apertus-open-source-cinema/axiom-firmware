@@ -32,8 +32,7 @@ lut_conf.static : lut_conf.o
 
 install:
 	$(STRIP) $(TARGETS)
-	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/local/bin/axiom-$$TARGET; chmod u+s $$TARGET; done
-	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /opt/axiom/bin/axiom-$$TARGET; done
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/axiom/bin/axiom-$$TARGET; chmod u+s $$TARGET; done
 
 clean:
 	rm -f *.o
