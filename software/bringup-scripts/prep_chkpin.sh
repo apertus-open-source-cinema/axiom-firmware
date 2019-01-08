@@ -5,7 +5,7 @@
 ./../fclk_init.sh
 ./../gpio.py init
 
-cat check_pin.bit >/dev/xdevcfg
+echo check_spkfan.bit > /sys/class/fpga_manager/fpga0/firmware
 sleep 0.2
 
 ./rf_disable.sh

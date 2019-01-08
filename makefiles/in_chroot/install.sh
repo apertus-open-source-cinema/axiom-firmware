@@ -75,11 +75,12 @@ cdmake software/misc-tools-utilities/raw2dng
 # download prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel 
 mkdir -p /opt/bitstreams/
-BITSTREAMS="cmv_hdmi3_dual_60.bit cmv_hdmi3_dual_30.bit"
+BITSTREAMS="BETA/cmv_hdmi3_dual_60.bit BETA/cmv_hdmi3_dual_30.bit BETA/ICSP/icsp.bit check_pin10.bit check_pin20.bit"
 for bit in $BITSTREAMS; do
-    (cd /opt/bitstreams && wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/$bit -O $bit)
-    ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$bit /opt/bitstreams/"${bit%.bit}.bin"
-    ln -sf /opt/bitstreams/"${bit%.bit}.bin" /lib/firmware
+    NAME=$(basename $bit)
+    (cd /opt/bitstreams && wget http://vserver.13thfloor.at/Stuff/AXIOM/$bit -O $NAME)
+    ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$NAME /opt/bitstreams/"$(basename ${NAME%.bit}).bin"
+    ln -sf /opt/bitstreams/"${NAME%.bit}.bin" /lib/firmware
 done
 ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 

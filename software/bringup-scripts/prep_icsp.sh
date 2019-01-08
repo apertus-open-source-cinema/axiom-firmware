@@ -12,7 +12,7 @@ i2c0_bit_clr 0x22 0x15 7
 sleep 0.1
 i2c0_bit_set 0x22 0x15 7
 
-cat icsp.bit >/dev/xdevcfg
+echo icsp.bin > /sys/class/fpga_manager/fpga0/firmware
 
 echo "Z<" >/dev/ttyPS1
 

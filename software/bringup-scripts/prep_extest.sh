@@ -5,7 +5,7 @@
 ./../fclk_init.sh
 ./../gpio.py init
 
-cat icsp.bit >/dev/xdevcfg
+echo icsp.bin > /sys/class/fpga_manager/fpga0/firmware
 sleep 0.2
 
 ./icsp_high.py /dev/ttyPS1
