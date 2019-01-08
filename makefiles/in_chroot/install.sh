@@ -73,7 +73,8 @@ cdmake software/misc-tools-utilities/raw2dng
 
 # download prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel 
-mkdir -p /opt/bitstreams
+mkdir -p /opt/bitstreams/
+mkdir -p /lib/firmware/
 BITSTREAMS="cmv_hdmi3_dual_60.bit cmv_hdmi3_dual_30.bit"
 for bit in $BITSTREAMS; do
     (cd /opt/bitstreams && wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/$bit -O $bit)
