@@ -1,0 +1,25 @@
+
+LOCATE COMP "n_spi_en" SITE "45" ;
+LOCATE COMP "n_sck" SITE "42" ;
+LOCATE COMP "n_sdo" SITE "43" ;
+LOCATE COMP "n_sdi" SITE "29" ;
+
+LOCATE COMP "e_en" SITE "20" ;
+LOCATE COMP "e_sck" SITE "21" ;
+LOCATE COMP "e_sdi" SITE "24" ;
+LOCATE COMP "e_sdo" SITE "25" ;
+
+LOCATE COMP "jx1_05_p" SITE "34" ;
+LOCATE COMP "jx1_05_n" SITE "35" ;
+LOCATE COMP "jx2_04_p" SITE "39" ;
+LOCATE COMP "jx2_04_n" SITE "38" ;
+
+LOCATE COMP "jx1_se_0" SITE "88" ;
+
+LOCATE COMP "loop_in" SITE "85" ;
+LOCATE COMP "loop_out" SITE "86" ;
+
+LOCATE COMP "fan" SITE "1" ;
+
+IOBUF ALLPORTS IO_TYPE=LVCMOS33 ;
+

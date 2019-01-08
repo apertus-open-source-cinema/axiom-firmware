@@ -1,0 +1,2143 @@
+gplink-1.5.0 #1285 (Sep 18 2016)
+Copyright (c) 1998-2016 gputils project
+Listing File Generated: 07/18/17  02:35:21
+
+
+Address  Value    Disassembly              Source
+-------  -----    -----------              ------
+                                           ;--------------------------------------------------------
+                                           ; File Created by SDCC : free open source ANSI-C Compiler
+                                           ; Version 3.6.0 #9615 (Linux)
+                                           ;--------------------------------------------------------
+                                           ; PIC port for the 14-bit core
+                                           ;--------------------------------------------------------
+                                           ;	.file	"i2c_slave.c"
+                                           	list	p=16f1718
+                                           	radix dec
+                                           	include "p16f1718.inc"
+                                                   LIST
+
+                                           ;==========================================================================
+                                           ; Build date : Aug 13 2015
+                                           ;  MPASM PIC16F1718 processor include
+                                           ; 
+                                           ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+                                           ;==========================================================================
+
+                                                   NOLIST
+                                           ;--------------------------------------------------------
+                                           ; config word(s)
+                                           ;--------------------------------------------------------
+                                           	__config _CONFIG1, 0x3fe4
+                                           	__config _CONFIG2, 0x33fb
+                                           ;--------------------------------------------------------
+                                           ; external declarations
+                                           ;--------------------------------------------------------
+                                           	extern	_STATUSbits
+                                           	extern	_BSRbits
+                                           	extern	_INTCONbits
+                                           	extern	_PORTAbits
+                                           	extern	_PORTBbits
+                                           	extern	_PORTCbits
+                                           	extern	_PORTEbits
+                                           	extern	_PIR1bits
+                                           	extern	_PIR2bits
+                                           	extern	_PIR3bits
+                                           	extern	_T1CONbits
+                                           	extern	_T1GCONbits
+                                           	extern	_T2CONbits
+                                           	extern	_TRISAbits
+                                           	extern	_TRISBbits
+                                           	extern	_TRISCbits
+                                           	extern	_TRISEbits
+                                           	extern	_PIE1bits
+                                           	extern	_PIE2bits
+                                           	extern	_PIE3bits
+                                           	extern	_OPTION_REGbits
+                                           	extern	_PCONbits
+                                           	extern	_WDTCONbits
+                                           	extern	_OSCTUNEbits
+                                           	extern	_OSCCONbits
+                                           	extern	_OSCSTATbits
+                                           	extern	_ADCON0bits
+                                           	extern	_ADCON1bits
+                                           	extern	_ADCON2bits
+                                           	extern	_LATAbits
+                                           	extern	_LATBbits
+                                           	extern	_LATCbits
+                                           	extern	_CM1CON0bits
+                                           	extern	_CM1CON1bits
+                                           	extern	_CM2CON0bits
+                                           	extern	_CM2CON1bits
+                                           	extern	_CMOUTbits
+                                           	extern	_BORCONbits
+                                           	extern	_FVRCONbits
+                                           	extern	_DAC1CON0bits
+                                           	extern	_DAC1CON1bits
+                                           	extern	_DAC2CON0bits
+                                           	extern	_DAC2CON1bits
+                                           	extern	_DAC2REFbits
+                                           	extern	_ZCD1CONbits
+                                           	extern	_ANSELAbits
+                                           	extern	_ANSELBbits
+                                           	extern	_ANSELCbits
+                                           	extern	_PMCON1bits
+                                           	extern	_VREGCONbits
+                                           	extern	_RC1STAbits
+                                           	extern	_RCSTAbits
+                                           	extern	_RCSTA1bits
+                                           	extern	_TX1STAbits
+                                           	extern	_TXSTAbits
+                                           	extern	_TXSTA1bits
+                                           	extern	_BAUD1CONbits
+                                           	extern	_BAUDCONbits
+                                           	extern	_BAUDCON1bits
+                                           	extern	_BAUDCTLbits
+                                           	extern	_BAUDCTL1bits
+                                           	extern	_WPUAbits
+                                           	extern	_WPUBbits
+                                           	extern	_WPUCbits
+                                           	extern	_WPUEbits
+                                           	extern	_SSP1BUFbits
+                                           	extern	_SSPBUFbits
+                                           	extern	_SSP1ADDbits
+                                           	extern	_SSPADDbits
+                                           	extern	_SSP1MSKbits
+                                           	extern	_SSPMSKbits
+                                           	extern	_SSP1STATbits
+                                           	extern	_SSPSTATbits
+                                           	extern	_SSP1CONbits
+                                           	extern	_SSP1CON1bits
+                                           	extern	_SSPCONbits
+                                           	extern	_SSPCON1bits
+                                           	extern	_SSP1CON2bits
+                                           	extern	_SSPCON2bits
+                                           	extern	_SSP1CON3bits
+                                           	extern	_SSPCON3bits
+                                           	extern	_ODCONAbits
+                                           	extern	_ODCONBbits
+                                           	extern	_ODCONCbits
+                                           	extern	_CCP1CONbits
+                                           	extern	_ECCP1CONbits
+                                           	extern	_CCP2CONbits
+                                           	extern	_ECCP2CONbits
+                                           	extern	_CCPTMRSbits
+                                           	extern	_SLRCONAbits
+                                           	extern	_SLRCONBbits
+                                           	extern	_SLRCONCbits
+                                           	extern	_INLVLAbits
+                                           	extern	_INLVLBbits
+                                           	extern	_INLVLCbits
+                                           	extern	_INLVLEbits
+                                           	extern	_IOCAPbits
+                                           	extern	_IOCANbits
+                                           	extern	_IOCAFbits
+                                           	extern	_IOCBPbits
+                                           	extern	_IOCBNbits
+                                           	extern	_IOCBFbits
+                                           	extern	_IOCCPbits
+                                           	extern	_IOCCNbits
+                                           	extern	_IOCCFbits
+                                           	extern	_IOCEPbits
+                                           	extern	_IOCENbits
+                                           	extern	_IOCEFbits
+                                           	extern	_T4CONbits
+                                           	extern	_T6CONbits
+                                           	extern	_NCO1ACCLbits
+                                           	extern	_NCO1ACCHbits
+                                           	extern	_NCO1ACCUbits
+                                           	extern	_NCO1INCLbits
+                                           	extern	_NCO1INCHbits
+                                           	extern	_NCO1INCUbits
+                                           	extern	_NCO1CONbits
+                                           	extern	_NCO1CLKbits
+                                           	extern	_OPA1CONbits
+                                           	extern	_OPA2CONbits
+                                           	extern	_PWM3DCLbits
+                                           	extern	_PWM3DCHbits
+                                           	extern	_PWM3CONbits
+                                           	extern	_PWM3CON0bits
+                                           	extern	_PWM4DCLbits
+                                           	extern	_PWM4DCHbits
+                                           	extern	_PWM4CONbits
+                                           	extern	_PWM4CON0bits
+                                           	extern	_COG1PHRbits
+                                           	extern	_COG1PHFbits
+                                           	extern	_COG1BLKRbits
+                                           	extern	_COG1BLKFbits
+                                           	extern	_COG1DBRbits
+                                           	extern	_COG1DBFbits
+                                           	extern	_COG1CON0bits
+                                           	extern	_COG1CON1bits
+                                           	extern	_COG1RISbits
+                                           	extern	_COG1RSIMbits
+                                           	extern	_COG1FISbits
+                                           	extern	_COG1FSIMbits
+                                           	extern	_COG1ASD0bits
+                                           	extern	_COG1ASD1bits
+                                           	extern	_COG1STRbits
+                                           	extern	_PPSLOCKbits
+                                           	extern	_CLCDATAbits
+                                           	extern	_CLC1CONbits
+                                           	extern	_CLC1POLbits
+                                           	extern	_CLC1SEL0bits
+                                           	extern	_CLC1SEL1bits
+                                           	extern	_CLC1SEL2bits
+                                           	extern	_CLC1SEL3bits
+                                           	extern	_CLC1GLS0bits
+                                           	extern	_CLC1GLS1bits
+                                           	extern	_CLC1GLS2bits
+                                           	extern	_CLC1GLS3bits
+                                           	extern	_CLC2CONbits
+                                           	extern	_CLC2POLbits
+                                           	extern	_CLC2SEL0bits
+                                           	extern	_CLC2SEL1bits
+                                           	extern	_CLC2SEL2bits
+                                           	extern	_CLC2SEL3bits
+                                           	extern	_CLC2GLS0bits
+                                           	extern	_CLC2GLS1bits
+                                           	extern	_CLC2GLS2bits
+                                           	extern	_CLC2GLS3bits
+                                           	extern	_CLC3CONbits
+                                           	extern	_CLC3POLbits
+                                           	extern	_CLC3SEL0bits
+                                           	extern	_CLC3SEL1bits
+                                           	extern	_CLC3SEL2bits
+                                           	extern	_CLC3SEL3bits
+                                           	extern	_CLC3GLS0bits
+                                           	extern	_CLC3GLS1bits
+                                           	extern	_CLC3GLS2bits
+                                           	extern	_CLC3GLS3bits
+                                           	extern	_CLC4CONbits
+                                           	extern	_CLC4POLbits
+                                           	extern	_CLC4SEL0bits
+                                           	extern	_CLC4SEL1bits
+                                           	extern	_CLC4SEL2bits
+                                           	extern	_CLC4SEL3bits
+                                           	extern	_CLC4GLS0bits
+                                           	extern	_CLC4GLS1bits
+                                           	extern	_CLC4GLS2bits
+                                           	extern	_CLC4GLS3bits
+                                           	extern	_STATUS_SHADbits
+                                           	extern	_INDF0
+                                           	extern	_INDF1
+                                           	extern	_PCL
+                                           	extern	_STATUS
+                                           	extern	_FSR0
+                                           	extern	_FSR0L
+                                           	extern	_FSR0H
+                                           	extern	_FSR1
+                                           	extern	_FSR1L
+                                           	extern	_FSR1H
+                                           	extern	_BSR
+                                           	extern	_WREG
+                                           	extern	_PCLATH
+                                           	extern	_INTCON
+                                           	extern	_PORTA
+                                           	extern	_PORTB
+                                           	extern	_PORTC
+                                           	extern	_PORTE
+                                           	extern	_PIR1
+                                           	extern	_PIR2
+                                           	extern	_PIR3
+                                           	extern	_TMR0
+                                           	extern	_TMR1
+                                           	extern	_TMR1L
+                                           	extern	_TMR1H
+                                           	extern	_T1CON
+                                           	extern	_T1GCON
+                                           	extern	_TMR2
+                                           	extern	_PR2
+                                           	extern	_T2CON
+                                           	extern	_TRISA
+                                           	extern	_TRISB
+                                           	extern	_TRISC
+                                           	extern	_TRISE
+                                           	extern	_PIE1
+                                           	extern	_PIE2
+                                           	extern	_PIE3
+                                           	extern	_OPTION_REG
+                                           	extern	_PCON
+                                           	extern	_WDTCON
+                                           	extern	_OSCTUNE
+                                           	extern	_OSCCON
+                                           	extern	_OSCSTAT
+                                           	extern	_ADRES
+                                           	extern	_ADRESL
+                                           	extern	_ADRESH
+                                           	extern	_ADCON0
+                                           	extern	_ADCON1
+                                           	extern	_ADCON2
+                                           	extern	_LATA
+                                           	extern	_LATB
+                                           	extern	_LATC
+                                           	extern	_CM1CON0
+                                           	extern	_CM1CON1
+                                           	extern	_CM2CON0
+                                           	extern	_CM2CON1
+                                           	extern	_CMOUT
+                                           	extern	_BORCON
+                                           	extern	_FVRCON
+                                           	extern	_DAC1CON0
+                                           	extern	_DAC1CON1
+                                           	extern	_DAC2CON0
+                                           	extern	_DAC2CON1
+                                           	extern	_DAC2REF
+                                           	extern	_ZCD1CON
+                                           	extern	_ANSELA
+                                           	extern	_ANSELB
+                                           	extern	_ANSELC
+                                           	extern	_PMADR
+                                           	extern	_PMADRL
+                                           	extern	_PMADRH
+                                           	extern	_PMDAT
+                                           	extern	_PMDATL
+                                           	extern	_PMDATH
+                                           	extern	_PMCON1
+                                           	extern	_PMCON2
+                                           	extern	_VREGCON
+                                           	extern	_RC1REG
+                                           	extern	_RCREG
+                                           	extern	_RCREG1
+                                           	extern	_TX1REG
+                                           	extern	_TXREG
+                                           	extern	_TXREG1
+                                           	extern	_SP1BRG
+                                           	extern	_SP1BRGL
+                                           	extern	_SPBRG
+                                           	extern	_SPBRG1
+                                           	extern	_SPBRGL
+                                           	extern	_SP1BRGH
+                                           	extern	_SPBRGH
+                                           	extern	_SPBRGH1
+                                           	extern	_RC1STA
+                                           	extern	_RCSTA
+                                           	extern	_RCSTA1
+                                           	extern	_TX1STA
+                                           	extern	_TXSTA
+                                           	extern	_TXSTA1
+                                           	extern	_BAUD1CON
+                                           	extern	_BAUDCON
+                                           	extern	_BAUDCON1
+                                           	extern	_BAUDCTL
+                                           	extern	_BAUDCTL1
+                                           	extern	_WPUA
+                                           	extern	_WPUB
+                                           	extern	_WPUC
+                                           	extern	_WPUE
+                                           	extern	_SSP1BUF
+                                           	extern	_SSPBUF
+                                           	extern	_SSP1ADD
+                                           	extern	_SSPADD
+                                           	extern	_SSP1MSK
+                                           	extern	_SSPMSK
+                                           	extern	_SSP1STAT
+                                           	extern	_SSPSTAT
+                                           	extern	_SSP1CON
+                                           	extern	_SSP1CON1
+                                           	extern	_SSPCON
+                                           	extern	_SSPCON1
+                                           	extern	_SSP1CON2
+                                           	extern	_SSPCON2
+                                           	extern	_SSP1CON3
+                                           	extern	_SSPCON3
+                                           	extern	_ODCONA
+                                           	extern	_ODCONB
+                                           	extern	_ODCONC
+                                           	extern	_CCPR1
+                                           	extern	_CCPR1L
+                                           	extern	_CCPR1H
+                                           	extern	_CCP1CON
+                                           	extern	_ECCP1CON
+                                           	extern	_CCPR2
+                                           	extern	_CCPR2L
+                                           	extern	_CCPR2H
+                                           	extern	_CCP2CON
+                                           	extern	_ECCP2CON
+                                           	extern	_CCPTMRS
+                                           	extern	_SLRCONA
+                                           	extern	_SLRCONB
+                                           	extern	_SLRCONC
+                                           	extern	_INLVLA
+                                           	extern	_INLVLB
+                                           	extern	_INLVLC
+                                           	extern	_INLVLE
+                                           	extern	_IOCAP
+                                           	extern	_IOCAN
+                                           	extern	_IOCAF
+                                           	extern	_IOCBP
+                                           	extern	_IOCBN
+                                           	extern	_IOCBF
+                                           	extern	_IOCCP
+                                           	extern	_IOCCN
+                                           	extern	_IOCCF
+                                           	extern	_IOCEP
+                                           	extern	_IOCEN
+                                           	extern	_IOCEF
+                                           	extern	_TMR4
+                                           	extern	_PR4
+                                           	extern	_T4CON
+                                           	extern	_TMR6
+                                           	extern	_PR6
+                                           	extern	_T6CON
+                                           	extern	_NCO1ACC
+                                           	extern	_NCO1ACCL
+                                           	extern	_NCO1ACCH
+                                           	extern	_NCO1ACCU
+                                           	extern	_NCO1INC
+                                           	extern	_NCO1INCL
+                                           	extern	_NCO1INCH
+                                           	extern	_NCO1INCU
+                                           	extern	_NCO1CON
+                                           	extern	_NCO1CLK
+                                           	extern	_OPA1CON
+                                           	extern	_OPA2CON
+                                           	extern	_PWM3DCL
+                                           	extern	_PWM3DCH
+                                           	extern	_PWM3CON
+                                           	extern	_PWM3CON0
+                                           	extern	_PWM4DCL
+                                           	extern	_PWM4DCH
+                                           	extern	_PWM4CON
+                                           	extern	_PWM4CON0
+                                           	extern	_COG1PHR
+                                           	extern	_COG1PHF
+                                           	extern	_COG1BLKR
+                                           	extern	_COG1BLKF
+                                           	extern	_COG1DBR
+                                           	extern	_COG1DBF
+                                           	extern	_COG1CON0
+                                           	extern	_COG1CON1
+                                           	extern	_COG1RIS
+                                           	extern	_COG1RSIM
+                                           	extern	_COG1FIS
+                                           	extern	_COG1FSIM
+                                           	extern	_COG1ASD0
+                                           	extern	_COG1ASD1
+                                           	extern	_COG1STR
+                                           	extern	_PPSLOCK
+                                           	extern	_INTPPS
+                                           	extern	_T0CKIPPS
+                                           	extern	_T1CKIPPS
+                                           	extern	_T1GPPS
+                                           	extern	_CCP1PPS
+                                           	extern	_CCP2PPS
+                                           	extern	_COGINPPS
+                                           	extern	_SSPCLKPPS
+                                           	extern	_SSPDATPPS
+                                           	extern	_SSPSSPPS
+                                           	extern	_RXPPS
+                                           	extern	_CKPPS
+                                           	extern	_CLCIN0PPS
+                                           	extern	_CLCIN1PPS
+                                           	extern	_CLCIN2PPS
+                                           	extern	_CLCIN3PPS
+                                           	extern	_RA0PPS
+                                           	extern	_RA1PPS
+                                           	extern	_RA2PPS
+                                           	extern	_RA3PPS
+                                           	extern	_RA4PPS
+                                           	extern	_RA5PPS
+                                           	extern	_RA6PPS
+                                           	extern	_RA7PPS
+                                           	extern	_RB0PPS
+                                           	extern	_RB1PPS
+                                           	extern	_RB2PPS
+                                           	extern	_RB3PPS
+                                           	extern	_RB4PPS
+                                           	extern	_RB5PPS
+                                           	extern	_RB6PPS
+                                           	extern	_RB7PPS
+                                           	extern	_RC0PPS
+                                           	extern	_RC1PPS
+                                           	extern	_RC2PPS
+                                           	extern	_RC3PPS
+                                           	extern	_RC4PPS
+                                           	extern	_RC5PPS
+                                           	extern	_RC6PPS
+                                           	extern	_RC7PPS
+                                           	extern	_CLCDATA
+                                           	extern	_CLC1CON
+                                           	extern	_CLC1POL
+                                           	extern	_CLC1SEL0
+                                           	extern	_CLC1SEL1
+                                           	extern	_CLC1SEL2
+                                           	extern	_CLC1SEL3
+                                           	extern	_CLC1GLS0
+                                           	extern	_CLC1GLS1
+                                           	extern	_CLC1GLS2
+                                           	extern	_CLC1GLS3
+                                           	extern	_CLC2CON
+                                           	extern	_CLC2POL
+                                           	extern	_CLC2SEL0
+                                           	extern	_CLC2SEL1
+                                           	extern	_CLC2SEL2
+                                           	extern	_CLC2SEL3
+                                           	extern	_CLC2GLS0
+                                           	extern	_CLC2GLS1
+                                           	extern	_CLC2GLS2
+                                           	extern	_CLC2GLS3
+                                           	extern	_CLC3CON
+                                           	extern	_CLC3POL
+                                           	extern	_CLC3SEL0
+                                           	extern	_CLC3SEL1
+                                           	extern	_CLC3SEL2
+                                           	extern	_CLC3SEL3
+                                           	extern	_CLC3GLS0
+                                           	extern	_CLC3GLS1
+                                           	extern	_CLC3GLS2
+                                           	extern	_CLC3GLS3
+                                           	extern	_CLC4CON
+                                           	extern	_CLC4POL
+                                           	extern	_CLC4SEL0
+                                           	extern	_CLC4SEL1
+                                           	extern	_CLC4SEL2
+                                           	extern	_CLC4SEL3
+                                           	extern	_CLC4GLS0
+                                           	extern	_CLC4GLS1
+                                           	extern	_CLC4GLS2
+                                           	extern	_CLC4GLS3
+                                           	extern	_STATUS_SHAD
+                                           	extern	_WREG_SHAD
+                                           	extern	_BSR_SHAD
+                                           	extern	_PCLATH_SHAD
+                                           	extern	_FSR0L_SHAD
+                                           	extern	_FSR0H_SHAD
+                                           	extern	_FSR1L_SHAD
+                                           	extern	_FSR1H_SHAD
+                                           	extern	_STKPTR
+                                           	extern	_TOSL
+                                           	extern	_TOSH
+                                           	extern	__sdcc_gsinit_startup
+                                           ;--------------------------------------------------------
+                                           ; global declarations
+                                           ;--------------------------------------------------------
+                                           	global	_tms_out
+                                           	global	_tdi_out
+                                           	global	_tdo_in
+                                           	global	_tdi_tdo
+                                           	global	_irq
+                                           	global	_main
+
+                                           	global PSAVE
+                                           	global SSAVE
+                                           	global WSAVE
+                                           	global STK12
+                                           	global STK11
+                                           	global STK10
+                                           	global STK09
+                                           	global STK08
+                                           	global STK07
+                                           	global STK06
+                                           	global STK05
+                                           	global STK04
+                                           	global STK03
+                                           	global STK02
+                                           	global STK01
+                                           	global STK00
+
+                                           sharebank udata_ovr 0x0070
+                                           PSAVE	res 1
+                                           SSAVE	res 1
+                                           WSAVE	res 1
+                                           STK12	res 1
+                                           STK11	res 1
+                                           STK10	res 1
+                                           STK09	res 1
+                                           STK08	res 1
+                                           STK07	res 1
+                                           STK06	res 1
+                                           STK05	res 1
+                                           STK04	res 1
+                                           STK03	res 1
+                                           STK02	res 1
+                                           STK01	res 1
+                                           STK00	res 1
+
+                                           ;--------------------------------------------------------
+                                           ; global definitions
+                                           ;--------------------------------------------------------
+                                           ;--------------------------------------------------------
+                                           ; absolute symbol definitions
+                                           ;--------------------------------------------------------
+                                           ;--------------------------------------------------------
+                                           ; compiler-defined variables
+                                           ;--------------------------------------------------------
+                                           UDL_i2c_slave_0	udata
+                                           r0x1033	res	1
+                                           r0x1034	res	1
+                                           r0x102F	res	1
+                                           r0x1030	res	1
+                                           r0x1031	res	1
+                                           r0x1032	res	1
+                                           r0x102A	res	1
+                                           r0x102B	res	1
+                                           r0x102C	res	1
+                                           r0x102D	res	1
+                                           r0x102E	res	1
+                                           r0x1025	res	1
+                                           r0x1026	res	1
+                                           r0x1027	res	1
+                                           r0x1028	res	1
+                                           r0x1029	res	1
+                                           r0x1035	res	1
+                                           r0x1036	res	1
+                                           _irq_t_1_24	res	1
+                                           _irq_a_1_24	res	1
+                                           ;--------------------------------------------------------
+                                           ; initialized data
+                                           ;--------------------------------------------------------
+
+                                           ID_i2c_slave_0	idata
+                                           _buf
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+                                           	db	0x00
+
+
+                                           ID_i2c_slave_1	idata
+                                           _v
+                                           	db	0x00
+
+
+                                           ID_i2c_slave_2	idata
+                                           _i
+                                           	db	0x00
+
+
+                                           ID_i2c_slave_3	idata
+                                           _c
+                                           	db	0x00
+
+                                           ;--------------------------------------------------------
+                                           ; overlayable items in internal ram 
+                                           ;--------------------------------------------------------
+                                           ;	udata_ovr
+                                           ;--------------------------------------------------------
+                                           ; reset vector 
+                                           ;--------------------------------------------------------
+                                           STARTUP	code 0x0000
+000000   0000     nop                      	nop
+000001   3182     movlp   0x02             	pagesel __sdcc_gsinit_startup
+000002   2a9a     goto    0x029a           	goto	__sdcc_gsinit_startup
+                                           ;--------------------------------------------------------
+                                           ; interrupt and initialization code
+                                           ;--------------------------------------------------------
+                                           c_interrupt	code	0x0004
+                                           __sdcc_interrupt:
+                                           ;***
+                                           ;  pBlock Stats: dbName = I
+                                           ;***
+                                           ;functions called:
+                                           ;   _tms_out
+                                           ;   _tms_out
+                                           ;   _tdi_tdo
+                                           ;   _tdi_tdo
+                                           ;   _tdi_out
+                                           ;   _tdi_out
+                                           ;   _tdi_tdo
+                                           ;   _tdi_tdo
+                                           ;   _tdi_out
+                                           ;   _tdi_out
+                                           ;   _tdo_in
+                                           ;   _tdo_in
+                                           ;   _tdo_in
+                                           ;   _tdo_in
+                                           ;   _tms_out
+                                           ;   _tms_out
+                                           ;   _tdi_tdo
+                                           ;   _tdi_tdo
+                                           ;   _tdi_out
+                                           ;   _tdi_out
+                                           ;   _tdi_tdo
+                                           ;   _tdi_tdo
+                                           ;   _tdi_out
+                                           ;   _tdi_out
+                                           ;   _tdo_in
+                                           ;   _tdo_in
+                                           ;   _tdo_in
+                                           ;   _tdo_in
+                                           ;4 compiler assigned registers:
+                                           ;   r0x1035
+                                           ;   r0x1036
+                                           ;   STK00
+                                           ;   STK01
+                                           ;; Starting pCode block
+                                           _irq:
+                                           ; 0 exit points
+                                           ;	.line	139; "i2c_slave.c"	void irq(void) __interrupt 0
+000004   018a     clrf    0x0a             	CLRF	PCLATH
+                                           ;	.line	144; "i2c_slave.c"	if (PIR1bits.SSP1IF) {
+000005   0020     movlb   0x00             	BANKSEL	_PIR1bits
+000006   1d91     btfss   0x11, 0x3        	BTFSS	_PIR1bits,3
+000007   2a99     goto    0x0299           	GOTO	END_OF_INTERRUPT
+                                           ;	.line	145; "i2c_slave.c"	PIR1bits.SSP1IF = 0;
+000008   1191     bcf     0x11, 0x3        	BCF	_PIR1bits,3
+                                           ;	.line	147; "i2c_slave.c"	if (SSPSTATbits.BF) {
+000009   0024     movlb   0x04             	BANKSEL	_SSPSTATbits
+00000a   1c14     btfss   0x14, 0x0        	BTFSS	_SSPSTATbits,0
+00000b   2a99     goto    0x0299           	GOTO	END_OF_INTERRUPT
+                                           ;	.line	148; "i2c_slave.c"	if (SSP1CON3bits.ACKTIM) {			/* (n)ack */
+00000c   1f97     btfss   0x17, 0x7        	BTFSS	_SSP1CON3bits,7
+00000d   2810     goto    0x0010           	GOTO	_00227_DS_
+                                           ;	.line	150; "i2c_slave.c"	SSP1CON1bits.CKP = 1;
+00000e   1615     bsf     0x15, 0x4        	BSF	_SSP1CON1bits,4
+00000f   2a99     goto    0x0299           	GOTO	END_OF_INTERRUPT
+                                           _00227_DS_:
+                                           ;	.line	152; "i2c_slave.c"	if (SSP1STATbits.D_NOT_A) {		/* data */
+000010   0024     movlb   0x04             	BANKSEL	_SSP1STATbits
+000011   1e94     btfss   0x14, 0x5        	BTFSS	_SSP1STATbits,5
+000012   2998     goto    0x0198           	GOTO	_00224_DS_
+                                           ;	.line	153; "i2c_slave.c"	if (SSP1STATbits.R_NOT_W) {		/* read */
+000013   1914     btfsc   0x14, 0x2        	BTFSC	_SSP1STATbits,2
+000014   2a99     goto    0x0299           	GOTO	END_OF_INTERRUPT
+                                           ;	.line	156; "i2c_slave.c"	switch (a & 0x2F) {
+000015   302f     movlw   0x2f             	MOVLW	0x2f
+000016   0020     movlb   0x00             	BANKSEL	_irq_a_1_24
+000017   0533     andwf   0x33, 0x0        	ANDWF	_irq_a_1_24,W
+000018   0020     movlb   0x00             	BANKSEL	r0x1035
+000019   00b0     movwf   0x30             	MOVWF	r0x1035
+                                           ;;     peep 1 - test/jump to test/skip
+00001a   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+00001b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00001c   2882     goto    0x0082           	GOTO	_00149_DS_
+00001d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00001e   3a02     xorlw   0x02             	XORLW	0x02
+00001f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000020   2898     goto    0x0098           	GOTO	_00150_DS_
+000021   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000022   3a03     xorlw   0x03             	XORLW	0x03
+000023   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000024   28a0     goto    0x00a0           	GOTO	_00151_DS_
+000025   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000026   3a04     xorlw   0x04             	XORLW	0x04
+000027   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000028   28b8     goto    0x00b8           	GOTO	_00155_DS_
+000029   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00002a   3a05     xorlw   0x05             	XORLW	0x05
+00002b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00002c   28c2     goto    0x00c2           	GOTO	_00156_DS_
+00002d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00002e   3a06     xorlw   0x06             	XORLW	0x06
+00002f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000030   28dc     goto    0x00dc           	GOTO	_00160_DS_
+000031   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000032   3a07     xorlw   0x07             	XORLW	0x07
+000033   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000034   28e6     goto    0x00e6           	GOTO	_00161_DS_
+000035   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000036   3a08     xorlw   0x08             	XORLW	0x08
+000037   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000038   2900     goto    0x0100           	GOTO	_00165_DS_
+000039   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00003a   3a09     xorlw   0x09             	XORLW	0x09
+00003b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00003c   290a     goto    0x010a           	GOTO	_00166_DS_
+00003d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00003e   3a0a     xorlw   0x0a             	XORLW	0x0a
+00003f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000040   2924     goto    0x0124           	GOTO	_00170_DS_
+000041   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000042   3a0b     xorlw   0x0b             	XORLW	0x0b
+000043   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000044   292e     goto    0x012e           	GOTO	_00171_DS_
+000045   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000046   3a20     xorlw   0x20             	XORLW	0x20
+000047   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000048   2948     goto    0x0148           	GOTO	_00175_DS_
+000049   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00004a   3a21     xorlw   0x21             	XORLW	0x21
+00004b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00004c   294d     goto    0x014d           	GOTO	_00176_DS_
+00004d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00004e   3a22     xorlw   0x22             	XORLW	0x22
+00004f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000050   2952     goto    0x0152           	GOTO	_00177_DS_
+000051   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000052   3a23     xorlw   0x23             	XORLW	0x23
+000053   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000054   2956     goto    0x0156           	GOTO	_00178_DS_
+000055   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000056   3a24     xorlw   0x24             	XORLW	0x24
+000057   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000058   295b     goto    0x015b           	GOTO	_00179_DS_
+000059   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00005a   3a25     xorlw   0x25             	XORLW	0x25
+00005b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00005c   2961     goto    0x0161           	GOTO	_00180_DS_
+00005d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00005e   3a26     xorlw   0x26             	XORLW	0x26
+00005f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000060   2966     goto    0x0166           	GOTO	_00181_DS_
+000061   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000062   3a27     xorlw   0x27             	XORLW	0x27
+000063   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000064   296a     goto    0x016a           	GOTO	_00182_DS_
+000065   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000066   3a28     xorlw   0x28             	XORLW	0x28
+000067   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000068   296f     goto    0x016f           	GOTO	_00183_DS_
+000069   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00006a   3a29     xorlw   0x29             	XORLW	0x29
+00006b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00006c   2974     goto    0x0174           	GOTO	_00184_DS_
+00006d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00006e   3a2a     xorlw   0x2a             	XORLW	0x2a
+00006f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000070   2979     goto    0x0179           	GOTO	_00185_DS_
+000071   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000072   3a2b     xorlw   0x2b             	XORLW	0x2b
+000073   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000074   297d     goto    0x017d           	GOTO	_00186_DS_
+000075   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000076   3a2c     xorlw   0x2c             	XORLW	0x2c
+000077   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000078   2982     goto    0x0182           	GOTO	_00187_DS_
+000079   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00007a   3a2e     xorlw   0x2e             	XORLW	0x2e
+00007b   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+00007c   2987     goto    0x0187           	GOTO	_00188_DS_
+00007d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+00007e   3a2f     xorlw   0x2f             	XORLW	0x2f
+00007f   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000080   298c     goto    0x018c           	GOTO	_00189_DS_
+000081   2991     goto    0x0191           	GOTO	_00190_DS_
+                                           _00149_DS_:
+                                           ;	.line	158; "i2c_slave.c"	buf[i++] = SSPBUF;
+000082   0020     movlb   0x00             	BANKSEL	_i
+000083   0841     movf    0x41, 0x0        	MOVF	_i,W
+000084   0020     movlb   0x00             	BANKSEL	r0x1035
+000085   00b0     movwf   0x30             	MOVWF	r0x1035
+000086   0020     movlb   0x00             	BANKSEL	_i
+000087   0ac1     incf    0x41, 0x1        	INCF	_i,F
+000088   0020     movlb   0x00             	BANKSEL	r0x1035
+000089   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+00008a   3ea0     addlw   0xa0             	ADDLW	(_buf + 0)
+00008b   00b0     movwf   0x30             	MOVWF	r0x1035
+00008c   300c     movlw   0x0c             	MOVLW	high (_buf + 0)
+00008d   1803     btfsc   0x03, 0x0        	BTFSC	STATUS,0
+00008e   3e01     addlw   0x01             	ADDLW	0x01
+00008f   00b1     movwf   0x31             	MOVWF	r0x1036
+000090   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+000091   0084     movwf   0x04             	MOVWF	FSR0L
+000092   0831     movf    0x31, 0x0        	MOVF	r0x1036,W
+000093   0085     movwf   0x05             	MOVWF	FSR0H
+000094   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000095   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000096   0080     movwf   0x00             	MOVWF	INDF0
+                                           ;	.line	159; "i2c_slave.c"	break;
+000097   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00150_DS_:
+                                           ;	.line	162; "i2c_slave.c"	tms_out(SSPBUF, 8);
+000098   3008     movlw   0x08             	MOVLW	0x08
+000099   00ff     movwf   0x7f             	MOVWF	STK00
+00009a   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00009b   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00009c   3184     movlp   0x04             	PAGESEL	_tms_out
+00009d   249a     call    0x049a           	CALL	_tms_out
+00009e   3180     movlp   0x00             	PAGESEL	$
+                                           ;	.line	163; "i2c_slave.c"	break;
+00009f   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00151_DS_:
+                                           ;	.line	165; "i2c_slave.c"	if (i++)
+0000a0   0020     movlb   0x00             	BANKSEL	_i
+0000a1   0841     movf    0x41, 0x0        	MOVF	_i,W
+0000a2   0020     movlb   0x00             	BANKSEL	r0x1035
+0000a3   00b0     movwf   0x30             	MOVWF	r0x1035
+0000a4   0020     movlb   0x00             	BANKSEL	_i
+0000a5   0ac1     incf    0x41, 0x1        	INCF	_i,F
+                                           ;;     peep 7 - Removed redundant move
+0000a6   0020     movlb   0x00             	BANKSEL	r0x1035
+0000a7   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+0000a8   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0000a9   28b3     goto    0x00b3           	GOTO	_00153_DS_
+                                           ;	.line	166; "i2c_slave.c"	tms_out(SSPBUF, c);
+0000aa   0020     movlb   0x00             	BANKSEL	_c
+0000ab   0842     movf    0x42, 0x0        	MOVF	_c,W
+0000ac   00ff     movwf   0x7f             	MOVWF	STK00
+0000ad   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000ae   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000af   3184     movlp   0x04             	PAGESEL	_tms_out
+0000b0   249a     call    0x049a           	CALL	_tms_out
+0000b1   3180     movlp   0x00             	PAGESEL	$
+0000b2   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00153_DS_:
+                                           ;	.line	168; "i2c_slave.c"	c = SSPBUF;
+0000b3   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000b4   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000b5   0020     movlb   0x00             	BANKSEL	_c
+0000b6   00c2     movwf   0x42             	MOVWF	_c
+                                           ;	.line	169; "i2c_slave.c"	break;
+0000b7   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00155_DS_:
+                                           ;	.line	172; "i2c_slave.c"	tdi_tdo(SSPBUF, 8, 1);
+0000b8   3001     movlw   0x01             	MOVLW	0x01
+0000b9   00fe     movwf   0x7e             	MOVWF	STK01
+0000ba   3008     movlw   0x08             	MOVLW	0x08
+0000bb   00ff     movwf   0x7f             	MOVWF	STK00
+0000bc   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000bd   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000be   3183     movlp   0x03             	PAGESEL	_tdi_tdo
+0000bf   231a     call    0x031a           	CALL	_tdi_tdo
+0000c0   3180     movlp   0x00             	PAGESEL	$
+                                           ;	.line	173; "i2c_slave.c"	break;
+0000c1   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00156_DS_:
+                                           ;	.line	175; "i2c_slave.c"	if (i++)
+0000c2   0020     movlb   0x00             	BANKSEL	_i
+0000c3   0841     movf    0x41, 0x0        	MOVF	_i,W
+0000c4   0020     movlb   0x00             	BANKSEL	r0x1035
+0000c5   00b0     movwf   0x30             	MOVWF	r0x1035
+0000c6   0020     movlb   0x00             	BANKSEL	_i
+0000c7   0ac1     incf    0x41, 0x1        	INCF	_i,F
+                                           ;;     peep 7 - Removed redundant move
+0000c8   0020     movlb   0x00             	BANKSEL	r0x1035
+0000c9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+0000ca   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0000cb   28d7     goto    0x00d7           	GOTO	_00158_DS_
+                                           ;	.line	176; "i2c_slave.c"	tdi_tdo(SSPBUF, c, 1);
+0000cc   3001     movlw   0x01             	MOVLW	0x01
+0000cd   00fe     movwf   0x7e             	MOVWF	STK01
+0000ce   0020     movlb   0x00             	BANKSEL	_c
+0000cf   0842     movf    0x42, 0x0        	MOVF	_c,W
+0000d0   00ff     movwf   0x7f             	MOVWF	STK00
+0000d1   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000d2   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000d3   3183     movlp   0x03             	PAGESEL	_tdi_tdo
+0000d4   231a     call    0x031a           	CALL	_tdi_tdo
+0000d5   3180     movlp   0x00             	PAGESEL	$
+0000d6   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00158_DS_:
+                                           ;	.line	178; "i2c_slave.c"	c = SSPBUF;
+0000d7   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000d8   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000d9   0020     movlb   0x00             	BANKSEL	_c
+0000da   00c2     movwf   0x42             	MOVWF	_c
+                                           ;	.line	179; "i2c_slave.c"	break;
+0000db   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00160_DS_:
+                                           ;	.line	182; "i2c_slave.c"	tdi_out(SSPBUF, 8, 1);
+0000dc   3001     movlw   0x01             	MOVLW	0x01
+0000dd   00fe     movwf   0x7e             	MOVWF	STK01
+0000de   3008     movlw   0x08             	MOVLW	0x08
+0000df   00ff     movwf   0x7f             	MOVWF	STK00
+0000e0   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000e1   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000e2   3183     movlp   0x03             	PAGESEL	_tdi_out
+0000e3   23f6     call    0x03f6           	CALL	_tdi_out
+0000e4   3180     movlp   0x00             	PAGESEL	$
+                                           ;	.line	183; "i2c_slave.c"	break;
+0000e5   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00161_DS_:
+                                           ;	.line	185; "i2c_slave.c"	if (i++)
+0000e6   0020     movlb   0x00             	BANKSEL	_i
+0000e7   0841     movf    0x41, 0x0        	MOVF	_i,W
+0000e8   0020     movlb   0x00             	BANKSEL	r0x1035
+0000e9   00b0     movwf   0x30             	MOVWF	r0x1035
+0000ea   0020     movlb   0x00             	BANKSEL	_i
+0000eb   0ac1     incf    0x41, 0x1        	INCF	_i,F
+                                           ;;     peep 7 - Removed redundant move
+0000ec   0020     movlb   0x00             	BANKSEL	r0x1035
+0000ed   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+0000ee   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0000ef   28fb     goto    0x00fb           	GOTO	_00163_DS_
+                                           ;	.line	186; "i2c_slave.c"	tdi_out(SSPBUF, c, 1);
+0000f0   3001     movlw   0x01             	MOVLW	0x01
+0000f1   00fe     movwf   0x7e             	MOVWF	STK01
+0000f2   0020     movlb   0x00             	BANKSEL	_c
+0000f3   0842     movf    0x42, 0x0        	MOVF	_c,W
+0000f4   00ff     movwf   0x7f             	MOVWF	STK00
+0000f5   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000f6   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000f7   3183     movlp   0x03             	PAGESEL	_tdi_out
+0000f8   23f6     call    0x03f6           	CALL	_tdi_out
+0000f9   3180     movlp   0x00             	PAGESEL	$
+0000fa   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00163_DS_:
+                                           ;	.line	188; "i2c_slave.c"	c = SSPBUF;
+0000fb   0024     movlb   0x04             	BANKSEL	_SSPBUF
+0000fc   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+0000fd   0020     movlb   0x00             	BANKSEL	_c
+0000fe   00c2     movwf   0x42             	MOVWF	_c
+                                           ;	.line	189; "i2c_slave.c"	break;
+0000ff   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00165_DS_:
+                                           ;	.line	192; "i2c_slave.c"	tdi_tdo(SSPBUF, 8, 0);
+000100   3000     movlw   0x00             	MOVLW	0x00
+000101   00fe     movwf   0x7e             	MOVWF	STK01
+000102   3008     movlw   0x08             	MOVLW	0x08
+000103   00ff     movwf   0x7f             	MOVWF	STK00
+000104   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000105   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000106   3183     movlp   0x03             	PAGESEL	_tdi_tdo
+000107   231a     call    0x031a           	CALL	_tdi_tdo
+000108   3181     movlp   0x01             	PAGESEL	$
+                                           ;	.line	193; "i2c_slave.c"	break;
+000109   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00166_DS_:
+                                           ;	.line	195; "i2c_slave.c"	if (i++)
+00010a   0020     movlb   0x00             	BANKSEL	_i
+00010b   0841     movf    0x41, 0x0        	MOVF	_i,W
+00010c   0020     movlb   0x00             	BANKSEL	r0x1035
+00010d   00b0     movwf   0x30             	MOVWF	r0x1035
+00010e   0020     movlb   0x00             	BANKSEL	_i
+00010f   0ac1     incf    0x41, 0x1        	INCF	_i,F
+                                           ;;     peep 7 - Removed redundant move
+000110   0020     movlb   0x00             	BANKSEL	r0x1035
+000111   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+000112   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000113   291f     goto    0x011f           	GOTO	_00168_DS_
+                                           ;	.line	196; "i2c_slave.c"	tdi_tdo(SSPBUF, c, 0);
+000114   3000     movlw   0x00             	MOVLW	0x00
+000115   00fe     movwf   0x7e             	MOVWF	STK01
+000116   0020     movlb   0x00             	BANKSEL	_c
+000117   0842     movf    0x42, 0x0        	MOVF	_c,W
+000118   00ff     movwf   0x7f             	MOVWF	STK00
+000119   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00011a   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00011b   3183     movlp   0x03             	PAGESEL	_tdi_tdo
+00011c   231a     call    0x031a           	CALL	_tdi_tdo
+00011d   3181     movlp   0x01             	PAGESEL	$
+00011e   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00168_DS_:
+                                           ;	.line	198; "i2c_slave.c"	c = SSPBUF;
+00011f   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000120   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000121   0020     movlb   0x00             	BANKSEL	_c
+000122   00c2     movwf   0x42             	MOVWF	_c
+                                           ;	.line	199; "i2c_slave.c"	break;
+000123   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00170_DS_:
+                                           ;	.line	202; "i2c_slave.c"	tdi_out(SSPBUF, 8, 0);
+000124   3000     movlw   0x00             	MOVLW	0x00
+000125   00fe     movwf   0x7e             	MOVWF	STK01
+000126   3008     movlw   0x08             	MOVLW	0x08
+000127   00ff     movwf   0x7f             	MOVWF	STK00
+000128   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000129   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00012a   3183     movlp   0x03             	PAGESEL	_tdi_out
+00012b   23f6     call    0x03f6           	CALL	_tdi_out
+00012c   3181     movlp   0x01             	PAGESEL	$
+                                           ;	.line	203; "i2c_slave.c"	break;
+00012d   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00171_DS_:
+                                           ;	.line	205; "i2c_slave.c"	if (i++)
+00012e   0020     movlb   0x00             	BANKSEL	_i
+00012f   0841     movf    0x41, 0x0        	MOVF	_i,W
+000130   0020     movlb   0x00             	BANKSEL	r0x1035
+000131   00b0     movwf   0x30             	MOVWF	r0x1035
+000132   0020     movlb   0x00             	BANKSEL	_i
+000133   0ac1     incf    0x41, 0x1        	INCF	_i,F
+                                           ;;     peep 7 - Removed redundant move
+000134   0020     movlb   0x00             	BANKSEL	r0x1035
+000135   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+000136   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000137   2943     goto    0x0143           	GOTO	_00173_DS_
+                                           ;	.line	206; "i2c_slave.c"	tdi_out(SSPBUF, c, 0);
+000138   3000     movlw   0x00             	MOVLW	0x00
+000139   00fe     movwf   0x7e             	MOVWF	STK01
+00013a   0020     movlb   0x00             	BANKSEL	_c
+00013b   0842     movf    0x42, 0x0        	MOVF	_c,W
+00013c   00ff     movwf   0x7f             	MOVWF	STK00
+00013d   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00013e   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00013f   3183     movlp   0x03             	PAGESEL	_tdi_out
+000140   23f6     call    0x03f6           	CALL	_tdi_out
+000141   3181     movlp   0x01             	PAGESEL	$
+000142   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00173_DS_:
+                                           ;	.line	208; "i2c_slave.c"	c = SSPBUF;
+000143   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000144   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000145   0020     movlb   0x00             	BANKSEL	_c
+000146   00c2     movwf   0x42             	MOVWF	_c
+                                           ;	.line	209; "i2c_slave.c"	break;
+000147   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00175_DS_:
+                                           ;	.line	212; "i2c_slave.c"	TRISA = SSPBUF;
+000148   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000149   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00014a   0021     movlb   0x01             	BANKSEL	_TRISA
+00014b   008c     movwf   0x0c             	MOVWF	_TRISA
+                                           ;	.line	213; "i2c_slave.c"	break;
+00014c   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00176_DS_:
+                                           ;	.line	215; "i2c_slave.c"	LATA = SSPBUF;
+00014d   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00014e   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00014f   0022     movlb   0x02             	BANKSEL	_LATA
+000150   008c     movwf   0x0c             	MOVWF	_LATA
+                                           ;	.line	216; "i2c_slave.c"	break;
+000151   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00177_DS_:
+                                           ;	.line	218; "i2c_slave.c"	WPUA = SSPBUF;
+000152   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000153   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000154   008c     movwf   0x0c             	MOVWF	_WPUA
+                                           ;	.line	219; "i2c_slave.c"	break;
+000155   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00178_DS_:
+                                           ;	.line	221; "i2c_slave.c"	PORTA = SSPBUF;
+000156   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000157   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000158   0020     movlb   0x00             	BANKSEL	_PORTA
+000159   008c     movwf   0x0c             	MOVWF	_PORTA
+                                           ;	.line	222; "i2c_slave.c"	break;
+00015a   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00179_DS_:
+                                           ;	.line	225; "i2c_slave.c"	TRISB = SSPBUF | 0xC0;
+00015b   30c0     movlw   0xc0             	MOVLW	0xc0
+00015c   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00015d   0411     iorwf   0x11, 0x0        	IORWF	_SSPBUF,W
+00015e   0021     movlb   0x01             	BANKSEL	_TRISB
+00015f   008d     movwf   0x0d             	MOVWF	_TRISB
+                                           ;	.line	226; "i2c_slave.c"	break;
+000160   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00180_DS_:
+                                           ;	.line	228; "i2c_slave.c"	LATB = SSPBUF;
+000161   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000162   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000163   0022     movlb   0x02             	BANKSEL	_LATB
+000164   008d     movwf   0x0d             	MOVWF	_LATB
+                                           ;	.line	229; "i2c_slave.c"	break;
+000165   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00181_DS_:
+                                           ;	.line	231; "i2c_slave.c"	WPUB = SSPBUF;
+000166   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000167   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000168   008d     movwf   0x0d             	MOVWF	_WPUB
+                                           ;	.line	232; "i2c_slave.c"	break;
+000169   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00182_DS_:
+                                           ;	.line	234; "i2c_slave.c"	PORTB = SSPBUF;
+00016a   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00016b   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00016c   0020     movlb   0x00             	BANKSEL	_PORTB
+00016d   008d     movwf   0x0d             	MOVWF	_PORTB
+                                           ;	.line	235; "i2c_slave.c"	break;
+00016e   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00183_DS_:
+                                           ;	.line	238; "i2c_slave.c"	TRISC = SSPBUF;
+00016f   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000170   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000171   0021     movlb   0x01             	BANKSEL	_TRISC
+000172   008e     movwf   0x0e             	MOVWF	_TRISC
+                                           ;	.line	239; "i2c_slave.c"	break;
+000173   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00184_DS_:
+                                           ;	.line	241; "i2c_slave.c"	LATC = SSPBUF;
+000174   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000175   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000176   0022     movlb   0x02             	BANKSEL	_LATC
+000177   008e     movwf   0x0e             	MOVWF	_LATC
+                                           ;	.line	242; "i2c_slave.c"	break;
+000178   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00185_DS_:
+                                           ;	.line	244; "i2c_slave.c"	WPUC = SSPBUF;
+000179   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00017a   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00017b   008e     movwf   0x0e             	MOVWF	_WPUC
+                                           ;	.line	245; "i2c_slave.c"	break;
+00017c   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00186_DS_:
+                                           ;	.line	247; "i2c_slave.c"	PORTC = SSPBUF;
+00017d   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00017e   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00017f   0020     movlb   0x00             	BANKSEL	_PORTC
+000180   008e     movwf   0x0e             	MOVWF	_PORTC
+                                           ;	.line	248; "i2c_slave.c"	break;
+000181   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00187_DS_:
+                                           ;	.line	251; "i2c_slave.c"	RC2PPS = SSPBUF;
+000182   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000183   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000184   003d     movlb   0x1d             	BANKSEL	_RC2PPS
+000185   00a2     movwf   0x22             	MOVWF	_RC2PPS
+                                           ;	.line	252; "i2c_slave.c"	break;
+000186   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00188_DS_:
+                                           ;	.line	254; "i2c_slave.c"	NCO1CON = SSPBUF;
+000187   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000188   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000189   0029     movlb   0x09             	BANKSEL	_NCO1CON
+00018a   009e     movwf   0x1e             	MOVWF	_NCO1CON
+                                           ;	.line	255; "i2c_slave.c"	break;
+00018b   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00189_DS_:
+                                           ;	.line	257; "i2c_slave.c"	NCO1CLK = SSPBUF;
+00018c   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00018d   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+00018e   0029     movlb   0x09             	BANKSEL	_NCO1CLK
+00018f   009f     movwf   0x1f             	MOVWF	_NCO1CLK
+                                           ;	.line	258; "i2c_slave.c"	break;
+000190   2995     goto    0x0195           	GOTO	_00191_DS_
+                                           _00190_DS_:
+                                           ;	.line	261; "i2c_slave.c"	t = SSPBUF;
+000191   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000192   0811     movf    0x11, 0x0        	MOVF	_SSPBUF,W
+000193   0020     movlb   0x00             	BANKSEL	_irq_t_1_24
+000194   00b2     movwf   0x32             	MOVWF	_irq_t_1_24
+                                           _00191_DS_:
+                                           ;	.line	264; "i2c_slave.c"	SSP1CON1bits.CKP = 1;
+000195   0024     movlb   0x04             	BANKSEL	_SSP1CON1bits
+000196   1615     bsf     0x15, 0x4        	BSF	_SSP1CON1bits,4
+000197   2a99     goto    0x0299           	GOTO	END_OF_INTERRUPT
+                                           ;;shiftRight_Left2ResultLit:5323: shCount=1, size=1, sign=0, same=0, offr=0
+                                           _00224_DS_:
+                                           ;	.line	267; "i2c_slave.c"	a = SSPBUF >> 1;
+000198   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000199   3611     lsrf    0x11, 0x0        	LSRF	_SSPBUF,W
+00019a   0020     movlb   0x00             	BANKSEL	_irq_a_1_24
+00019b   00b3     movwf   0x33             	MOVWF	_irq_a_1_24
+                                           ;	.line	268; "i2c_slave.c"	i = 0;
+00019c   0020     movlb   0x00             	BANKSEL	_i
+00019d   01c1     clrf    0x41             	CLRF	_i
+                                           ;	.line	269; "i2c_slave.c"	if (SSP1STATbits.R_NOT_W) {		/* read */
+00019e   0024     movlb   0x04             	BANKSEL	_SSP1STATbits
+00019f   1d14     btfss   0x14, 0x2        	BTFSS	_SSP1STATbits,2
+0001a0   2a99     goto    0x0299           	GOTO	END_OF_INTERRUPT
+                                           ;	.line	270; "i2c_slave.c"	switch (a & 0x2F) {
+0001a1   302f     movlw   0x2f             	MOVLW	0x2f
+0001a2   0020     movlb   0x00             	BANKSEL	_irq_a_1_24
+0001a3   0533     andwf   0x33, 0x0        	ANDWF	_irq_a_1_24,W
+0001a4   0020     movlb   0x00             	BANKSEL	r0x1035
+0001a5   00b0     movwf   0x30             	MOVWF	r0x1035
+                                           ;;     peep 1 - test/jump to test/skip
+0001a6   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+0001a7   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001a8   2a06     goto    0x0206           	GOTO	_00195_DS_
+0001a9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001aa   3a04     xorlw   0x04             	XORLW	0x04
+0001ab   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001ac   2a1c     goto    0x021c           	GOTO	_00197_DS_
+0001ad   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001ae   3a05     xorlw   0x05             	XORLW	0x05
+0001af   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001b0   2a1c     goto    0x021c           	GOTO	_00197_DS_
+0001b1   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001b2   3a06     xorlw   0x06             	XORLW	0x06
+0001b3   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001b4   2a21     goto    0x0221           	GOTO	_00198_DS_
+0001b5   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001b6   3a07     xorlw   0x07             	XORLW	0x07
+0001b7   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001b8   2a2a     goto    0x022a           	GOTO	_00199_DS_
+0001b9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001ba   3a08     xorlw   0x08             	XORLW	0x08
+0001bb   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001bc   2a34     goto    0x0234           	GOTO	_00201_DS_
+0001bd   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001be   3a09     xorlw   0x09             	XORLW	0x09
+0001bf   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001c0   2a34     goto    0x0234           	GOTO	_00201_DS_
+0001c1   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001c2   3a0a     xorlw   0x0a             	XORLW	0x0a
+0001c3   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001c4   2a39     goto    0x0239           	GOTO	_00202_DS_
+0001c5   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001c6   3a0b     xorlw   0x0b             	XORLW	0x0b
+0001c7   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001c8   2a42     goto    0x0242           	GOTO	_00203_DS_
+0001c9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001ca   3a20     xorlw   0x20             	XORLW	0x20
+0001cb   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001cc   2a4c     goto    0x024c           	GOTO	_00204_DS_
+0001cd   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001ce   3a21     xorlw   0x21             	XORLW	0x21
+0001cf   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001d0   2a51     goto    0x0251           	GOTO	_00205_DS_
+0001d1   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001d2   3a22     xorlw   0x22             	XORLW	0x22
+0001d3   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001d4   2a56     goto    0x0256           	GOTO	_00206_DS_
+0001d5   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001d6   3a23     xorlw   0x23             	XORLW	0x23
+0001d7   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001d8   2a5a     goto    0x025a           	GOTO	_00207_DS_
+0001d9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001da   3a24     xorlw   0x24             	XORLW	0x24
+0001db   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001dc   2a5f     goto    0x025f           	GOTO	_00208_DS_
+0001dd   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001de   3a25     xorlw   0x25             	XORLW	0x25
+0001df   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001e0   2a64     goto    0x0264           	GOTO	_00209_DS_
+0001e1   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001e2   3a26     xorlw   0x26             	XORLW	0x26
+0001e3   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001e4   2a69     goto    0x0269           	GOTO	_00210_DS_
+0001e5   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001e6   3a27     xorlw   0x27             	XORLW	0x27
+0001e7   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001e8   2a6d     goto    0x026d           	GOTO	_00211_DS_
+0001e9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001ea   3a28     xorlw   0x28             	XORLW	0x28
+0001eb   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001ec   2a72     goto    0x0272           	GOTO	_00212_DS_
+0001ed   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001ee   3a29     xorlw   0x29             	XORLW	0x29
+0001ef   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001f0   2a77     goto    0x0277           	GOTO	_00213_DS_
+0001f1   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001f2   3a2a     xorlw   0x2a             	XORLW	0x2a
+0001f3   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001f4   2a7c     goto    0x027c           	GOTO	_00214_DS_
+0001f5   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001f6   3a2b     xorlw   0x2b             	XORLW	0x2b
+0001f7   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001f8   2a80     goto    0x0280           	GOTO	_00215_DS_
+0001f9   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001fa   3a2c     xorlw   0x2c             	XORLW	0x2c
+0001fb   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0001fc   2a85     goto    0x0285           	GOTO	_00216_DS_
+0001fd   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+0001fe   3a2e     xorlw   0x2e             	XORLW	0x2e
+0001ff   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000200   2a8a     goto    0x028a           	GOTO	_00217_DS_
+000201   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+                                           ;;     peep 1 - test/jump to test/skip
+000202   3a2f     xorlw   0x2f             	XORLW	0x2f
+000203   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000204   2a8f     goto    0x028f           	GOTO	_00218_DS_
+000205   2a94     goto    0x0294           	GOTO	_00219_DS_
+                                           _00195_DS_:
+                                           ;	.line	272; "i2c_slave.c"	SSPBUF = buf[i++];
+000206   0020     movlb   0x00             	BANKSEL	_i
+000207   0841     movf    0x41, 0x0        	MOVF	_i,W
+000208   0020     movlb   0x00             	BANKSEL	r0x1035
+000209   00b0     movwf   0x30             	MOVWF	r0x1035
+00020a   0020     movlb   0x00             	BANKSEL	_i
+00020b   0ac1     incf    0x41, 0x1        	INCF	_i,F
+00020c   0020     movlb   0x00             	BANKSEL	r0x1035
+00020d   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+00020e   3ea0     addlw   0xa0             	ADDLW	(_buf + 0)
+00020f   00b0     movwf   0x30             	MOVWF	r0x1035
+000210   300c     movlw   0x0c             	MOVLW	high (_buf + 0)
+000211   1803     btfsc   0x03, 0x0        	BTFSC	STATUS,0
+000212   3e01     addlw   0x01             	ADDLW	0x01
+000213   00b1     movwf   0x31             	MOVWF	r0x1036
+000214   0830     movf    0x30, 0x0        	MOVF	r0x1035,W
+000215   0084     movwf   0x04             	MOVWF	FSR0L
+000216   0831     movf    0x31, 0x0        	MOVF	r0x1036,W
+000217   0085     movwf   0x05             	MOVWF	FSR0H
+000218   0800     movf    0x00, 0x0        	MOVF	INDF0,W
+000219   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00021a   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	273; "i2c_slave.c"	break;
+00021b   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00197_DS_:
+                                           ;	.line	277; "i2c_slave.c"	SSPBUF = v;
+00021c   0020     movlb   0x00             	BANKSEL	_v
+00021d   0840     movf    0x40, 0x0        	MOVF	_v,W
+00021e   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00021f   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	278; "i2c_slave.c"	break;
+000220   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00198_DS_:
+                                           ;	.line	281; "i2c_slave.c"	SSPBUF = tdo_in(8, 1);
+000221   3001     movlw   0x01             	MOVLW	0x01
+000222   00ff     movwf   0x7f             	MOVWF	STK00
+000223   3008     movlw   0x08             	MOVLW	0x08
+000224   3183     movlp   0x03             	PAGESEL	_tdo_in
+000225   2377     call    0x0377           	CALL	_tdo_in
+000226   3182     movlp   0x02             	PAGESEL	$
+000227   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000228   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	282; "i2c_slave.c"	break;
+000229   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00199_DS_:
+                                           ;	.line	284; "i2c_slave.c"	SSPBUF = tdo_in(c, 1);
+00022a   3001     movlw   0x01             	MOVLW	0x01
+00022b   00ff     movwf   0x7f             	MOVWF	STK00
+00022c   0020     movlb   0x00             	BANKSEL	_c
+00022d   0842     movf    0x42, 0x0        	MOVF	_c,W
+00022e   3183     movlp   0x03             	PAGESEL	_tdo_in
+00022f   2377     call    0x0377           	CALL	_tdo_in
+000230   3182     movlp   0x02             	PAGESEL	$
+000231   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000232   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	285; "i2c_slave.c"	break;
+000233   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00201_DS_:
+                                           ;	.line	289; "i2c_slave.c"	SSPBUF = v;
+000234   0020     movlb   0x00             	BANKSEL	_v
+000235   0840     movf    0x40, 0x0        	MOVF	_v,W
+000236   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000237   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	290; "i2c_slave.c"	break;
+000238   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00202_DS_:
+                                           ;	.line	293; "i2c_slave.c"	SSPBUF = tdo_in(8, 0);
+000239   3000     movlw   0x00             	MOVLW	0x00
+00023a   00ff     movwf   0x7f             	MOVWF	STK00
+00023b   3008     movlw   0x08             	MOVLW	0x08
+00023c   3183     movlp   0x03             	PAGESEL	_tdo_in
+00023d   2377     call    0x0377           	CALL	_tdo_in
+00023e   3182     movlp   0x02             	PAGESEL	$
+00023f   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000240   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	294; "i2c_slave.c"	break;
+000241   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00203_DS_:
+                                           ;	.line	296; "i2c_slave.c"	SSPBUF = tdo_in(c, 0);
+000242   3000     movlw   0x00             	MOVLW	0x00
+000243   00ff     movwf   0x7f             	MOVWF	STK00
+000244   0020     movlb   0x00             	BANKSEL	_c
+000245   0842     movf    0x42, 0x0        	MOVF	_c,W
+000246   3183     movlp   0x03             	PAGESEL	_tdo_in
+000247   2377     call    0x0377           	CALL	_tdo_in
+000248   3182     movlp   0x02             	PAGESEL	$
+000249   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00024a   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	297; "i2c_slave.c"	break;
+00024b   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00204_DS_:
+                                           ;	.line	300; "i2c_slave.c"	SSPBUF = TRISA;
+00024c   0021     movlb   0x01             	BANKSEL	_TRISA
+00024d   080c     movf    0x0c, 0x0        	MOVF	_TRISA,W
+00024e   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00024f   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	301; "i2c_slave.c"	break;
+000250   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00205_DS_:
+                                           ;	.line	303; "i2c_slave.c"	SSPBUF = LATA;
+000251   0022     movlb   0x02             	BANKSEL	_LATA
+000252   080c     movf    0x0c, 0x0        	MOVF	_LATA,W
+000253   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000254   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	304; "i2c_slave.c"	break;
+000255   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00206_DS_:
+                                           ;	.line	306; "i2c_slave.c"	SSPBUF = WPUA;
+000256   0024     movlb   0x04             	BANKSEL	_WPUA
+000257   080c     movf    0x0c, 0x0        	MOVF	_WPUA,W
+000258   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	307; "i2c_slave.c"	break;
+000259   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00207_DS_:
+                                           ;	.line	309; "i2c_slave.c"	SSPBUF = PORTA;
+00025a   0020     movlb   0x00             	BANKSEL	_PORTA
+00025b   080c     movf    0x0c, 0x0        	MOVF	_PORTA,W
+00025c   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00025d   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	310; "i2c_slave.c"	break;
+00025e   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00208_DS_:
+                                           ;	.line	313; "i2c_slave.c"	SSPBUF = TRISB;
+00025f   0021     movlb   0x01             	BANKSEL	_TRISB
+000260   080d     movf    0x0d, 0x0        	MOVF	_TRISB,W
+000261   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000262   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	314; "i2c_slave.c"	break;
+000263   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00209_DS_:
+                                           ;	.line	316; "i2c_slave.c"	SSPBUF = LATB;
+000264   0022     movlb   0x02             	BANKSEL	_LATB
+000265   080d     movf    0x0d, 0x0        	MOVF	_LATB,W
+000266   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000267   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	317; "i2c_slave.c"	break;
+000268   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00210_DS_:
+                                           ;	.line	319; "i2c_slave.c"	SSPBUF = WPUB;
+000269   0024     movlb   0x04             	BANKSEL	_WPUB
+00026a   080d     movf    0x0d, 0x0        	MOVF	_WPUB,W
+00026b   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	320; "i2c_slave.c"	break;
+00026c   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00211_DS_:
+                                           ;	.line	322; "i2c_slave.c"	SSPBUF = PORTB;
+00026d   0020     movlb   0x00             	BANKSEL	_PORTB
+00026e   080d     movf    0x0d, 0x0        	MOVF	_PORTB,W
+00026f   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000270   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	323; "i2c_slave.c"	break;
+000271   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00212_DS_:
+                                           ;	.line	326; "i2c_slave.c"	SSPBUF = TRISC;
+000272   0021     movlb   0x01             	BANKSEL	_TRISC
+000273   080e     movf    0x0e, 0x0        	MOVF	_TRISC,W
+000274   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000275   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	327; "i2c_slave.c"	break;
+000276   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00213_DS_:
+                                           ;	.line	329; "i2c_slave.c"	SSPBUF = LATC;
+000277   0022     movlb   0x02             	BANKSEL	_LATC
+000278   080e     movf    0x0e, 0x0        	MOVF	_LATC,W
+000279   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00027a   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	330; "i2c_slave.c"	break;
+00027b   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00214_DS_:
+                                           ;	.line	332; "i2c_slave.c"	SSPBUF = WPUC;
+00027c   0024     movlb   0x04             	BANKSEL	_WPUC
+00027d   080e     movf    0x0e, 0x0        	MOVF	_WPUC,W
+00027e   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	333; "i2c_slave.c"	break;
+00027f   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00215_DS_:
+                                           ;	.line	335; "i2c_slave.c"	SSPBUF = PORTC;
+000280   0020     movlb   0x00             	BANKSEL	_PORTC
+000281   080e     movf    0x0e, 0x0        	MOVF	_PORTC,W
+000282   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000283   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	336; "i2c_slave.c"	break;
+000284   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00216_DS_:
+                                           ;	.line	339; "i2c_slave.c"	SSPBUF = RC2PPS;
+000285   003d     movlb   0x1d             	BANKSEL	_RC2PPS
+000286   0822     movf    0x22, 0x0        	MOVF	_RC2PPS,W
+000287   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000288   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	340; "i2c_slave.c"	break;
+000289   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00217_DS_:
+                                           ;	.line	342; "i2c_slave.c"	SSPBUF = NCO1CON;
+00028a   0029     movlb   0x09             	BANKSEL	_NCO1CON
+00028b   081e     movf    0x1e, 0x0        	MOVF	_NCO1CON,W
+00028c   0024     movlb   0x04             	BANKSEL	_SSPBUF
+00028d   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	343; "i2c_slave.c"	break;
+00028e   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00218_DS_:
+                                           ;	.line	345; "i2c_slave.c"	SSPBUF = NCO1CLK;
+00028f   0029     movlb   0x09             	BANKSEL	_NCO1CLK
+000290   081f     movf    0x1f, 0x0        	MOVF	_NCO1CLK,W
+000291   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000292   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           ;	.line	346; "i2c_slave.c"	break;
+000293   2a97     goto    0x0297           	GOTO	_00220_DS_
+                                           _00219_DS_:
+                                           ;	.line	349; "i2c_slave.c"	SSPBUF = 0xA5;		/* default */
+000294   30a5     movlw   0xa5             	MOVLW	0xa5
+000295   0024     movlb   0x04             	BANKSEL	_SSPBUF
+000296   0091     movwf   0x11             	MOVWF	_SSPBUF
+                                           _00220_DS_:
+                                           ;	.line	351; "i2c_slave.c"	SSP1CON1bits.CKP = 1;
+000297   0024     movlb   0x04             	BANKSEL	_SSP1CON1bits
+000298   1615     bsf     0x15, 0x4        	BSF	_SSP1CON1bits,4
+                                           END_OF_INTERRUPT:
+000299   0009     retfie                   	RETFIE	
+
+                                           ;--------------------------------------------------------
+                                           ; code
+                                           ;--------------------------------------------------------
+                                           code_i2c_slave	code
+                                           ;***
+                                           ;  pBlock Stats: dbName = M
+                                           ;***
+                                           ;has an exit
+                                           ;; Starting pCode block
+                                           S_i2c_slave__main	code
+                                           _main:
+                                           ; 2 exit points
+                                           ;	.line	370; "i2c_slave.c"	OSCCONbits.SPLLEN = 1;
+0003b9   0021     movlb   0x01             	BANKSEL	_OSCCONbits
+0003ba   1799     bsf     0x19, 0x7        	BSF	_OSCCONbits,7
+                                           ;	.line	371; "i2c_slave.c"	OSCCONbits.IRCF = 0b1110;	/* 8MHz */
+0003bb   0819     movf    0x19, 0x0        	MOVF	(_OSCCONbits + 0),W
+0003bc   3987     andlw   0x87             	ANDLW	0x87
+0003bd   3870     iorlw   0x70             	IORLW	0x70
+                                           ;;     peep 2 - Removed redundant move
+                                           ;	.line	372; "i2c_slave.c"	OSCCONbits.SCS = 0b00;	/* Fosc */
+0003be   0099     movwf   0x19             	MOVWF	(_OSCCONbits + 0)
+0003bf   39fc     andlw   0xfc             	ANDLW	0xfc
+0003c0   0099     movwf   0x19             	MOVWF	(_OSCCONbits + 0)
+                                           ;	.line	375; "i2c_slave.c"	ANSELA = 0;
+0003c1   0023     movlb   0x03             	BANKSEL	_ANSELA
+0003c2   018c     clrf    0x0c             	CLRF	_ANSELA
+                                           ;	.line	376; "i2c_slave.c"	ANSELB = 0;
+0003c3   018d     clrf    0x0d             	CLRF	_ANSELB
+                                           ;	.line	377; "i2c_slave.c"	ANSELC = 0;
+0003c4   018e     clrf    0x0e             	CLRF	_ANSELC
+                                           ;	.line	380; "i2c_slave.c"	SCL_TRIS = 1;
+0003c5   0021     movlb   0x01             	BANKSEL	_TRISBbits
+0003c6   170d     bsf     0x0d, 0x6        	BSF	_TRISBbits,6
+                                           ;	.line	381; "i2c_slave.c"	SDA_TRIS = 1;
+0003c7   178d     bsf     0x0d, 0x7        	BSF	_TRISBbits,7
+                                           ;	.line	383; "i2c_slave.c"	PPSLOCKbits.PPSLOCKED = 0;
+0003c8   003c     movlb   0x1c             	BANKSEL	_PPSLOCKbits
+0003c9   100f     bcf     0x0f, 0x0        	BCF	_PPSLOCKbits,0
+                                           ;	.line	385; "i2c_slave.c"	SSPDATPPS = SDA_PPSP;
+0003ca   300f     movlw   0x0f             	MOVLW	0x0f
+0003cb   00a1     movwf   0x21             	MOVWF	_SSPDATPPS
+                                           ;	.line	386; "i2c_slave.c"	SDA_RPPS = SDA_PPS;
+0003cc   3011     movlw   0x11             	MOVLW	0x11
+0003cd   003d     movlb   0x1d             	BANKSEL	_RB7PPS
+0003ce   009f     movwf   0x1f             	MOVWF	_RB7PPS
+                                           ;	.line	388; "i2c_slave.c"	SSPCLKPPS = SCL_PPSP;
+0003cf   300e     movlw   0x0e             	MOVLW	0x0e
+0003d0   003c     movlb   0x1c             	BANKSEL	_SSPCLKPPS
+0003d1   00a0     movwf   0x20             	MOVWF	_SSPCLKPPS
+                                           ;	.line	389; "i2c_slave.c"	SCL_RPPS = SCL_PPS;
+0003d2   3010     movlw   0x10             	MOVLW	0x10
+0003d3   003d     movlb   0x1d             	BANKSEL	_RB6PPS
+0003d4   009e     movwf   0x1e             	MOVWF	_RB6PPS
+                                           ;	.line	391; "i2c_slave.c"	SSP1STATbits.SMP = 1;
+0003d5   0024     movlb   0x04             	BANKSEL	_SSP1STATbits
+0003d6   1794     bsf     0x14, 0x7        	BSF	_SSP1STATbits,7
+                                           ;	.line	392; "i2c_slave.c"	SSP1STATbits.CKE = 1;
+0003d7   1714     bsf     0x14, 0x6        	BSF	_SSP1STATbits,6
+                                           ;	.line	393; "i2c_slave.c"	SSP1CON1bits.SSPM = 0b0110;	/* 7bit slave mode */
+0003d8   0815     movf    0x15, 0x0        	MOVF	(_SSP1CON1bits + 0),W
+0003d9   39f0     andlw   0xf0             	ANDLW	0xf0
+0003da   3806     iorlw   0x06             	IORLW	0x06
+0003db   0095     movwf   0x15             	MOVWF	(_SSP1CON1bits + 0)
+                                           ;	.line	394; "i2c_slave.c"	SSP1CON1bits.SSPEN = 1;	/* enable I2C */
+0003dc   1695     bsf     0x15, 0x5        	BSF	_SSP1CON1bits,5
+                                           ;	.line	395; "i2c_slave.c"	SSP1CON1bits.CKP = 1;	/* enable I2C clock */
+0003dd   1615     bsf     0x15, 0x4        	BSF	_SSP1CON1bits,4
+                                           ;	.line	396; "i2c_slave.c"	SSP1CON2 = 0;
+0003de   0196     clrf    0x16             	CLRF	_SSP1CON2
+                                           ;	.line	397; "i2c_slave.c"	SSP1CON2bits.SEN = 0;	/* clock stretching disabled */
+0003df   1016     bcf     0x16, 0x0        	BCF	_SSP1CON2bits,0
+                                           ;	.line	398; "i2c_slave.c"	SSP1CON3 = 0;
+0003e0   0197     clrf    0x17             	CLRF	_SSP1CON3
+                                           ;	.line	399; "i2c_slave.c"	SSP1CON3bits.BOEN = 1;	/* buffer override enabled */
+0003e1   1617     bsf     0x17, 0x4        	BSF	_SSP1CON3bits,4
+                                           ;	.line	401; "i2c_slave.c"	SSPADD = 0b10000000;
+0003e2   3080     movlw   0x80             	MOVLW	0x80
+0003e3   0092     movwf   0x12             	MOVWF	_SSPADD
+                                           ;	.line	402; "i2c_slave.c"	SSPMSK = 0b10100000;
+0003e4   30a0     movlw   0xa0             	MOVLW	0xa0
+0003e5   0093     movwf   0x13             	MOVWF	_SSPMSK
+                                           ;	.line	404; "i2c_slave.c"	NCO1INCU = 0;
+0003e6   0029     movlb   0x09             	BANKSEL	_NCO1INCU
+0003e7   019d     clrf    0x1d             	CLRF	_NCO1INCU
+                                           ;	.line	405; "i2c_slave.c"	NCO1INCH = 0x80;
+0003e8   3080     movlw   0x80             	MOVLW	0x80
+0003e9   009c     movwf   0x1c             	MOVWF	_NCO1INCH
+                                           ;	.line	406; "i2c_slave.c"	NCO1INCL = 0x00;
+0003ea   019b     clrf    0x1b             	CLRF	_NCO1INCL
+                                           ;	.line	408; "i2c_slave.c"	NCO1CON = 0b10100000;
+0003eb   30a0     movlw   0xa0             	MOVLW	0xa0
+0003ec   009e     movwf   0x1e             	MOVWF	_NCO1CON
+                                           ;	.line	412; "i2c_slave.c"	PIR1bits.SSP1IF = 0;	/* clear I2C irq */
+0003ed   0020     movlb   0x00             	BANKSEL	_PIR1bits
+0003ee   1191     bcf     0x11, 0x3        	BCF	_PIR1bits,3
+                                           ;	.line	413; "i2c_slave.c"	PIE1bits.SSP1IE = 1;	/* enable I2C irq */
+0003ef   0021     movlb   0x01             	BANKSEL	_PIE1bits
+0003f0   1591     bsf     0x11, 0x3        	BSF	_PIE1bits,3
+                                           ;	.line	415; "i2c_slave.c"	INTCONbits.PEIE = 1;	/* enable peripheral irq */
+0003f1   0020     movlb   0x00             	BANKSEL	_INTCONbits
+0003f2   170b     bsf     0x0b, 0x6        	BSF	_INTCONbits,6
+                                           ;	.line	416; "i2c_slave.c"	INTCONbits.GIE = 1;		/* enable global irq */
+0003f3   178b     bsf     0x0b, 0x7        	BSF	_INTCONbits,7
+                                           _00473_DS_:
+                                           ;	.line	418; "i2c_slave.c"	while (1);
+0003f4   2bf4     goto    0x03f4           	GOTO	_00473_DS_
+0003f5   0008     return                   	RETURN	
+                                           ; exit point of _main
+
+                                           ;***
+                                           ;  pBlock Stats: dbName = C
+                                           ;***
+                                           ;has an exit
+                                           ;7 compiler assigned registers:
+                                           ;   r0x1025
+                                           ;   STK00
+                                           ;   r0x1026
+                                           ;   STK01
+                                           ;   r0x1027
+                                           ;   r0x1028
+                                           ;   r0x1029
+                                           ;; Starting pCode block
+                                           S_i2c_slave__tdi_tdo	code
+                                           _tdi_tdo:
+                                           ; 2 exit points
+                                           ;	.line	108; "i2c_slave.c"	void tdi_tdo(unsigned char val, unsigned char cnt, unsigned char tms)
+00031a   0020     movlb   0x00             	BANKSEL	r0x1025
+00031b   00ab     movwf   0x2b             	MOVWF	r0x1025
+00031c   087f     movf    0x7f, 0x0        	MOVF	STK00,W
+00031d   00ac     movwf   0x2c             	MOVWF	r0x1026
+00031e   087e     movf    0x7e, 0x0        	MOVF	STK01,W
+00031f   00ad     movwf   0x2d             	MOVWF	r0x1027
+                                           ;	.line	110; "i2c_slave.c"	unsigned char bit = 0;
+000320   01ae     clrf    0x2e             	CLRF	r0x1028
+                                           ;	.line	112; "i2c_slave.c"	TMS_PORT = 0;
+000321   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000322   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           _00139_DS_:
+                                           ;	.line	113; "i2c_slave.c"	while (--cnt) {
+000323   0020     movlb   0x00             	BANKSEL	r0x1026
+000324   032c     decf    0x2c, 0x0        	DECF	r0x1026,W
+                                           ;;     peep 2 - Removed redundant move
+000325   00af     movwf   0x2f             	MOVWF	r0x1029
+000326   00ac     movwf   0x2c             	MOVWF	r0x1026
+                                           ;;     peep 7 - Removed redundant move
+000327   082f     movf    0x2f, 0x0        	MOVF	r0x1029,W
+000328   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000329   2b49     goto    0x0349           	GOTO	_00141_DS_
+                                           ;	.line	114; "i2c_slave.c"	v = (v << 1) | bit;
+00032a   0020     movlb   0x00             	BANKSEL	_v
+00032b   3540     lslf    0x40, 0x0        	LSLF	_v,W
+                                           ;;     peep 9b - Removed redundant move
+00032c   0020     movlb   0x00             	BANKSEL	r0x1029
+00032d   00af     movwf   0x2f             	MOVWF	r0x1029
+00032e   042e     iorwf   0x2e, 0x0        	IORWF	r0x1028,W
+00032f   0020     movlb   0x00             	BANKSEL	_v
+000330   00c0     movwf   0x40             	MOVWF	_v
+                                           ;	.line	115; "i2c_slave.c"	TCK_PORT = 0;
+000331   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000332   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	116; "i2c_slave.c"	if (val & 1) {
+000333   0020     movlb   0x00             	BANKSEL	r0x1025
+000334   1c2b     btfss   0x2b, 0x0        	BTFSS	r0x1025,0
+000335   2b39     goto    0x0339           	GOTO	_00137_DS_
+                                           ;	.line	117; "i2c_slave.c"	TDI_PORT = 1;
+000336   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000337   148e     bsf     0x0e, 0x1        	BSF	_PORTCbits,1
+000338   2b3b     goto    0x033b           	GOTO	_00138_DS_
+                                           _00137_DS_:
+                                           ;	.line	119; "i2c_slave.c"	TDI_PORT = 0;
+000339   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00033a   108e     bcf     0x0e, 0x1        	BCF	_PORTCbits,1
+                                           _00138_DS_:
+                                           ;	.line	121; "i2c_slave.c"	bit = TDO_PORT;
+00033b   0020     movlb   0x00             	BANKSEL	r0x1029
+00033c   01af     clrf    0x2f             	CLRF	r0x1029
+00033d   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00033e   1c0e     btfss   0x0e, 0x0        	BTFSS	_PORTCbits,0
+00033f   2b42     goto    0x0342           	GOTO	_00001_DS_
+000340   0020     movlb   0x00             	BANKSEL	r0x1029
+000341   0aaf     incf    0x2f, 0x1        	INCF	r0x1029,F
+                                           _00001_DS_:
+000342   0020     movlb   0x00             	BANKSEL	r0x1029
+000343   082f     movf    0x2f, 0x0        	MOVF	r0x1029,W
+000344   00ae     movwf   0x2e             	MOVWF	r0x1028
+                                           ;;shiftRight_Left2ResultLit:5323: shCount=1, size=1, sign=0, same=1, offr=0
+                                           ;	.line	122; "i2c_slave.c"	val = val >> 1;
+000345   36ab     lsrf    0x2b, 0x1        	LSRF	r0x1025,F
+                                           ;	.line	123; "i2c_slave.c"	TCK_PORT = 1;
+000346   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000347   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+000348   2b23     goto    0x0323           	GOTO	_00139_DS_
+                                           _00141_DS_:
+                                           ;	.line	125; "i2c_slave.c"	v = (v << 1) | bit;
+000349   0020     movlb   0x00             	BANKSEL	_v
+00034a   3540     lslf    0x40, 0x0        	LSLF	_v,W
+                                           ;;     peep 9b - Removed redundant move
+00034b   0020     movlb   0x00             	BANKSEL	r0x1026
+00034c   00ac     movwf   0x2c             	MOVWF	r0x1026
+00034d   042e     iorwf   0x2e, 0x0        	IORWF	r0x1028,W
+00034e   0020     movlb   0x00             	BANKSEL	_v
+00034f   00c0     movwf   0x40             	MOVWF	_v
+                                           ;	.line	126; "i2c_slave.c"	TCK_PORT = 0;
+000350   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000351   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	127; "i2c_slave.c"	if (val & 1) {
+000352   0020     movlb   0x00             	BANKSEL	r0x1025
+000353   1c2b     btfss   0x2b, 0x0        	BTFSS	r0x1025,0
+000354   2b58     goto    0x0358           	GOTO	_00143_DS_
+                                           ;	.line	128; "i2c_slave.c"	TDI_PORT = 1;
+000355   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000356   148e     bsf     0x0e, 0x1        	BSF	_PORTCbits,1
+000357   2b5a     goto    0x035a           	GOTO	_00144_DS_
+                                           _00143_DS_:
+                                           ;	.line	130; "i2c_slave.c"	TDI_PORT = 0;
+000358   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000359   108e     bcf     0x0e, 0x1        	BCF	_PORTCbits,1
+                                           _00144_DS_:
+                                           ;	.line	132; "i2c_slave.c"	bit = TDO_PORT;
+00035a   0020     movlb   0x00             	BANKSEL	r0x1025
+00035b   01ab     clrf    0x2b             	CLRF	r0x1025
+00035c   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00035d   1c0e     btfss   0x0e, 0x0        	BTFSS	_PORTCbits,0
+00035e   2b61     goto    0x0361           	GOTO	_00002_DS_
+00035f   0020     movlb   0x00             	BANKSEL	r0x1025
+000360   0aab     incf    0x2b, 0x1        	INCF	r0x1025,F
+                                           _00002_DS_:
+000361   0020     movlb   0x00             	BANKSEL	r0x1025
+000362   082b     movf    0x2b, 0x0        	MOVF	r0x1025,W
+000363   00ae     movwf   0x2e             	MOVWF	r0x1028
+                                           ;	.line	133; "i2c_slave.c"	TMS_PORT = tms;
+000364   0c2d     rrf     0x2d, 0x0        	RRF	r0x1027,W
+000365   1803     btfsc   0x03, 0x0        	BTFSC	STATUS,0
+000366   2b69     goto    0x0369           	GOTO	_00003_DS_
+000367   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000368   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           _00003_DS_:
+000369   1c03     btfss   0x03, 0x0        	BTFSS	STATUS,0
+00036a   2b6d     goto    0x036d           	GOTO	_00004_DS_
+00036b   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00036c   158e     bsf     0x0e, 0x3        	BSF	_PORTCbits,3
+                                           _00004_DS_:
+                                           ;	.line	134; "i2c_slave.c"	TCK_PORT = 1;
+00036d   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00036e   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+                                           ;	.line	135; "i2c_slave.c"	v = v << 1 | bit;
+00036f   0020     movlb   0x00             	BANKSEL	_v
+000370   3540     lslf    0x40, 0x0        	LSLF	_v,W
+                                           ;;     peep 9b - Removed redundant move
+000371   0020     movlb   0x00             	BANKSEL	r0x1025
+000372   00ab     movwf   0x2b             	MOVWF	r0x1025
+000373   042e     iorwf   0x2e, 0x0        	IORWF	r0x1028,W
+000374   0020     movlb   0x00             	BANKSEL	_v
+000375   00c0     movwf   0x40             	MOVWF	_v
+000376   0008     return                   	RETURN	
+                                           ; exit point of _tdi_tdo
+
+                                           ;***
+                                           ;  pBlock Stats: dbName = C
+                                           ;***
+                                           ;has an exit
+                                           ;6 compiler assigned registers:
+                                           ;   r0x102A
+                                           ;   STK00
+                                           ;   r0x102B
+                                           ;   r0x102C
+                                           ;   r0x102D
+                                           ;   r0x102E
+                                           ;; Starting pCode block
+                                           S_i2c_slave__tdo_in	code
+                                           _tdo_in:
+                                           ; 2 exit points
+                                           ;	.line	85; "i2c_slave.c"	unsigned char tdo_in(unsigned char cnt, unsigned char tms)
+000377   0020     movlb   0x00             	BANKSEL	r0x102A
+000378   00a6     movwf   0x26             	MOVWF	r0x102A
+000379   087f     movf    0x7f, 0x0        	MOVF	STK00,W
+00037a   00a7     movwf   0x27             	MOVWF	r0x102B
+                                           ;	.line	87; "i2c_slave.c"	unsigned char val = 0;
+00037b   01a8     clrf    0x28             	CLRF	r0x102C
+                                           ;	.line	88; "i2c_slave.c"	unsigned char bit = 0;
+00037c   01a9     clrf    0x29             	CLRF	r0x102D
+                                           ;	.line	90; "i2c_slave.c"	TMS_PORT = 0;
+00037d   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00037e   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           _00129_DS_:
+                                           ;	.line	91; "i2c_slave.c"	while (--cnt) {
+00037f   0020     movlb   0x00             	BANKSEL	r0x102A
+000380   0326     decf    0x26, 0x0        	DECF	r0x102A,W
+                                           ;;     peep 2 - Removed redundant move
+000381   00aa     movwf   0x2a             	MOVWF	r0x102E
+000382   00a6     movwf   0x26             	MOVWF	r0x102A
+                                           ;;     peep 7 - Removed redundant move
+000383   082a     movf    0x2a, 0x0        	MOVF	r0x102E,W
+000384   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000385   2b98     goto    0x0398           	GOTO	_00131_DS_
+                                           ;	.line	92; "i2c_slave.c"	val = val << 1;
+000386   35a8     lslf    0x28, 0x1        	LSLF	r0x102C,F
+                                           ;	.line	93; "i2c_slave.c"	TCK_PORT = 0;
+000387   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000388   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	94; "i2c_slave.c"	val = val | bit;
+000389   0020     movlb   0x00             	BANKSEL	r0x102D
+00038a   0829     movf    0x29, 0x0        	MOVF	r0x102D,W
+00038b   04a8     iorwf   0x28, 0x1        	IORWF	r0x102C,F
+                                           ;	.line	95; "i2c_slave.c"	bit = TDO_PORT;
+00038c   01aa     clrf    0x2a             	CLRF	r0x102E
+00038d   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00038e   1c0e     btfss   0x0e, 0x0        	BTFSS	_PORTCbits,0
+00038f   2b92     goto    0x0392           	GOTO	_00005_DS_
+000390   0020     movlb   0x00             	BANKSEL	r0x102E
+000391   0aaa     incf    0x2a, 0x1        	INCF	r0x102E,F
+                                           _00005_DS_:
+000392   0020     movlb   0x00             	BANKSEL	r0x102E
+000393   082a     movf    0x2a, 0x0        	MOVF	r0x102E,W
+000394   00a9     movwf   0x29             	MOVWF	r0x102D
+                                           ;	.line	96; "i2c_slave.c"	TCK_PORT = 1;
+000395   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000396   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+000397   2b7f     goto    0x037f           	GOTO	_00129_DS_
+                                           _00131_DS_:
+                                           ;	.line	98; "i2c_slave.c"	val = val << 1;
+000398   0020     movlb   0x00             	BANKSEL	r0x102C
+000399   35a8     lslf    0x28, 0x1        	LSLF	r0x102C,F
+                                           ;	.line	99; "i2c_slave.c"	TCK_PORT = 0;
+00039a   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00039b   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	100; "i2c_slave.c"	val = val | bit;
+00039c   0020     movlb   0x00             	BANKSEL	r0x102D
+00039d   0829     movf    0x29, 0x0        	MOVF	r0x102D,W
+00039e   04a8     iorwf   0x28, 0x1        	IORWF	r0x102C,F
+                                           ;	.line	101; "i2c_slave.c"	bit = TDO_PORT;
+00039f   01a6     clrf    0x26             	CLRF	r0x102A
+0003a0   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0003a1   1c0e     btfss   0x0e, 0x0        	BTFSS	_PORTCbits,0
+0003a2   2ba5     goto    0x03a5           	GOTO	_00006_DS_
+0003a3   0020     movlb   0x00             	BANKSEL	r0x102A
+0003a4   0aa6     incf    0x26, 0x1        	INCF	r0x102A,F
+                                           _00006_DS_:
+0003a5   0020     movlb   0x00             	BANKSEL	r0x102A
+0003a6   0826     movf    0x26, 0x0        	MOVF	r0x102A,W
+0003a7   00a9     movwf   0x29             	MOVWF	r0x102D
+                                           ;	.line	102; "i2c_slave.c"	TMS_PORT = tms;
+0003a8   0c27     rrf     0x27, 0x0        	RRF	r0x102B,W
+0003a9   1803     btfsc   0x03, 0x0        	BTFSC	STATUS,0
+0003aa   2bad     goto    0x03ad           	GOTO	_00007_DS_
+0003ab   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0003ac   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           _00007_DS_:
+0003ad   1c03     btfss   0x03, 0x0        	BTFSS	STATUS,0
+0003ae   2bb1     goto    0x03b1           	GOTO	_00008_DS_
+0003af   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0003b0   158e     bsf     0x0e, 0x3        	BSF	_PORTCbits,3
+                                           _00008_DS_:
+                                           ;	.line	103; "i2c_slave.c"	TCK_PORT = 1;
+0003b1   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0003b2   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+                                           ;	.line	104; "i2c_slave.c"	val = val << 1 | bit;
+0003b3   0020     movlb   0x00             	BANKSEL	r0x102C
+0003b4   3528     lslf    0x28, 0x0        	LSLF	r0x102C,W
+                                           ;;     peep 9b - Removed redundant move
+0003b5   00a6     movwf   0x26             	MOVWF	r0x102A
+0003b6   0429     iorwf   0x29, 0x0        	IORWF	r0x102D,W
+                                           ;;     peep 2 - Removed redundant move
+                                           ;	.line	105; "i2c_slave.c"	return val;
+0003b7   00a8     movwf   0x28             	MOVWF	r0x102C
+0003b8   0008     return                   	RETURN	
+                                           ; exit point of _tdo_in
+
+                                           ;***
+                                           ;  pBlock Stats: dbName = C
+                                           ;***
+                                           ;has an exit
+                                           ;6 compiler assigned registers:
+                                           ;   r0x102F
+                                           ;   STK00
+                                           ;   r0x1030
+                                           ;   STK01
+                                           ;   r0x1031
+                                           ;   r0x1032
+                                           ;; Starting pCode block
+                                           S_i2c_slave__tdi_out	code
+                                           _tdi_out:
+                                           ; 2 exit points
+                                           ;	.line	62; "i2c_slave.c"	void tdi_out(unsigned char val, unsigned char cnt, unsigned char tms)
+0003f6   0020     movlb   0x00             	BANKSEL	r0x102F
+0003f7   00a2     movwf   0x22             	MOVWF	r0x102F
+0003f8   087f     movf    0x7f, 0x0        	MOVF	STK00,W
+0003f9   00a3     movwf   0x23             	MOVWF	r0x1030
+0003fa   087e     movf    0x7e, 0x0        	MOVF	STK01,W
+0003fb   00a4     movwf   0x24             	MOVWF	r0x1031
+                                           ;	.line	64; "i2c_slave.c"	TMS_PORT = 0;
+0003fc   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0003fd   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           _00119_DS_:
+                                           ;	.line	65; "i2c_slave.c"	while (--cnt) {
+0003fe   0020     movlb   0x00             	BANKSEL	r0x1030
+0003ff   0323     decf    0x23, 0x0        	DECF	r0x1030,W
+                                           ;;     peep 2 - Removed redundant move
+000400   00a5     movwf   0x25             	MOVWF	r0x1032
+000401   00a3     movwf   0x23             	MOVWF	r0x1030
+                                           ;;     peep 7 - Removed redundant move
+000402   0825     movf    0x25, 0x0        	MOVF	r0x1032,W
+000403   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+000404   2c14     goto    0x0414           	GOTO	_00121_DS_
+                                           ;	.line	66; "i2c_slave.c"	TCK_PORT = 0;
+000405   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000406   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	67; "i2c_slave.c"	if (val & 1) {
+000407   0020     movlb   0x00             	BANKSEL	r0x102F
+000408   1c22     btfss   0x22, 0x0        	BTFSS	r0x102F,0
+000409   2c0d     goto    0x040d           	GOTO	_00117_DS_
+                                           ;	.line	68; "i2c_slave.c"	TDI_PORT = 1;
+00040a   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00040b   148e     bsf     0x0e, 0x1        	BSF	_PORTCbits,1
+00040c   2c0f     goto    0x040f           	GOTO	_00118_DS_
+                                           _00117_DS_:
+                                           ;	.line	70; "i2c_slave.c"	TDI_PORT = 0;
+00040d   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00040e   108e     bcf     0x0e, 0x1        	BCF	_PORTCbits,1
+                                           ;;shiftRight_Left2ResultLit:5323: shCount=1, size=1, sign=0, same=1, offr=0
+                                           _00118_DS_:
+                                           ;	.line	72; "i2c_slave.c"	val = val >> 1;
+00040f   0020     movlb   0x00             	BANKSEL	r0x102F
+000410   36a2     lsrf    0x22, 0x1        	LSRF	r0x102F,F
+                                           ;	.line	73; "i2c_slave.c"	TCK_PORT = 1;
+000411   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000412   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+000413   2bfe     goto    0x03fe           	GOTO	_00119_DS_
+                                           _00121_DS_:
+                                           ;	.line	75; "i2c_slave.c"	TCK_PORT = 0;
+000414   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000415   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	76; "i2c_slave.c"	if (val & 1) {
+000416   0020     movlb   0x00             	BANKSEL	r0x102F
+000417   1c22     btfss   0x22, 0x0        	BTFSS	r0x102F,0
+000418   2c1c     goto    0x041c           	GOTO	_00123_DS_
+                                           ;	.line	77; "i2c_slave.c"	TDI_PORT = 1;
+000419   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00041a   148e     bsf     0x0e, 0x1        	BSF	_PORTCbits,1
+00041b   2c1e     goto    0x041e           	GOTO	_00124_DS_
+                                           _00123_DS_:
+                                           ;	.line	79; "i2c_slave.c"	TDI_PORT = 0;
+00041c   0020     movlb   0x00             	BANKSEL	_PORTCbits
+00041d   108e     bcf     0x0e, 0x1        	BCF	_PORTCbits,1
+                                           _00124_DS_:
+                                           ;	.line	81; "i2c_slave.c"	TMS_PORT = tms;
+00041e   0020     movlb   0x00             	BANKSEL	r0x1031
+00041f   0c24     rrf     0x24, 0x0        	RRF	r0x1031,W
+000420   1803     btfsc   0x03, 0x0        	BTFSC	STATUS,0
+000421   2c24     goto    0x0424           	GOTO	_00009_DS_
+000422   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000423   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           _00009_DS_:
+000424   1c03     btfss   0x03, 0x0        	BTFSS	STATUS,0
+000425   2c28     goto    0x0428           	GOTO	_00010_DS_
+000426   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000427   158e     bsf     0x0e, 0x3        	BSF	_PORTCbits,3
+                                           _00010_DS_:
+                                           ;	.line	82; "i2c_slave.c"	TCK_PORT = 1;
+000428   0020     movlb   0x00             	BANKSEL	_PORTCbits
+000429   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+00042a   0008     return                   	RETURN	
+                                           ; exit point of _tdi_out
+
+                                           ;***
+                                           ;  pBlock Stats: dbName = C
+                                           ;***
+                                           ;has an exit
+                                           ;3 compiler assigned registers:
+                                           ;   r0x1033
+                                           ;   STK00
+                                           ;   r0x1034
+                                           ;; Starting pCode block
+                                           S_i2c_slave__tms_out	code
+                                           _tms_out:
+                                           ; 2 exit points
+                                           ;	.line	47; "i2c_slave.c"	void tms_out(unsigned char val, unsigned char cnt)
+00049a   0020     movlb   0x00             	BANKSEL	r0x1033
+00049b   00a0     movwf   0x20             	MOVWF	r0x1033
+00049c   087f     movf    0x7f, 0x0        	MOVF	STK00,W
+00049d   00a1     movwf   0x21             	MOVWF	r0x1034
+                                           _00108_DS_:
+                                           ;	.line	49; "i2c_slave.c"	while (cnt) {
+00049e   3000     movlw   0x00             	MOVLW	0x00
+00049f   0020     movlb   0x00             	BANKSEL	r0x1034
+0004a0   0421     iorwf   0x21, 0x0        	IORWF	r0x1034,W
+0004a1   1903     btfsc   0x03, 0x2        	BTFSC	STATUS,2
+0004a2   2cb4     goto    0x04b4           	GOTO	_00111_DS_
+                                           ;	.line	50; "i2c_slave.c"	TCK_PORT = 0;
+0004a3   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0004a4   110e     bcf     0x0e, 0x2        	BCF	_PORTCbits,2
+                                           ;	.line	51; "i2c_slave.c"	if (val & 1) {
+0004a5   0020     movlb   0x00             	BANKSEL	r0x1033
+0004a6   1c20     btfss   0x20, 0x0        	BTFSS	r0x1033,0
+0004a7   2cab     goto    0x04ab           	GOTO	_00106_DS_
+                                           ;	.line	52; "i2c_slave.c"	TMS_PORT = 1;
+0004a8   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0004a9   158e     bsf     0x0e, 0x3        	BSF	_PORTCbits,3
+0004aa   2cad     goto    0x04ad           	GOTO	_00107_DS_
+                                           _00106_DS_:
+                                           ;	.line	54; "i2c_slave.c"	TMS_PORT = 0;
+0004ab   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0004ac   118e     bcf     0x0e, 0x3        	BCF	_PORTCbits,3
+                                           ;;shiftRight_Left2ResultLit:5323: shCount=1, size=1, sign=0, same=1, offr=0
+                                           _00107_DS_:
+                                           ;	.line	56; "i2c_slave.c"	val = val >> 1;
+0004ad   0020     movlb   0x00             	BANKSEL	r0x1033
+0004ae   36a0     lsrf    0x20, 0x1        	LSRF	r0x1033,F
+                                           ;	.line	57; "i2c_slave.c"	TCK_PORT = 1;
+0004af   0020     movlb   0x00             	BANKSEL	_PORTCbits
+0004b0   150e     bsf     0x0e, 0x2        	BSF	_PORTCbits,2
+                                           ;	.line	58; "i2c_slave.c"	cnt--;
+0004b1   0020     movlb   0x00             	BANKSEL	r0x1034
+0004b2   03a1     decf    0x21, 0x1        	DECF	r0x1034,F
+0004b3   2c9e     goto    0x049e           	GOTO	_00108_DS_
+                                           _00111_DS_:
+0004b4   0008     return                   	RETURN	
+                                           ; exit point of _tms_out
+
+
+                                           ;	code size estimation:
+                                           ;	  710+  252 =   962 instructions ( 2428 byte)
+
+                                           	end
+                                                   LIST
+
+                                           ;==========================================================================
+                                           ; Build date : Aug 13 2015
+                                           ;  MPASM PIC16F1934 processor include
+                                           ; 
+                                           ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+                                           ;==========================================================================
+
+                                                   NOLIST
+                                                   LIST
+
+                                           ;==========================================================================
+                                           ; Build date : Aug 13 2015
+                                           ;  MPASM PIC16F1718 processor include
+                                           ; 
+                                           ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+                                           ;==========================================================================
+
+                                                   NOLIST

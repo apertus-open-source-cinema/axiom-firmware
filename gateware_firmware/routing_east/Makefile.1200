@@ -1,0 +1,73 @@
+
+BOARD="MachXO2"
+DEVICE="LCMXO2-1200HC"
+PKG="TQFP100"
+GRADE=4
+SEARCH="/opt/diamond/3.5_x64/ispfpga/vhdl/data/"
+
+ALL:	pass.jed
+
+%.edi : %.vhd 
+	synpwrap -prj $*.prj
+
+%.ngo : %.edi
+	edif2ngd -l $(BOARD) -d $(DEVICE) $< $@
+
+%.ngd : %.ngo
+	ngdbuild -a $(BOARD) -d $(DEVICE) -p $(SEARCH) $< $@
+
+%.ncd : %.ngd %.lpf
+	map -a $(BOARD) -p $(DEVICE) -t $(PKG) -s $(GRADE) $< -o $@ $*.lpf
+
+%.o.ncd : %.ncd
+	par -w $< $*.o.ncd $*.prf
+
+%.jed : %.o.ncd
+	bitgen -w -jedec $< $@
+
+%.bit : %.o.ncd
+	bitgen -w $< $@
+
+%.rbt : %.o.ncd
+	bitgen -w -b $< $@
+
+%.jbt : %.o.ncd
+	# bitgen -w -J w -a $< -o $@
+
+%.twr : %.ncd
+	trce -v $< $*.prf -o $@
+
+%.bin : %.jed
+	ddtcmd -oft -jed2bin -if $< -of $@
+
+%.hex : %.jed
+	ddtcmd -oft -jed2hex -if $< -of $@
+
+%.svf : %.jed
+	ddtcmd -oft -svfsingle -op "FLASH Erase,Program,Verify" -if $< -of $@
+	mv -f $@ $@.flash
+	ddtcmd -oft -svfsingle -revd -op "SRAM Fast Program" -if $< -of $@
+	mv -f $@ $@.sram
+	./svf_to_urjtag.pl <$@.flash | sed 's/,/./g' > $@
+
+clean:
+	rm -f *~
+	rm -f *.alt *.areasrr *.asd
+	rm -f *.bgn *.cam *.drc *.edi
+	rm -f *.fse *.hrr *.mrp *.rbt
+	rm -f *.ncd *.pad *.par *.prf
+	rm -f *.prs *.rpt *.sdc *.srd
+	rm -f *.srm *.srr *.srs *.twr
+	rm -f *.log *.htm *.bak 
+	rm -f *.jed *.hex *.bit *.mcs
+	rm -f *_synplify.lpf
+	rm -f *.svf{,.sram,.flash}
+	rm -f run_options.txt
+	rm -rf backup
+	rm -rf dm
+	rm -rf coreip
+	rm -rf physical_plus
+	rm -rf synlog
+	rm -rf synwork
+	rm -rf syntmp
+
