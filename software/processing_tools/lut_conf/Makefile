@@ -1,7 +1,7 @@
 
 .SUFFIXES: .c .o .asm .hex .bin
 
-TARGETS = lut_conf3
+TARGETS = lut_conf
 
 all : $(TARGETS)
 
@@ -10,7 +10,7 @@ STRIP = strip
 CFLAGS += -ggdb -Wall -std=gnu99 -O2
 LDFLAGS += -lm
 
-lut_conf3.static : lut_conf3.o
+lut_conf.static : lut_conf.o
 	$(CC) $(CFLAGS) -static -o $@ $^ $(LDFLAGS)
 
 install:
@@ -21,5 +21,3 @@ clean:
 	rm -f *.o
 	rm -f $(TARGETS)
 	rm -f *~ *.orig
-
-

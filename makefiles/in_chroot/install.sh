@@ -89,7 +89,8 @@ if [[ $(cat /etc/hostname) == 'axiom-micro' ]]; then
     systemctl disable axiom
 else
     # TODO(robin): disable for now, as it hangs the camera	
-    systemctl enable axiom-start
+    # systemctl enable axiom-start
+    true
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf

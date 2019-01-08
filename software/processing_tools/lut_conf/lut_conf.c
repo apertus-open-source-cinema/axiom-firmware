@@ -28,7 +28,7 @@
 #include <math.h>
 
 
-#define	VERSION	"V1.5"
+#define	VERSION	"lut_conf3 V1.5"
 
 static char *cmd_name = NULL;
 

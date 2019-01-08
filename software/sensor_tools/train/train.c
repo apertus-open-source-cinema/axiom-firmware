@@ -28,7 +28,7 @@
 #include "cmv_reg.h"
 
 
-#define	VERSION	"V1.3"
+#define	VERSION	"cmv_train3 V1.3"
 
 static char *cmd_name = NULL;
 

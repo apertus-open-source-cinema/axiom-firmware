@@ -30,7 +30,7 @@
 #include "cmv_reg.h"
 #include "scn_reg.h"
 
-#define VERSION "V1.11"
+#define VERSION "cmv_snap3 V1.11"
 
 static char *cmd_name = NULL;
 
