@@ -105,12 +105,8 @@ was a matrix conversion script (outdated?)
 are the cmv12000 register settings as benchmarked by Ingmar
 
 
-## kick.sh and halt.sh 
+## start.sh and halt.sh 
 are the scripts called by the cmv12k.service (to initialize image sensor communication - LVDS training - and video stream output) on boot up
-
-
-## kick_manual.sh and halt_manual.sh
-are the scripts called by kick.sh and halt.sh
 
 
 ## Further documentation

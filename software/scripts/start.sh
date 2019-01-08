@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# this script initializes and starts the image streaming pipeline
+# it was previously known as kick.sh / kick-manual.sh
+
 cd $(dirname $(realpath $0))    # change into script dir
 . ./cmv.func
 
@@ -9,7 +13,7 @@ cd $(dirname $(realpath $0))    # change into script dir
 ./fclk_init.sh
 ./zynq_info.sh
 
-echo cmv_hdmi3_dual_60.bin > /sys/class/fpga_manager/fpga0/firmware
+echo axiom-fpga-main.bin > /sys/class/fpga_manager/fpga0/firmware
 
 devmem 0xF8006210 w 0x00001
 devmem 0xF8006214 w 0x00001
@@ -26,7 +30,7 @@ while sleep 1; do
     fil_reg 15 0x0
 
     ./cmv_init.sh
-    ../cmv_tools/cmv_train3/cmv_train3 && break
+    ../sensor_tools/train/train && break
 
     ./power_init.sh
 done

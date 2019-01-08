@@ -14,7 +14,7 @@ echo /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 fil_reg 15 0
 
 #capture frame
-../cmv_tools/cmv_snap3/cmv_snap3 -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
+../sensor_tools/snap/snap -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 
 echo "raw12 written"
 

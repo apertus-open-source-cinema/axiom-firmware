@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname $(realpath $0))    # change into script dir
 
 shw_grey () {
     echo $(tput bold)$(tput setaf 0)$@$(tput sgr 0)
@@ -35,7 +36,7 @@ fi
 echo "taking 64 dark frames at 10ms"
 mkdir -p $STORE/rcn
 for i in $(seq 1 64); do
-  ./cmv_snap3 -2 -b -r -e 10ms > $STORE/rcn/dark-x1-10ms-$i.raw12 2>/dev/null
+  .../sensor-tools/snap -2 -b -r -e 10ms > $STORE/rcn/dark-x1-10ms-$i.raw12 2>/dev/null
   printf "capturing darkframe $i of 64"\\r
 done
 

@@ -8,7 +8,7 @@ sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
 pacman-key --init
 pacman-key --populate archlinuxarm
 pacman --noconfirm --needed -Syu
-pacman --noconfirm -R linux-zedboard linux-firmware || true
+pacman --noconfirm -R linux-zedboard || true
 
 # install dependencies
 # pacman -R pkgconf --noconfirm || true
@@ -45,13 +45,14 @@ function cdmake () {
 }
 
 mkdir -p /opt/axiom/bin/
-for dir in $(ls -d software/cmv_tools/*/); do cdmake "$dir"; done
+echo 'PATH=$PATH:/opt/axiom/bin' >> /etc/profile
+for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
-echo 'PATH=$PATH:/opt/axiom/bin' >> /etc/profile
-
-for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /opt/axiom/bin/axiom-$(basename $script | sed "s/_/-/g"); done
-for script in software/scripts/*.py; do ln -sf $(pwd)/$script /opt/axiom/bin/axiom-$(basename $script | sed "s/_/-/g"); done
+mkdir -p /opt/axiom/script/
+echo 'PATH=$PATH:/opt/axiom/script' >> /etc/profile
+for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /opt/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
+for script in software/scripts/*.py; do ln -sf $(pwd)/$script /opt/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 
 
 # build and install the control daemon
@@ -74,20 +75,20 @@ cdmake software/misc-tools-utilities/raw2dng
 # download prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel 
 mkdir -p /opt/bitstreams/
-mkdir -p /lib/firmware/
 BITSTREAMS="cmv_hdmi3_dual_60.bit cmv_hdmi3_dual_30.bit"
 for bit in $BITSTREAMS; do
     (cd /opt/bitstreams && wget http://vserver.13thfloor.at/Stuff/AXIOM/BETA/$bit -O $bit)
     ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$bit /opt/bitstreams/"${bit%.bit}.bin"
     ln -sf /opt/bitstreams/"${bit%.bit}.bin" /lib/firmware
 done
+ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
-cp software/scripts/axiom-kick.service /etc/systemd/system/
+cp software/scripts/axiom-start.service /etc/systemd/system/
 if [[ $(cat /etc/hostname) == 'axiom-micro' ]]; then
     systemctl disable axiom
 else
     # TODO(robin): disable for now, as it hangs the camera	
-    systemctl enable axiom-kick
+    systemctl enable axiom-start
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
