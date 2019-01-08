@@ -59,9 +59,10 @@ for script in software/scripts/*.py; do ln -sf $(pwd)/$script /opt/axiom/script/
 (cd software/axiom-control-daemon/
     [ -d build ] || mkdir -p build
     cd build
-    [ ../CMakeLists.txt -nt Makefile ] && cmake ..
-    make -j $(nproc)
+    [ ../CMakeLists.txt -nt Makefile ] && cmake .. &&
+    make -j $(nproc) &&
     ./install_daemon.sh
+    true
 )
 
 # configure lighttpd
@@ -97,6 +98,14 @@ echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
 
 # configure bash
 cp software/configs/bashrc /etc/bash.bashrc
+
+# install overlay, if any is found
+if [ -d overlay ]; then
+    rsync -aK --exclude install.sh overlay/ /
+    if [ -f overlay/install.sh ]; then
+        bash overlay/install.sh
+    fi
+fi
 
 # finish the update
 echo "apertus\e{lightred}°\e{reset} $(cat /etc/hostname) running Arch Linux ARM [\m]" > /etc/issue

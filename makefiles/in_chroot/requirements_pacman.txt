@@ -8,6 +8,7 @@ figlet
 wget
 hashdeep
 pacman-contrib
+rsync
 
 # dependencies of tools
 python
