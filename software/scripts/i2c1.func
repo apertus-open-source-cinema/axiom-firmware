@@ -11,6 +11,14 @@ i2c1_set() {
     i2cset -y 1 $1 $2 $3
 }
 
+i2c1_getw() {
+    i2cget -y 1 $1 $2 w
+}
+
+i2c1_setw() {
+    i2cset -y 1 $1 $2 $3 w
+}
+
 i2c1_bit_get() {
     val=`i2c1_get $1 $2`
     msk=`bit_msk $3`

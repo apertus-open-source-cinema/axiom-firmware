@@ -33,7 +33,10 @@ print("assuming power board version", pb_ver);
 
 if sel == "A":                                  # toggle A_!RST 
     print("selecting RFW [bus A] ...")
-    if pb_ver == "0.29":
+    if pb_ver == "0.30":
+        iob = i2c0.read_byte_data(0x22, 0x15)
+        i2c0.write_byte_data(0x22, 0x15, iob&0x3F|0x40)
+    elif pb_ver == "0.29":
         i2c2.write_byte(0x30, 0x2)              # steer mux
     else:
         i2c2.write_byte(0x70, 0x5)              # steer mux
@@ -43,7 +46,10 @@ if sel == "A":                                  # toggle A_!RST
 
 elif sel == "B":                                # toggle B_!RST
     print("selecting RFE [bus B] ...")
-    if pb_ver == "0.29":
+    if pb_ver == "0.30":
+        iob = i2c0.read_byte_data(0x22, 0x15)
+        i2c0.write_byte_data(0x22, 0x15, iob&0x3F|0x80)
+    elif pb_ver == "0.29":
         i2c2.write_byte(0x30, 0x1)              # steer mux
     else:
         i2c2.write_byte(0x70, 0x4)              # steer mux
@@ -53,7 +59,10 @@ elif sel == "B":                                # toggle B_!RST
 
 elif sel == "N":                               
     print("disabling MUX ...")
-    if pb_ver == "0.29":
+    if pb_ver == "0.30":
+        iob = i2c0.read_byte_data(0x22, 0x15)
+        i2c0.write_byte_data(0x22, 0x15, iob&0x3F)
+    elif pb_ver == "0.29":
         i2c2.write_byte(0x30, 0x0)              # disable mux
     else:
         i2c2.write_byte(0x70, 0x0)              # disable mux

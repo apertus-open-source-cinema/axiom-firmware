@@ -12,7 +12,7 @@ from mxo2 import *
 
 
 i2c = SMBus(2)
-jtag = JTag(i2c)
+jtag = JTag(i2c, base=0x40, debug=False)
 
 jtag.on()
 jtag.reset()

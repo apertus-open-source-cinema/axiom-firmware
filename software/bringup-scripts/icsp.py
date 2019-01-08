@@ -26,6 +26,9 @@ def icsp_m2i(val):
 def icsp_i2m(val):
     return "%04X" % ((val & 0x3FFF) << 1)
 
+def icsp_i2p(val):
+    return "%06X" % ((val & 0x3FFFFF) << 1)
+
 def icsp_cmd(ser, cmd, rlen=None):
     # print("%s" % cmd)
     # FIXME: add CRC

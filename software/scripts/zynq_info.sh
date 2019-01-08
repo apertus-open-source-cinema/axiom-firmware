@@ -2,17 +2,23 @@
 cd $(dirname $(realpath $0))    # change into script dir
 
 
-. ./i2c.func
-
-# ZTO=`cat /sys/devices/soc0/amba/*.adc/iio*/in_temp0_offset` 
-# ZTR=`cat /sys/devices/soc0/amba/*.adc/iio*/in_temp0_raw` 
-# ZTS=`cat /sys/devices/soc0/amba/*.adc/iio*/in_temp0_scale` 
-
-ZTO=`cat /sys/devices/soc0/amba/f8007100.adc/iio:device0/in_temp0_offset`
-ZTR=`cat /sys/devices/soc0/amba/f8007100.adc/iio:device0/in_temp0_raw`
-ZTS=`cat /sys/devices/soc0/amba/f8007100.adc/iio:device0/in_temp0_scale`
+ZTO=`cat /sys/devices/soc0/amba/*.adc/iio*/in_temp0_offset` 
+ZTR=`cat /sys/devices/soc0/amba/*.adc/iio*/in_temp0_raw` 
+ZTS=`cat /sys/devices/soc0/amba/*.adc/iio*/in_temp0_scale` 
 
 ZT=`dc -e "5k $ZTR ${ZTO/-/_} + $ZTS * 1000 / p"`
 
-printf "%-14.14s\t%6.4f °C\n" "ZYNQ Temp" $ZT
+printf "%-14.14s\t%8.4f °C\n" "Temp" $ZT
+
+for n in /sys/devices/soc0/amba/*.adc/iio*/in_voltage*raw; do
+    b=${n%_raw}
+
+    ZVN=V${b##*_v}
+    ZVR=`cat $n`
+    ZVS=`cat ${b}_scale`
+
+    ZV=`dc -e "5k ${ZVR/-/_} $ZVS * 1000 / p"`
+
+    printf "%-14.14s\t%8.4f V\n" $ZVN $ZV
+done
 
