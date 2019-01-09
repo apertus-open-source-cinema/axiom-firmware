@@ -18,7 +18,7 @@
 	};
 
 	chosen {
-		bootargs = "bootargs=console=ttyPS0,115200n8 root=/dev/mmcblk0p2 rw rootfstype=ext4 rootwait debug verbose systemd.log_level=warning systemd.log_target=console kernel.sysrq=1 init=/usr/lib/systemd/systemd sdhci.debug_quirks=64 earlycon";
+		bootargs = [00];
 		stdout-path = "serial0:115200n8";
 	};
 

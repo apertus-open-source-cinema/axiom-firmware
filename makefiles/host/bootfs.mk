@@ -4,7 +4,7 @@ CROSS = arm-linux-gnueabi-
 LINUX_VERSION = v4.17.19
 LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
 
-UBOOT_VERSION = 714418bebb8b4343b1f06fd46a31295f59edb56f
+UBOOT_VERSION = xilinx-v2018.3
 UBOOT_SOURCE = build/u-boot-xlnx-$(UBOOT_VERSION).git
 
 build/boot.fs/BOOT.bin: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.elf build/boot.fs/devicetree.dtb \
@@ -50,14 +50,14 @@ $(LINUX_SOURCE)/arch/arm/boot/zImage: boot/kernel.config $(LINUX_SOURCE)
 # u-boot
 # TODO use mainline uboot -> profit (use `--depth 1` again)
 U_BOOT_MAKE = $(MAKE) -C $(UBOOT_SOURCE) CROSS_COMPILE=$(CROSS) ARCH=$(ARCH)
-$(UBOOT_SOURCE): boot/axiom-micro/devicetree_uboot.dts boot/axiom-beta/devicetree_uboot.dts
+$(UBOOT_SOURCE): 
 	@mkdir -p $(@D)
-	git clone https://github.com/Xilinx/u-boot-xlnx $@
-	(cd $@ && git reset --hard $(UBOOT_VERSION))
+	git clone --branch $(UBOOT_VERSION) --depth 1 https://github.com/Xilinx/u-boot-xlnx $@
+
+$(UBOOT_SOURCE)/u-boot.elf: boot/axiom-$(DEVICE)/u-boot.config $(UBOOT_SOURCE) boot/axiom-micro/devicetree_uboot.dts boot/axiom-beta/devicetree_uboot.dts
+	# copy the devicetree's (done here to avoid redownload on changed devicetree)
 	cp boot/axiom-micro/devicetree_uboot.dts $(UBOOT_SOURCE)/arch/arm/dts/zynq-zturn-myir.dts
 	cp boot/axiom-beta/devicetree_uboot.dts $(UBOOT_SOURCE)/arch/arm/dts/zynq-microzed.dts
-
-$(UBOOT_SOURCE)/u-boot.elf: boot/axiom-$(DEVICE)/u-boot.config $(UBOOT_SOURCE)
 	# configure u-boot
 	cp $< $(UBOOT_SOURCE)/.config
 	+$(U_BOOT_MAKE) olddefconfig
