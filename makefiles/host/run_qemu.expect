@@ -22,7 +22,7 @@ expect {
 
 send "sudo systemctl poweroff\r"
 expect {
-    "Reached target Final Step." { }
+    "Power-Off" { }
     timeout { puts "\ntimed out\n"; exit 1 }
 }
 
