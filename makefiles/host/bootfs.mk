@@ -1,15 +1,15 @@
 ARCH = arm
 CROSS = arm-linux-gnueabi-
 
-LINUX_VERSION = v4.17.19
+LINUX_VERSION = v4.20.1
 LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
 
 UBOOT_VERSION = xilinx-v2018.3
 UBOOT_SOURCE = build/u-boot-xlnx-$(UBOOT_VERSION).git
 
 build/boot.fs/BOOT.bin: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.elf build/boot.fs/devicetree.dtb \
-			   build/zynq-mkbootimage.git/mkbootimage \
-			   boot/boot.bif boot/axiom-$(DEVICE)/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt
+			   build/zynq-mkbootimage.git/mkbootimage boot/boot.bif boot/axiom-$(DEVICE)/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt \
+			   build/boot.fs/devicetree.dts
 	mkdir -p $(@D)
 
 ifeq ($(DEVICE),micro)
