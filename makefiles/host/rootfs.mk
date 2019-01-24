@@ -1,6 +1,6 @@
 include bootfs.mk
 
-LINUX_BASE_IMAGE=ArchLinuxARM-zedboard-latest.tar.gz
+LINUX_BASE_IMAGE=void-armv7l-ROOTFS.tar.xz
 
 build/root.fs/.install_stamp: $(shell find makefiles/in_chroot/) build/root.fs/opt/axiom-firmware/.install_stamp $(LINUX_SOURCE)/arch/arm/boot/zImage build/root.fs/.base_install
 	rsync -aK build/kernel_modules.fs/ $(@D)
@@ -18,11 +18,11 @@ build/root.fs/opt/axiom-firmware/.install_stamp: $(shell find -type f -not -path
 
 build/root.fs/.base_install: build/$(LINUX_BASE_IMAGE)
 	mkdir -p $(@D)
-	tar --warning=no-unknown-keyword -x -C $(@D) -f $<
+	tar -xJ -C $(@D) -f $<
 
 	touch $@
 
 
 build/$(LINUX_BASE_IMAGE):
 	mkdir -p $(@D)
-	wget -c -nv http://archlinuxarm.org/os/$(LINUX_BASE_IMAGE) -O $@
+	wget -q -O $@ "https://alpha.de.repo.voidlinux.org/live/current/$$(wget -q -O - https://alpha.de.repo.voidlinux.org/live/current/ | grep -o 'void-armv7l-ROOTFS[^"]*\.tar\.xz' | head -n1)"

@@ -20,24 +20,15 @@ update-binfmts --enable qemu-aarch64
 update-binfmts --enable qemu-arm
 
 # change the resolv conf. systemd is not running in chroot.
-[ -f build/root.fs/etc/resolv.conf.bak ] || readlink -v build/root.fs/etc/resolv.conf > build/root.fs/etc/resolv.conf.bak
-unlink build/root.fs/etc/resolv.conf
 echo "nameserver 185.121.177.177" > build/root.fs/etc/resolv.conf
-
-# use local package cache
-rm -rf build/root.fs/var/cache/pacman/*
-mkdir -p build/pacman-cache/
-mount -o bind build/pacman-cache/ build/root.fs/var/cache/pacman/
-
 
 chroot build/root.fs $*
 
 # undo the changes, and reset the image to work on hardware again.
-ln -sf "$(cat build/root.fs/etc/resolv.conf.bak)" build/root.fs/etc/resolv.conf
+rm -f build/root.fs/etc/resolv.conf
 rm -f build/root.fs/usr/bin/qemu-arm-static build/root.fs/usr/bin/qemu-aarch64-static
 
 # unmount (allow fail)
-umount build/root.fs/var/cache/pacman/pkg/ || true
 umount build/root.fs/sys || true
 umount build/root.fs/dev/pts || true
 umount build/root.fs/dev/ || true

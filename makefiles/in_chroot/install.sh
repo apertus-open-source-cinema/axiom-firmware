@@ -4,22 +4,8 @@ DEVICE=$(cat /etc/hostname)
 
 cd /opt/axiom-firmware
 
-
-# configure pacman & do sysupdate
-sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf
-sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
-pacman-key --init
-pacman-key --populate archlinuxarm
-pacman --noconfirm --needed -Syu
-pacman --noconfirm -R linux-zedboard || true
-
 # install dependencies
-# pacman -R pkgconf --noconfirm || true
-pacman --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
-
-# evil hack because archlinux-arm has fucked up packages
-cat /etc/ca-certificates/extracted/cadir/* > /etc/ca-certificates/extracted/tls-ca-bundle.pem
-
+xbps-install -yS $(grep -vE "^\s*#" makefiles/in_chroot/requirements_xbps.txt | tr "\n" " ") || [ $? -eq 6 ]
 pip install -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users
@@ -68,7 +54,7 @@ for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/
 
 # configure lighttpd
 cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
-systemctl enable lighttpd
+# systemctl enable lighttpd
 cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
@@ -86,9 +72,10 @@ for bit in $BITSTREAMS; do
 done
 ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
-cp software/scripts/axiom-start.service /etc/systemd/system/
+# cp software/scripts/axiom-start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
-    systemctl disable axiom
+    true
+    # systemctl disable axiom
 else
     # TODO(robin): disable for now, as it hangs the camera	
     # systemctl enable axiom-start

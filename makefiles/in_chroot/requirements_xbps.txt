@@ -1,5 +1,5 @@
 # This file contains a list of all the archlinuxarm packages, that are needed inside the image
-# install them via: pacman --noconfirm $(grep -vE "^\s*#" dependencies.txt | tr "\n" " ")
+# install them via: xbps-install -S $(grep -vE "^\s*#" dependencies.txt | tr "\n" " ")
 
 # things needed for setup
 base-devel
@@ -7,12 +7,10 @@ git
 figlet
 wget
 hashdeep
-pacman-contrib
 rsync
 
 # dependencies of tools
 python
-devmem
 i2c-tools
 cmake
 bc
@@ -23,14 +21,15 @@ ninja
 vim
 nano
 python-pip
-python-numpy
+python-devel
 dtc
 
 # webserver
 lighttpd
 
 # python-stuff
-python-numpy
+#python-numpy
 
 # control daemon
 clang
+ninja
