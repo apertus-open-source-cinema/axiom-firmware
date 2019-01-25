@@ -1,6 +1,9 @@
 #!/bin/bash
 set -xeuo pipefail
+DEVICE=$(cat /etc/hostname)
+
 cd /opt/axiom-firmware
+
 
 # configure pacman & do sysupdate
 sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf
@@ -59,8 +62,8 @@ for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/
 (cd software/axiom-control-daemon/
     [ -d build ] || mkdir -p build
     cd build
-    cmake ..
-    make -j $(nproc)
+    cmake -G Ninja ..
+    ninja
     ./install_daemon.sh
 )
 
@@ -85,7 +88,7 @@ done
 ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
 cp software/scripts/axiom-start.service /etc/systemd/system/
-if [[ $(cat /etc/hostname) == 'axiom-micro' ]]; then
+if [[ $DEVICE == 'micro' ]]; then
     systemctl disable axiom
 else
     # TODO(robin): disable for now, as it hangs the camera	
@@ -107,14 +110,15 @@ if [ -d overlay ]; then
 fi
 
 # finish the update
-echo "apertus\e{lightred}°\e{reset} $(cat /etc/hostname) running Arch Linux ARM [\m]" > /etc/issue
+echo "apertus\e{lightred}°\e{reset} axiom $DEVICE running Arch Linux ARM [\m]" > /etc/issue
 echo "Kernel \r" >> /etc/issue
 echo "Build $(git describe --always --abbrev=8 --dirty)" >> /etc/issue
 echo "Network (ipv4) \4" >> /etc/issue
 echo "Serial console on \l [\b baud]" >> /etc/issue
 echo "initial login is \e{lightgreen}operator\e{reset} with password \e{lightgreen}axiom\e{reset}." >> /etc/issue
 
-echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM  $(cat /etc/hostname | sed 's/axiom-//')")$(tput sgr0)" > /etc/motd
+
+echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update, run \"axiom-update\"." >> /etc/motd
 echo "" >> /etc/motd

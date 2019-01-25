@@ -1,0 +1,13 @@
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 4c816e5a8..44b8fc437 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -545,7 +545,7 @@ static int macb_mii_probe(struct net_device *dev)
+ 
+ 	/* mask with MAC supported features */
+ 	if (macb_is_gem(bp) && bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
+-		phy_set_max_speed(phydev, SPEED_1000);
++		phydev->supported &= *PHY_GBIT_FEATURES; 
+ 	else
+ 		phy_set_max_speed(phydev, SPEED_100);
+ 

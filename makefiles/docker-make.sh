@@ -4,7 +4,8 @@ cd $(dirname $(realpath $0))/../
 set -eo pipefail
 
 # initialize submodules if nescessary
-(git submodule status --recursive | grep "^-") && git submodule update --init --recursive
+# TODO(robin): breaks updating submodules without commiting the update
+# (git submodule status --recursive | grep "^-") && git submodule update --init --recursive
 
 # check for the right privileges
 docker ps > /dev/null

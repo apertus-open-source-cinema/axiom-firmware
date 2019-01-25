@@ -16,6 +16,8 @@ devmem
 i2c-tools
 cmake
 bc
+# control daemon uses ninja now
+ninja
 
 # convenience tools
 vim
