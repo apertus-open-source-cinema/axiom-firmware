@@ -97,6 +97,7 @@ else
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
+echo "ledtrig-heartbeat" > /etc/modules-load.d/ledtrig.conf
 
 # configure bash
 cp software/configs/bashrc /etc/bash.bashrc
