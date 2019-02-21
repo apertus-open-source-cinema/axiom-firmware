@@ -48,7 +48,7 @@ function cdmake () {
 }
 
 mkdir -p /usr/axiom/bin/
-echo 'PATH=$PATH:/usr/axiom/bin' >> /etc/profile
+echo 'PATH=${PATH}:/usr/axiom/bin' >> /etc/environment
 for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
