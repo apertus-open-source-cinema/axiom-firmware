@@ -20,7 +20,7 @@ The Repository is divided in the following parts:
 ### `software/`
 Linux user-space tools and scripts used to operate the AXIOM Beta hardware.
 
-### `gateware/`
+### `peripherals/soc_main/`
 Contains the VHDL sources for the various Programmable Logic Devices on the board. (Currently not everything is contained)
 
 ### `boot/`
