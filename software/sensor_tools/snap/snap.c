@@ -1,7 +1,7 @@
 /**********************************************************************
 **  snap.c
 **      Control Image Capture and Data Dump
-**      Version 1.10
+**      Version 1.11
 **
 **  Copyright (C) 2013-2015 H.Poetzl
 **
