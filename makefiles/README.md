@@ -44,9 +44,9 @@ makefiles/docker-make.sh clean-all
 Then again follow the above build instructions.
 
 ## Customize it!
-If you want to customize your image you can create a `overlay/` folter in the root of this repo.
+If you want to customize your image you can create a `overlay/` folder in the root of this repo.
 An install.sh in this directory will be executed in a chroot of the camera. All the other contents 
-will be coppyed to the `/` of the camera.
+will be copied to the `/` of the camera.
 
 This is especially usefull for adding your ssh keys to the camera or to install your preffered tools
 (ie. gnu/emacs).
