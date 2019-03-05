@@ -118,28 +118,11 @@ if [ -d overlay ]; then
     fi
 fi
 
-# finish the update
-echo "apertus\e{lightred}°\e{reset} axiom $DEVICE running Arch Linux ARM [\m]" > /etc/issue
-echo "Kernel \r" >> /etc/issue
-echo "Build $(git describe --always --abbrev=8 --dirty)" >> /etc/issue
-echo "Network (ipv4) \4" >> /etc/issue
-echo "Serial console on \l [\b baud]" >> /etc/issue
-echo "initial login is \e{lightgreen}operator\e{reset} with password \e{lightgreen}axiom\e{reset}." >> /etc/issue
-
-echo '[Unit]' >> /etc/systemd/system/gen_etc_issue.service
-echo 'Description=generate the /etc/issue file used by getty' >> /etc/systemd/system/gen_etc_issue.service
-echo '' >> /etc/systemd/system/gen_etc_issue.service
-echo '[Service]' >> /etc/systemd/system/gen_etc_issue.service
-echo 'Type=oneshot' >> /etc/systemd/system/gen_etc_issue.service
-echo 'ExecStart=/usr/axiom/script/gen_etc_issue.sh' >> /etc/systemd/system/gen_etc_issue.service
-echo 'KillMode=process' >> /etc/systemd/system/gen_etc_issue.service
-echo '' >> /etc/systemd/system/gen_etc_issue.service
-echo '[Install]' >> /etc/systemd/system/gen_etc_issue.service
-echo 'WantedBy=multi-user.target' >> /etc/systemd/system/gen_etc_issue.service
-echo 'WantedBy=getty@tty1.service' >> /etc/systemd/system/gen_etc_issue.service
-
+# install /etc/issue generating service
+cp software/configs/gen_etc_issue.service /etc/systemd/system/
 systemctl enable /etc/systemd/system/gen_etc_issue.service
 
+# generate the motd and indicate software version
 echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update, run \"axiom-update\"." >> /etc/motd
@@ -154,11 +137,8 @@ echo "PARTUUID=f37043ff-01 /boot vfat defaults,rw 0 0" >> /etc/fstab
 VERIFY_DIRECTORIES="/etc /usr /opt"
 HASH_LOCATION="/opt/integrity_check"
 mkdir -p $HASH_LOCATION
-
 # delete hashes so they aren't included in the new files list
-rm -f $HASH_LOCATION/hashes.txt
-rm -f $HASH_LOCATION/files.txt
-
+rm -f $HASH_LOCATION/hashes.txt; rm -f $HASH_LOCATION/files.txt
 find $VERIFY_DIRECTORIES -type f > $HASH_LOCATION/files.txt
 # also hash file list
 echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt

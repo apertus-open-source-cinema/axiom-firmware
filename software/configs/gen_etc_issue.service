@@ -1,0 +1,11 @@
+[Unit]
+Description=generate the /etc/issue file used by getty
+
+[Service]
+Type=oneshot
+ExecStart=/usr/axiom/script/gen_etc_issue.sh
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=getty@tty1.service
