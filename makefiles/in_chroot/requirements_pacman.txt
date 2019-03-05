@@ -34,3 +34,7 @@ python-numpy
 
 # control daemon
 clang
+
+# nodejs stuff
+node
+npm

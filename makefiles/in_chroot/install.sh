@@ -67,13 +67,22 @@ echo 'echo "initial login is \e{lightgreen}operator\e{reset} with password \e{li
 chmod a+x /usr/axiom/script/gen_etc_issue.sh
 
 # build and install the control daemon
-(cd software/axiom-control-daemon/
+(cd software/control-daemon/
     [ -d build ] || mkdir -p build
     cd build
     cmake -G Ninja ..
     ninja
     ./install_daemon.sh
 )
+
+# build the webui
+(cd software/web-remote/
+    npm install
+    npm run build
+)
+mkdir -p /srv/http
+cp -r software/web-remote/dest/* /srv/http/
+
 
 # configure lighttpd
 cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
