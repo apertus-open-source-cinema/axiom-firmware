@@ -87,7 +87,6 @@ cp -r software/web-remote/dest/* /srv/http/
 # configure lighttpd
 cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
 systemctl enable lighttpd
-cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
 cdmake software/misc-tools-utilities/raw2dng

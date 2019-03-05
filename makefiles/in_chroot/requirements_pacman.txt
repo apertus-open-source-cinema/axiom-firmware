@@ -36,5 +36,5 @@ python-numpy
 clang
 
 # nodejs stuff
-node
+nodejs
 npm
