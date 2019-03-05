@@ -1,6 +1,9 @@
 #!/bin/bash
 set -xeuo pipefail
+DEVICE=$(cat /etc/hostname)
+
 cd /opt/axiom-firmware
+
 
 # configure pacman & do sysupdate
 sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf
@@ -54,13 +57,21 @@ echo 'PATH=$PATH:/usr/axiom/script' >> /etc/profile
 for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 
+echo '#!/bin/bash' >> /usr/axiom/script/gen_etc_issue.sh
+echo 'echo "apertus\e{lightred}°\e{reset} axiom $DEVICE running Arch Linux ARM [\m]" > /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
+echo 'echo "Kernel \r" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
+echo 'echo "Build $(cd /opt/axiom-firmware; git describe --always --abbrev=8 --dirty)" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
+echo 'echo "Network (ipv4) \4 [$(cat /sys/class/net/eth0/address)]" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
+echo 'echo "Serial console on \l [\b baud]" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
+echo 'echo "initial login is \e{lightgreen}operator\e{reset} with password \e{lightgreen}axiom\e{reset}." >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
+chmod a+x /usr/axiom/script/gen_etc_issue.sh
 
 # build and install the control daemon
 (cd software/axiom-control-daemon/
     [ -d build ] || mkdir -p build
     cd build
-    cmake ..
-    make -j $(nproc)
+    cmake -G Ninja ..
+    ninja
     ./install_daemon.sh
 )
 
@@ -85,7 +96,7 @@ done
 ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
 cp software/scripts/axiom-start.service /etc/systemd/system/
-if [[ $(cat /etc/hostname) == 'axiom-micro' ]]; then
+if [[ $DEVICE == 'micro' ]]; then
     systemctl disable axiom
 else
     # TODO(robin): disable for now, as it hangs the camera	
@@ -94,6 +105,7 @@ else
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
+echo "ledtrig-heartbeat" > /etc/modules-load.d/ledtrig.conf
 
 # configure bash
 cp software/configs/bashrc /etc/bash.bashrc
@@ -106,15 +118,12 @@ if [ -d overlay ]; then
     fi
 fi
 
-# finish the update
-echo "apertus\e{lightred}°\e{reset} $(cat /etc/hostname) running Arch Linux ARM [\m]" > /etc/issue
-echo "Kernel \r" >> /etc/issue
-echo "Build $(git describe --always --abbrev=8 --dirty)" >> /etc/issue
-echo "Network (ipv4) \4" >> /etc/issue
-echo "Serial console on \l [\b baud]" >> /etc/issue
-echo "initial login is \e{lightgreen}operator\e{reset} with password \e{lightgreen}axiom\e{reset}." >> /etc/issue
+# install /etc/issue generating service
+cp software/configs/gen_etc_issue.service /etc/systemd/system/
+systemctl enable /etc/systemd/system/gen_etc_issue.service
 
-echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM  $(cat /etc/hostname | sed 's/axiom-//')")$(tput sgr0)" > /etc/motd
+# generate the motd and indicate software version
+echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update, run \"axiom-update\"." >> /etc/motd
 echo "" >> /etc/motd
@@ -128,11 +137,8 @@ echo "PARTUUID=f37043ff-01 /boot vfat defaults,rw 0 0" >> /etc/fstab
 VERIFY_DIRECTORIES="/etc /usr /opt"
 HASH_LOCATION="/opt/integrity_check"
 mkdir -p $HASH_LOCATION
-
 # delete hashes so they aren't included in the new files list
-rm -f $HASH_LOCATION/hashes.txt
-rm -f $HASH_LOCATION/files.txt
-
+rm -f $HASH_LOCATION/hashes.txt; rm -f $HASH_LOCATION/files.txt
 find $VERIFY_DIRECTORIES -type f > $HASH_LOCATION/files.txt
 # also hash file list
 echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt

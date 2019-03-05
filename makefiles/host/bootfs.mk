@@ -1,15 +1,15 @@
 ARCH = arm
 CROSS = arm-linux-gnueabi-
 
-LINUX_VERSION = v4.17.19
+LINUX_VERSION = v4.20.4
 LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
 
 UBOOT_VERSION = xilinx-v2018.3
 UBOOT_SOURCE = build/u-boot-xlnx-$(UBOOT_VERSION).git
 
 build/boot.fs/BOOT.bin: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.elf build/boot.fs/devicetree.dtb \
-			   build/zynq-mkbootimage.git/mkbootimage \
-			   boot/boot.bif boot/axiom-$(DEVICE)/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt
+			   build/zynq-mkbootimage.git/mkbootimage boot/boot.bif boot/axiom-$(DEVICE)/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt \
+			   build/boot.fs/devicetree.dts
 	mkdir -p $(@D)
 
 ifeq ($(DEVICE),micro)
@@ -31,6 +31,9 @@ $(LINUX_SOURCE): $(LINUX_PATCHES)
 	git clone --branch $(LINUX_VERSION) --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git $@
 
 	./makefiles/host/patch_wrapper.sh $@ $(LINUX_PATCHES) 
+	# remove + at end of kernel version (indicates dirty tree)
+	touch $@/.scmversion
+
 
 $(LINUX_SOURCE)/arch/arm/boot/zImage: boot/kernel.config $(LINUX_SOURCE)
 	# first configure the kernel

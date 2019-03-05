@@ -1,7 +1,7 @@
 --- a/drivers/fpga/fpga-mgr.c	2018-08-15 04:49:22.662146600 +0200
 +++ b/drivers/fpga/fpga-mgr.c	2018-08-17 16:35:29.032452237 +0200
-@@ -397,12 +397,42 @@
- 	return sprintf(buf, "%s\n", state_str[mgr->state]);
+@@ -432,14 +432,44 @@
+ 	return len;
  }
  
 +static ssize_t firmware_store(struct device *dev,
@@ -34,11 +34,13 @@
 +
  static DEVICE_ATTR_RO(name);
  static DEVICE_ATTR_RO(state);
+ static DEVICE_ATTR_RO(status);
 +static DEVICE_ATTR_WO(firmware);
  
  static struct attribute *fpga_mgr_attrs[] = {
  	&dev_attr_name.attr,
  	&dev_attr_state.attr,
+ 	&dev_attr_status.attr,
 +	&dev_attr_firmware.attr,
  	NULL,
  };

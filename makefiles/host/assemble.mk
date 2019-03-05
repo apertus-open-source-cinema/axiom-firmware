@@ -5,9 +5,9 @@ include rootfs.mk
 SHELL := /bin/bash
 
 # define the layout of the image
-IMGSIZE = 4096MiB
+IMGSIZE = 3800MiB
 BOOTSIZE = 50MiB
-ROOTSIZE = 4000MiB
+ROOTSIZE = 3700MiB
 LABEL_ID = f37043ff
 
 define SFDISK_SCRIPT
@@ -20,7 +20,7 @@ export SFDISK_SCRIPT
 
 
 build/axiom.img: build/boot.part build/root.part
-	echo "building image for AXIOM $(DEVICE) with $(nproc) cores (not nesscessarily jobs)"
+	+echo "building image for AXIOM $(DEVICE) with $$(nproc) cores (not nesscessarily jobs)"
 
 	# create the image file
 	rm -rf $@

@@ -1,3 +1,21 @@
+/*
+ * AXIOM Micro Z-Turn lite Device Tree
+ * Version 1.0
+ *
+ * Copyright (C) 2018-2019 R.Heinemann
+ *
+ * This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version
+ * 2 of the License, or (at your option) any later version.
+ *
+ * http://devicetree.org/Device_Tree_Usage
+ * Power_ePAPR_APPROVED_v1.1.pdf
+ *
+ * scripts/dtc/dtc -I dts -O dtb -o devicetree.dtb devicetree.dts
+ *
+ */
+
 /dts-v1/;
 
 / {
@@ -6,7 +24,7 @@
 	compatible = "myir,zynq-zturn", "xlnx,zynq-7000";
 	model = "AXIOM micro Z-turn lite";
 
-	memory {
+	memory@0 {
 		device_type = "memory";
 		reg = <0x0 0x20000000>;
 	};
@@ -187,6 +205,65 @@
 			reg = <0xf8006000 0x1000>;
 		};
 
+        qspi0: spi@e000d000 {
+			clock-names = "ref_clk", "pclk";
+			clocks = <&clkc 10>, <&clkc 43>;
+			compatible = "xlnx,zynq-qspi-1.0";
+			status = "okay";
+			interrupt-parent = <&intc>;
+			interrupts = <0 19 4>;
+			reg = <0xe000d000 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			is-dual = <0x0>;
+			num-cs = <0x1>;
+
+			flash@0 {
+				compatible = "w25q128";
+				reg = <0x0>;
+				spi-tx-bus-width = <0x1>;
+				spi-rx-bus-width = <0x4>;
+				spi-max-frequency = <0x2faf080>;
+				#address-cells = <0x1>;
+				#size-cells = <0x1>;
+
+				partition@qspi-boot {
+					label = "qspi-boot";
+					reg = <0x0 0x80000>;
+				};
+
+				partition@qspi-bootenv {
+					label = "qspi-bootenv";
+					reg = <0x80000 0x20000>;
+				};
+
+				partition@qspi-bitstream {
+					label = "qspi-bitstream";
+					reg = <0xa0000 0x460000>;
+				};
+
+				partition@qspi-kernel {
+					label = "qspi-kernel";
+					reg = <0x500000 0x480000>;
+				};
+
+				partition@qspi-devicetree {
+					label = "qspi-devicetree";
+					reg = <0x980000 0x10000>;
+				};
+
+				partition@qspi-rootfs {
+					label = "qspi-rootfs";
+					reg = <0x990000 0x600000>;
+				};
+
+				partition@qspi-data {
+					label = "data";
+					reg = <0xf90000 0x70000>;
+				};
+			};
+		};
+
 		uart0: serial@e0000000 {
 			compatible = "xlnx,xuartps", "cdns,uart-r1p8";
 			status = "okay";
@@ -235,7 +312,7 @@
 
 		gem0: ethernet@e000b000 {
 			compatible = "cdns,zynq-gem", "cdns,gem";
-			reg = <0xe000b000 0x4000>;
+			reg = <0xe000b000 0x1000>;
 			status = "okay";
 			interrupts = <0 22 4>;
 			clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
@@ -251,7 +328,7 @@
 			phy-handle = <&phy0>;
 
 			phy0: phy@0 {
-				compatible = "ethernet-phy-id004d.d072", "ethernet-phy-ieee802.3-c22";
+//				compatible = "ethernet-phy-id004d.d072", "ethernet-phy-ieee802.3-c22";
 				device_type = "ethernet-phy";
 				reg = <0x0>;
 			};
@@ -349,15 +426,15 @@
 			reg = <0xf8007000 0x100>;
 			interrupt-parent = <&intc>;
 			interrupts = <0 8 4>;
-	        clocks = <&clkc 12>, <&clkc 15>, <&clkc 16>, <&clkc 17>, <&clkc 18>;
-            clock-names = "ref_clk", "fclk0", "fclk1", "fclk2", "fclk3";
+			clocks = <&clkc 12>, <&clkc 15>, <&clkc 16>, <&clkc 17>, <&clkc 18>;
+			clock-names = "ref_clk", "fclk0", "fclk1", "fclk2", "fclk3";
 			syscon = <&slcr>;
 		};
 
-		fclk: fclk@0 {
+		fclk: fclk {
 			compatible = "zynq-fclk";
-	        clocks = <&clkc 15>, <&clkc 16>, <&clkc 17>, <&clkc 18>;
-            clock-names = "fclk0", "fclk1", "fclk2", "fclk3";
+			clocks = <&clkc 15>, <&clkc 16>, <&clkc 17>, <&clkc 18>;
+			clock-names = "fclk0", "fclk1", "fclk2", "fclk3";
 		};
 
 		global_timer: timer@f8f00200 {
@@ -435,8 +512,6 @@
 
 		keys0: gpio-keys {
 			compatible = "gpio-keys";
-			#address-cells = <0x1>;
-			#size-cells = <0x0>;
 			autorepeat;
 
 			K1 {
