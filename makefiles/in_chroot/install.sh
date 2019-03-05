@@ -48,7 +48,7 @@ function cdmake () {
 }
 
 mkdir -p /usr/axiom/bin/
-echo 'PATH=$PATH:/usr/axiom/bin' >> /etc/profile
+echo 'PATH=${PATH}:/usr/axiom/bin' >> /etc/environment
 for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
@@ -56,15 +56,6 @@ mkdir -p /usr/axiom/script/
 echo 'PATH=$PATH:/usr/axiom/script' >> /etc/profile
 for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
-
-echo '#!/bin/bash' >> /usr/axiom/script/gen_etc_issue.sh
-echo 'echo "apertus\e{lightred}°\e{reset} axiom $DEVICE running Arch Linux ARM [\m]" > /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
-echo 'echo "Kernel \r" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
-echo 'echo "Build $(cd /opt/axiom-firmware; git describe --always --abbrev=8 --dirty)" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
-echo 'echo "Network (ipv4) \4 [$(cat /sys/class/net/eth0/address)]" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
-echo 'echo "Serial console on \l [\b baud]" >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
-echo 'echo "initial login is \e{lightgreen}operator\e{reset} with password \e{lightgreen}axiom\e{reset}." >> /etc/issue' >> /usr/axiom/script/gen_etc_issue.sh
-chmod a+x /usr/axiom/script/gen_etc_issue.sh
 
 # build and install the control daemon
 (cd software/axiom-control-daemon/
