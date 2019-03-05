@@ -20,7 +20,7 @@ export SFDISK_SCRIPT
 
 
 build/axiom.img: build/boot.part build/root.part
-	echo "building image for AXIOM $(DEVICE) with $(nproc) cores (not nesscessarily jobs)"
+	+echo "building image for AXIOM $(DEVICE) with $$(nproc) cores (not nesscessarily jobs)"
 
 	# create the image file
 	rm -rf $@

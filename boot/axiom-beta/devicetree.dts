@@ -298,7 +298,7 @@
 
 		gem0: ethernet@e000b000 {
 			compatible = "cdns,zynq-gem", "cdns,gem";
-			reg = <0xe000b000 0x4000>;
+			reg = <0xe000b000 0x1000>;
 			status = "okay";
 			interrupts = <0 22 4>;
 			clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
