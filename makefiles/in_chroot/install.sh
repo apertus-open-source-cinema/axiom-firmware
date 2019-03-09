@@ -111,7 +111,7 @@ fi
 
 # install /etc/issue generating service
 cp software/configs/gen_etc_issue.service /etc/systemd/system/
-systemctl enable /etc/systemd/system/gen_etc_issue.service
+systemctl enable gen_etc_issue.service
 
 # generate the motd and indicate software version
 echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
