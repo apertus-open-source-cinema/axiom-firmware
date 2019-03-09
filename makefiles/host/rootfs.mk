@@ -18,7 +18,7 @@ build/root.fs/opt/axiom-firmware/.install_stamp: $(shell find -type f -not -path
 
 build/root.fs/.base_install: build/$(LINUX_BASE_IMAGE)
 	mkdir -p $(@D)
-	tar -xJ -C $(@D) -f $<
+	tar xpf $< -C $(@D) --xattrs-include='*.*' --numeric-owner
 
 	touch $@
 
