@@ -19,7 +19,7 @@ endef
 export SFDISK_SCRIPT
 
 
-build/axiom.img: build/boot.part build/root.part
+build/$(IMAGE): build/boot.part build/root.part
 	+echo "building image for AXIOM $(DEVICE) with $$(nproc) cores (not nesscessarily jobs)"
 
 	# create the image file
@@ -31,8 +31,8 @@ build/axiom.img: build/boot.part build/root.part
 	sfdisk $@ <<<"$$SFDISK_SCRIPT"
 
 	# assemble the partitions into the full image
-	dd if=build/boot.part of=$@ bs=512 seek=$$(sfdisk -l build/axiom.img -o start -q | sed -n "2p" | sed 's/ //g') conv=sparse,notrunc
-	dd if=build/root.part of=$@ bs=512 seek=$$(sfdisk -l build/axiom.img -o start -q | sed -n "3p" | sed 's/ //g') conv=sparse,notrunc
+	dd if=build/boot.part of=$@ bs=512 seek=$$(sfdisk -l build/$(IMAGE) -o start -q | sed -n "2p" | sed 's/ //g') conv=sparse,notrunc
+	dd if=build/root.part of=$@ bs=512 seek=$$(sfdisk -l build/$(IMAGE) -o start -q | sed -n "3p" | sed 's/ //g') conv=sparse,notrunc
 
 build/boot.part: build/boot.fs/BOOT.bin
 	rm -f build/boot.part

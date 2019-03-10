@@ -1,5 +1,4 @@
 ARCH = arm
-CROSS = arm-linux-gnueabi-
 
 LINUX_VERSION = v4.20.4
 LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
@@ -13,7 +12,7 @@ build/boot.fs/BOOT.bin: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-b
 	mkdir -p $(@D)
 
 ifeq ($(DEVICE),micro)
-	cp -a boot/axiom-micro/bitstream.bit build/boot.fs/bitstream.bit
+	cp -a boot/axiom-micro/bitstream.bit $(@D)/bitstream.bit
 endif
 
 	cp boot/axiom-$(DEVICE)/uEnv.txt boot/axiom-$(DEVICE)/fsbl.elf boot/boot.bif $(UBOOT_SOURCE)/u-boot.elf $(LINUX_SOURCE)/arch/arm/boot/zImage $(@D)
