@@ -1,6 +1,7 @@
+include config.mk
+
 .DEFAULT_GOAL := build/$(IMAGE)
 
-include config.mk
 include assemble.mk
 include qemu.mk
 
