@@ -4,22 +4,10 @@ DEVICE=$(cat /etc/hostname)
 
 cd /opt/axiom-firmware
 
-
-# configure pacman & do sysupdate
-sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf
-sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
-pacman-key --init
-pacman-key --populate archlinuxarm
-pacman --noconfirm --needed -Syu
-pacman --noconfirm -R linux-zedboard || true
-
 # install dependencies
-# pacman -R pkgconf --noconfirm || true
-pacman --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
-
-# evil hack because archlinux-arm has fucked up packages
-cat /etc/ca-certificates/extracted/cadir/* > /etc/ca-certificates/extracted/tls-ca-bundle.pem
-
+xbps-install -ySu 
+xbps-install -ySu
+xbps-install -yS $(grep -vE "^\s*#" makefiles/in_chroot/requirements_xbps.txt | tr "\n" " ") || [ $? -eq 6 ]
 pip install -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users
@@ -58,17 +46,18 @@ for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/script/
 for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 
 # build and install the control daemon
-(cd software/axiom-control-daemon/
-    [ -d build ] || mkdir -p build
-    cd build
-    cmake -G Ninja ..
-    ninja
-    ./install_daemon.sh
-)
+# (cd software/axiom-control-daemon/
+#     [ -d build ] || mkdir -p build
+#     cd build
+#     cmake -G Ninja ..
+#     ninja
+#     ./install_daemon.sh
+# )
 
 # configure lighttpd
 cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
-systemctl enable lighttpd
+# systemctl enable lighttpd
+mkdir -p /srv/http/
 cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
@@ -76,6 +65,7 @@ cdmake software/misc-tools-utilities/raw2dng
 
 # download prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel 
+mkdir -p /lib/firmware/
 mkdir -p /opt/bitstreams/
 BITSTREAMS="BETA/cmv_hdmi3_dual_60.bit BETA/cmv_hdmi3_dual_30.bit BETA/ICSP/icsp.bit check_pin10.bit check_pin20.bit"
 for bit in $BITSTREAMS; do
@@ -86,17 +76,21 @@ for bit in $BITSTREAMS; do
 done
 ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
-cp software/scripts/axiom-start.service /etc/systemd/system/
+# cp software/scripts/axiom-start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
-    systemctl disable axiom
+    true
+    # systemctl disable axiom
 else
     # TODO(robin): disable for now, as it hangs the camera	
     # systemctl enable axiom-start
     true
 fi
 
+mkdir -p /etc/modules-load.d/
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
 echo "ledtrig-heartbeat" > /etc/modules-load.d/ledtrig.conf
+
+ln -sf /etc/sv/agetty-console /etc/runit/runsvdir/default/
 
 # configure bash
 cp software/configs/bashrc /etc/bash.bashrc
@@ -110,8 +104,8 @@ if [ -d overlay ]; then
 fi
 
 # install /etc/issue generating service
-cp software/configs/gen_etc_issue.service /etc/systemd/system/
-systemctl enable gen_etc_issue.service
+# cp software/configs/gen_etc_issue.service /etc/systemd/system/
+# systemctl enable gen_etc_issue.service
 
 # generate the motd and indicate software version
 echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
