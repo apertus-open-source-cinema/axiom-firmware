@@ -1,6 +1,7 @@
 #!/bin/bash
 cd $(dirname $(realpath $0))    # change into script dir
 
+. ./cmv.func
 
 fil_reg 15 0x0
 fil_reg 11 0xFF01F000
