@@ -4,8 +4,6 @@
 # it was previously known as kick.sh / kick-manual.sh
 
 cd $(dirname $(realpath $0))    # change into script dir
-. ./cmv.func
-
 
 . ./cmv.func
 . ./hdmi.func
