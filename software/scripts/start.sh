@@ -49,8 +49,8 @@ fil_reg 15 0x01000100
 # scn_reg  8  0
 
 #./hdmi_init2.sh
-./rf_sel.py A
-./pic_jtag_pcie.py 0x92 0x92
+../bringup-scripts/rf_sel.py A
+../bringup-scripts/pic_jtag_pcie.py 0x92 0x92
 
 # ./rest_pll.sh <PLL/5000kHz.pll
 
