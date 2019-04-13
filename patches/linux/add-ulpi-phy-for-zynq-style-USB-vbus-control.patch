@@ -1,0 +1,192 @@
+diff --git a/drivers/usb/chipidea/ci_hdrc_usb2.c b/drivers/usb/chipidea/ci_hdrc_usb2.c
+index c044fba46..83238293e 100644
+--- a/drivers/usb/chipidea/ci_hdrc_usb2.c
++++ b/drivers/usb/chipidea/ci_hdrc_usb2.c
+@@ -30,6 +30,7 @@ static const struct ci_hdrc_platform_data ci_default_pdata = {
+ 
+ static struct ci_hdrc_platform_data ci_zynq_pdata = {
+ 	.capoffset	= DEF_CAPOFFSET,
++	.flags          = CI_HDRC_PHY_VBUS_CONTROL,
+ };
+ 
+ static const struct of_device_id ci_hdrc_usb2_of_match[] = {
+@@ -58,6 +59,10 @@ static int ci_hdrc_usb2_probe(struct platform_device *pdev)
+ 	if (match && match->data) {
+ 		/* struct copy */
+ 		*ci_pdata = *(struct ci_hdrc_platform_data *)match->data;
++		ci_pdata->usb_phy = devm_usb_get_phy_by_phandle(dev, "usb-phy",
++					 0);
++		if (IS_ERR(ci_pdata->usb_phy))
++			return PTR_ERR(ci_pdata->usb_phy);
+ 	}
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+diff --git a/drivers/usb/chipidea/host.c b/drivers/usb/chipidea/host.c
+index d858a82c4..3d8f993e9 100644
+--- a/drivers/usb/chipidea/host.c
++++ b/drivers/usb/chipidea/host.c
+@@ -55,6 +55,14 @@ static int ehci_ci_portpower(struct usb_hcd *hcd, int portnum, bool enable)
+ 		}
+ 	}
+ 
++	if (ci->platdata->flags & CI_HDRC_PHY_VBUS_CONTROL &&
++			ci->usb_phy && ci->usb_phy->set_vbus) {
++		if (enable)
++			ci->usb_phy->set_vbus(ci->usb_phy, 1);
++		else
++			ci->usb_phy->set_vbus(ci->usb_phy, 0);
++	}
++
+ 	if (enable && (ci->platdata->phy_mode == USBPHY_INTERFACE_MODE_HSIC)) {
+ 		/*
+ 		 * Marvell 28nm HSIC PHY requires forcing the port to HS mode.
+diff --git a/drivers/usb/phy/phy-ulpi.c b/drivers/usb/phy/phy-ulpi.c
+index a43c49369..0f7f6eb16 100644
+--- a/drivers/usb/phy/phy-ulpi.c
++++ b/drivers/usb/phy/phy-ulpi.c
+@@ -13,9 +13,16 @@
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/export.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/io.h>
++#include <linux/of_address.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
+ #include <linux/usb.h>
+ #include <linux/usb/otg.h>
+ #include <linux/usb/ulpi.h>
++#include <linux/usb/phy.h>
+ 
+ 
+ struct ulpi_info {
+@@ -39,6 +46,13 @@ static struct ulpi_info ulpi_ids[] = {
+ 	ULPI_INFO(ULPI_ID(0x0451, 0x1507), "TI TUSB1210"),
+ };
+ 
++struct ulpi_phy {
++	struct usb_phy	*usb_phy;
++	void __iomem *regs;
++	unsigned int vp_offset;
++	unsigned int flags;
++};
++
+ static int ulpi_set_otg_flags(struct usb_phy *phy)
+ {
+ 	unsigned int flags = ULPI_OTG_CTRL_DP_PULLDOWN |
+@@ -240,6 +254,23 @@ static int ulpi_set_vbus(struct usb_otg *otg, bool on)
+ 	return usb_phy_io_write(phy, flags, ULPI_OTG_CTRL);
+ }
+ 
++static int usbphy_set_vbus(struct usb_phy *phy, int on)
++{
++	unsigned int flags = usb_phy_io_read(phy, ULPI_OTG_CTRL);
++
++	flags &= ~(ULPI_OTG_CTRL_DRVVBUS | ULPI_OTG_CTRL_DRVVBUS_EXT);
++
++	if (on) {
++		if (phy->flags & ULPI_OTG_DRVVBUS)
++			flags |= ULPI_OTG_CTRL_DRVVBUS;
++
++		if (phy->flags & ULPI_OTG_DRVVBUS_EXT)
++			flags |= ULPI_OTG_CTRL_DRVVBUS_EXT;
++	}
++
++	return usb_phy_io_write(phy, flags, ULPI_OTG_CTRL);
++}
++
+ struct usb_phy *
+ otg_ulpi_create(struct usb_phy_io_ops *ops,
+ 		unsigned int flags)
+@@ -262,6 +293,7 @@ otg_ulpi_create(struct usb_phy_io_ops *ops,
+ 	phy->io_ops	= ops;
+ 	phy->otg	= otg;
+ 	phy->init	= ulpi_init;
++	phy->set_vbus	= usbphy_set_vbus;
+ 
+ 	otg->usb_phy	= phy;
+ 	otg->set_host	= ulpi_set_host;
+@@ -271,3 +303,70 @@ otg_ulpi_create(struct usb_phy_io_ops *ops,
+ }
+ EXPORT_SYMBOL_GPL(otg_ulpi_create);
+ 
++static int ulpi_phy_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct resource *res;
++	struct ulpi_phy *uphy;
++	bool flag;
++	int ret;
++
++	uphy = devm_kzalloc(&pdev->dev, sizeof(*uphy), GFP_KERNEL);
++	if (!uphy)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	uphy->regs = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	if (IS_ERR(uphy->regs))
++		return PTR_ERR(uphy->regs);
++
++	ret = of_property_read_u32(np, "view-port", &uphy->vp_offset);
++	if (IS_ERR(uphy->regs)) {
++		dev_err(&pdev->dev, "view-port register not specified\n");
++		return PTR_ERR(uphy->regs);
++	}
++
++	flag = of_property_read_bool(np, "drv-vbus");
++	if (flag)
++		uphy->flags |= ULPI_OTG_DRVVBUS | ULPI_OTG_DRVVBUS_EXT;
++
++	uphy->usb_phy = otg_ulpi_create(&ulpi_viewport_access_ops, uphy->flags);
++
++	uphy->usb_phy->dev = &pdev->dev;
++
++	uphy->usb_phy->io_priv = uphy->regs + uphy->vp_offset;
++
++	ret = usb_add_phy_dev(uphy->usb_phy);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int ulpi_phy_remove(struct platform_device *pdev)
++{
++	struct ulpi_phy *uphy = platform_get_drvdata(pdev);
++
++	usb_remove_phy(uphy->usb_phy);
++
++	return 0;
++}
++
++static const struct of_device_id ulpi_phy_table[] = {
++	{ .compatible = "ulpi-phy" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, ulpi_phy_table);
++
++static struct platform_driver ulpi_phy_driver = {
++	.probe		= ulpi_phy_probe,
++	.remove		= ulpi_phy_remove,
++	.driver		= {
++		.name	= "ulpi-phy",
++		.of_match_table = ulpi_phy_table,
++	},
++};
++module_platform_driver(ulpi_phy_driver);
++
++MODULE_DESCRIPTION("ULPI PHY driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/usb/chipidea.h b/include/linux/usb/chipidea.h
+index 63758c399..be9aaf54e 100644
+--- a/include/linux/usb/chipidea.h
++++ b/include/linux/usb/chipidea.h
+@@ -60,6 +60,7 @@ struct ci_hdrc_platform_data {
+ #define CI_HDRC_OVERRIDE_RX_BURST	BIT(11)
+ #define CI_HDRC_OVERRIDE_PHY_CONTROL	BIT(12) /* Glue layer manages phy */
+ #define CI_HDRC_REQUIRES_ALIGNED_DMA	BIT(13)
++#define CI_HDRC_PHY_VBUS_CONTROL	BIT(14)
+ 	enum usb_dr_mode	dr_mode;
+ #define CI_HDRC_CONTROLLER_RESET_EVENT		0
+ #define CI_HDRC_CONTROLLER_STOPPED_EVENT	1

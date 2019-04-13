@@ -585,7 +585,7 @@
 		};
 	};
 
-    usb_phy0: phy@0 {
+	usb_phy0: phy@0 {
 		compatible = "ulpi-phy";
 		#phy-cells = <0x0>;
 		reg = <0xe0002000 0x1000>;
