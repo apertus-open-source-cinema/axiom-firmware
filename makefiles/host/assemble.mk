@@ -34,7 +34,7 @@ build/$(IMAGE): build/boot.part build/root.part
 	dd if=build/boot.part of=$@ bs=512 seek=$$(sfdisk -l build/$(IMAGE) -o start -q | sed -n "2p" | sed 's/ //g') conv=sparse,notrunc
 	dd if=build/root.part of=$@ bs=512 seek=$$(sfdisk -l build/$(IMAGE) -o start -q | sed -n "3p" | sed 's/ //g') conv=sparse,notrunc
 
-build/boot.part: build/boot.fs/BOOT.bin
+build/boot.part: build/boot.fs/.install_stamp
 	rm -f build/boot.part
 	fallocate -l $(BOOTSIZE) build/boot.part
 	mkfs.vfat -n "BOOT" -F 32 build/boot.part

@@ -1,0 +1,1 @@
+U_BOOT_DEFCONFIG = zynq_z_turn_lite_defconfig
