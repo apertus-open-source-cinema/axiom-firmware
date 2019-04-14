@@ -1,0 +1,1 @@
+U_BOOT_DEFCONFIG = zynq_microzed_defconfig

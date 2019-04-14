@@ -1,4 +1,5 @@
 include config.mk
+include config/$(DEVICE).mk
 
 .DEFAULT_GOAL := build/$(IMAGE)
 
@@ -16,12 +17,12 @@ chroot-shell: build/root.fs/.install_stamp
 	./makefiles/host/run_in_chroot.sh /bin/bash
 
 .PHONY: qemu-shell
-qemu-shell: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/devicetree.dtb $(UBOOT_SOURCE)/u-boot.elf build/$(IMAGE)
-	$(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb build/boot.fs/devicetree.dtb -kernel $(UBOOT_SOURCE)/u-boot.elf -drive if=sd,format=raw,index=0,file=build/$(IMAGE) -boot mode=5
+qemu-shell: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/.install_stamp build/$(IMAGE)
+	$(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -serial /dev/null -serial mon:stdio -nographic -dtb build/boot.fs/devicetree.dtb -drive if=sd,format=raw,index=0,file=build/$(IMAGE) -kernel build/boot.fs/zImage -append 'console=ttyPS0,115200n8 root=PARTUUID=f37043ff-02 rw rootfstype=ext4 rootwait systemd.log_level=warning loglevel=7 systemd.log_target=console kernel.sysrq=1 init=/usr/lib/systemd/systemd sdhci.debug_quirks=64 kernel.sysrq=1'
 
 # test targets
 .PHONY: test
-test: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/devicetree.dtb $(UBOOT_SOURCE)/u-boot.elf build/$(IMAGE) makefiles/host/run_qemu.expect
+test: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/.install_stamp build/$(IMAGE) makefiles/host/run_qemu.expect
 	QEMU_SOURCE=$(QEMU_SOURCE) IMAGE=$(IMAGE) makefiles/host/run_qemu.expect
 
 # cleaning rules

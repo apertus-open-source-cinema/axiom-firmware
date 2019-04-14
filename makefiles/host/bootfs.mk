@@ -3,21 +3,20 @@ ARCH = arm
 LINUX_VERSION = v4.20.4
 LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
 
-UBOOT_VERSION = xilinx-v2018.3
-UBOOT_SOURCE = build/u-boot-xlnx-$(UBOOT_VERSION).git
+UBOOT_VERSION = v2019.04
+UBOOT_SOURCE = build/u-boot-$(UBOOT_VERSION).git
 
-build/boot.fs/BOOT.bin: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.elf build/boot.fs/devicetree.dtb \
-			   build/zynq-mkbootimage.git/mkbootimage boot/boot.bif boot/axiom-$(DEVICE)/fsbl.elf boot/axiom-$(DEVICE)/uEnv.txt \
-			   build/boot.fs/devicetree.dts
+build/boot.fs/.install_stamp: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.img $(UBOOT_SOURCE)/spl/boot.bin build/boot.fs/devicetree.dtb \
+			   boot/axiom-$(DEVICE)/uEnv.txt build/boot.fs/devicetree.dts
 	mkdir -p $(@D)
 
 ifeq ($(DEVICE),micro)
 	cp -a boot/axiom-micro/bitstream.bit $(@D)/bitstream.bit
 endif
 
-	cp boot/axiom-$(DEVICE)/uEnv.txt boot/axiom-$(DEVICE)/fsbl.elf boot/boot.bif $(UBOOT_SOURCE)/u-boot.elf $(LINUX_SOURCE)/arch/arm/boot/zImage $(@D)
+	cp boot/axiom-$(DEVICE)/uEnv.txt $(UBOOT_SOURCE)/u-boot.img $(UBOOT_SOURCE)/spl/boot.bin $(LINUX_SOURCE)/arch/arm/boot/zImage $(@D)
 
-	(cd $(@D) && ../zynq-mkbootimage.git/mkbootimage boot.bif BOOT.bin)
+	touch $@
 
 
 ### Kernel
@@ -29,7 +28,7 @@ $(LINUX_SOURCE): $(LINUX_PATCHES)
 	rm -rf $@
 	git clone --branch $(LINUX_VERSION) --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git $@
 
-	./makefiles/host/patch_wrapper.sh $@ $(LINUX_PATCHES) 
+	./makefiles/host/patch_wrapper.sh $@ $(LINUX_PATCHES)
 	# remove + at end of kernel version (indicates dirty tree)
 	touch $@/.scmversion
 
@@ -50,22 +49,27 @@ $(LINUX_SOURCE)/arch/arm/boot/zImage: boot/kernel.config $(LINUX_SOURCE)
 	touch $@
 
 # u-boot
-# TODO use mainline uboot -> profit (use `--depth 1` again)
 U_BOOT_MAKE = $(MAKE) -C $(UBOOT_SOURCE) CROSS_COMPILE=$(CROSS) ARCH=$(ARCH)
-$(UBOOT_SOURCE): 
+U_BOOT_PATCHES = $(wildcard patches/u-boot/*.patch)
+$(UBOOT_SOURCE)/.config: $(U_BOOT_PATCHES)
 	@mkdir -p $(@D)
-	git clone --branch $(UBOOT_VERSION) --depth 1 https://github.com/Xilinx/u-boot-xlnx $@
+	rm -rf $(@D)
+	git clone --branch $(UBOOT_VERSION) --depth 1 git://www.denx.de/git/u-boot.git $(@D)
 
-$(UBOOT_SOURCE)/u-boot.elf: boot/axiom-$(DEVICE)/u-boot.config $(UBOOT_SOURCE) boot/axiom-micro/devicetree_uboot.dts boot/axiom-beta/devicetree_uboot.dts
-	# copy the devicetree's (done here to avoid redownload on changed devicetree)
-	cp boot/axiom-micro/devicetree_uboot.dts $(UBOOT_SOURCE)/arch/arm/dts/zynq-zturn-myir.dts
-	cp boot/axiom-beta/devicetree_uboot.dts $(UBOOT_SOURCE)/arch/arm/dts/zynq-microzed.dts
+	./makefiles/host/patch_wrapper.sh $(@D) $(U_BOOT_PATCHES)
+	# remove -dirty from version
+	touch $(@D)/.scmversion
+
 	# configure u-boot
-	cp $< $(UBOOT_SOURCE)/.config
-	+$(U_BOOT_MAKE) olddefconfig
+	+$(U_BOOT_MAKE) $(U_BOOT_DEFCONFIG)
+	touch $@
 
-	# finally make it
-	+$(U_BOOT_MAKE) u-boot.elf
+$(UBOOT_SOURCE)/u-boot.img: $(UBOOT_SOURCE)/.config
+	+$(U_BOOT_MAKE) u-boot.img
+	touch $@
+
+$(UBOOT_SOURCE)/spl/boot.bin: $(UBOOT_SOURCE)/.config $(UBOOT_SOURCE)/u-boot.img
+	+$(U_BOOT_MAKE) spl/boot.bin
 	touch $@
 
 build/boot.fs/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
@@ -75,10 +79,3 @@ build/boot.fs/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
 build/boot.fs/devicetree.dts: boot/axiom-$(DEVICE)/devicetree.dts
 	@mkdir -p $(@D)
 	cp $< $@
-
-# tool for generating BOOT.bin
-build/zynq-mkbootimage.git/mkbootimage:
-	git clone --depth 1 https://github.com/antmicro/zynq-mkbootimage build/zynq-mkbootimage.git
-	+$(MAKE) -C $(@D) 
-
-	touch $@
