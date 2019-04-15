@@ -2,7 +2,7 @@
 
 cd "${0%/*}"		# change into script dir
 
-. ./i2c.func
+. ../scripts/i2c.func
 
 for id in 0x21; do
     i2c_test $id || continue

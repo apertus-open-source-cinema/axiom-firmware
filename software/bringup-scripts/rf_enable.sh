@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./../i2c0.func 
+. ../scripts/i2c0.func 
 
 # disable power to RFs
 

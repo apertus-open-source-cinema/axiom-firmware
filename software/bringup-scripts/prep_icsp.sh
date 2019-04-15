@@ -1,12 +1,11 @@
 #!/bin/bash
 
-./../power_init.sh
-./../power_on.sh
-./../fclk_init.sh
+../scripts/power_init.sh
+../scripts/power_on.sh
+../scripts/fclk_init.sh
 
-./gpio.py init
-
-. i2c0.func
+../scripts/gpio.py init
+. ../scripts/i2c0.func
 
 i2c0_bit_clr 0x22 0x15 7
 sleep 0.1
