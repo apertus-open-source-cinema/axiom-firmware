@@ -5,15 +5,20 @@ docker_builder:
     matrix:
       DEVICE: beta
       DEVICE: micro
-  clone_script: 
-    - git clone --recursive --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
-    - git reset --hard $CIRRUS_CHANGE_IN_REPO
+  clone_script: >
+    if [[ -z "$CIRRUS_PR" ]]; then
+      git clone --recursive --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+    else
+      git clone --recursive https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+    fi;
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
   make_script: ./makefiles/docker-make.sh DEVICE=$DEVICE
   test_script: ./makefiles/docker-make.sh DEVICE=$DEVICE test
   release_script: >
     if [ $CIRRUS_BRANCH = 'master' ]; then
       # compress the image
-      xz -T $(nproc) build/axiom.img
+      xz -T $(nproc) build/axiom-$DEVICE.img
       # get the github-release tool
       wget https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
       tar -xf linux-amd64-github-release.tar.bz2
@@ -27,7 +32,7 @@ docker_builder:
       - Only continue, if you know, what you are doing!
       \`\`\`
       " || true
-      ./bin/linux/amd64/github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "axiom-$DEVICE-$(git describe --always --abbrev=8).img.xz" -f build/axiom.img.xz
+      ./bin/linux/amd64/github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "axiom-$DEVICE-$(git describe --always --abbrev=8).img.xz" -f build/axiom-$DEVICE.img.xz
     else
       echo "not on master branch; skipping deploy..."
     fi 

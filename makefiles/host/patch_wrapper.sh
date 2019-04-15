@@ -4,10 +4,13 @@
 
 set -xeuo pipefail
 
+# if we give patch no arguments it wants them on stdin
+[ $# -eq 1 ] && exit 0
+
 # If we could reverse the patch, then it has already been applied; skip it
 if cat ${*:2} | patch -d $1 -p1 --dry-run --reverse --force >/dev/null 2>&1; then
   # patch already applied - skipping
-  true
+  exit 0
 else 
   # patch not yet applied
   cat ${*:2} | patch -d $1 -p1 -Ns || (echo "Patch failed" >&2 && exit 1)

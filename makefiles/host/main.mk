@@ -1,5 +1,6 @@
-.DEFAULT_GOAL := build/axiom.img
-DEVICE ?= beta
+include config.mk
+
+.DEFAULT_GOAL := build/$(IMAGE)
 
 include assemble.mk
 include qemu.mk
@@ -15,13 +16,13 @@ chroot-shell: build/root.fs/.install_stamp
 	./makefiles/host/run_in_chroot.sh /bin/bash
 
 .PHONY: qemu-shell
-qemu-shell: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/devicetree.dtb $(UBOOT_SOURCE)/u-boot.elf build/axiom.img
-	$(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb build/boot.fs/devicetree.dtb -kernel $(UBOOT_SOURCE)/u-boot.elf -drive if=sd,format=raw,index=0,file=build/axiom.img -boot mode=5
+qemu-shell: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/devicetree.dtb $(UBOOT_SOURCE)/u-boot.elf build/$(IMAGE)
+	$(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -machine linux=on -serial /dev/null -serial mon:stdio -nographic -dtb build/boot.fs/devicetree.dtb -kernel $(UBOOT_SOURCE)/u-boot.elf -drive if=sd,format=raw,index=0,file=build/$(IMAGE) -boot mode=5
 
 # test targets
 .PHONY: test
-test: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/devicetree.dtb $(UBOOT_SOURCE)/u-boot.elf build/axiom.img makefiles/host/run_qemu.expect
-	QEMU_SOURCE=$(QEMU_SOURCE) makefiles/host/run_qemu.expect
+test: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/devicetree.dtb $(UBOOT_SOURCE)/u-boot.elf build/$(IMAGE) makefiles/host/run_qemu.expect
+	QEMU_SOURCE=$(QEMU_SOURCE) IMAGE=$(IMAGE) makefiles/host/run_qemu.expect
 
 # cleaning rules
 clean: clean-rootfs clean-kernel clean-u-boot clean-qemu
@@ -41,7 +42,6 @@ clean-kernel:
 .PHONY: clean-u-boot
 clean-u-boot:
 	+$(UBOOT_MAKE) clean
-
 
 .PHONY: clean-qemu
 clean-qemu:

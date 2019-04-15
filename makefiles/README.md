@@ -26,7 +26,7 @@ makefiles/docker-make.sh
 ```
 
 The script will create a docker container and run the makefiles inside it.
-This will result in the finished camera image with path `build/axiom.img`.
+This will result in the finished camera image with path `build/axiom-beta.img`.
 
 You can also run other targets, defined in the makefile, with `docker-make.sh`. You can for example
 run:
@@ -34,6 +34,8 @@ run:
 * `docker-make.sh chroot-shell` to get a root shell inide a chroot of the camera
 * `docker-make.sh qemu-shell` to boot the camera image inside qemu. currently the network is not working.
 * `docker-make.sh test` to run automated tests of the image inside qemu.
+
+To configure the compilation process and camera image take a look at `makefiles/host/config.mk`.
 
 ### Rebuild
 To run the build process again you need to first remove the current build files to start with a clean system: 
@@ -44,9 +46,9 @@ makefiles/docker-make.sh clean-all
 Then again follow the above build instructions.
 
 ## Customize it!
-If you want to customize your image you can create a `overlay/` folter in the root of this repo.
+If you want to customize your image you can create a `overlay/` folder in the root of this repo.
 An install.sh in this directory will be executed in a chroot of the camera. All the other contents 
-will be coppyed to the `/` of the camera.
+will be copied to the `/` of the camera.
 
 This is especially usefull for adding your ssh keys to the camera or to install your preffered tools
 (ie. gnu/emacs).

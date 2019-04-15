@@ -1,0 +1,13 @@
+diff --git a/hw/misc/zynq_slcr.c b/hw/misc/zynq_slcr.c
+index 7557482..3a387ec 100644
+--- a/hw/misc/zynq_slcr.c
++++ b/hw/misc/zynq_slcr.c
+@@ -310,7 +310,7 @@ static void zynq_slcr_reset(DeviceState *d)
+ 
+     s->regs[LOCKSTA] = 1;
+     /* 0x100 - 0x11C */
+-    s->regs[ARM_PLL_CTRL]   = 0x0001A008;
++    s->regs[ARM_PLL_CTRL]   = 0x00014008;
+     s->regs[DDR_PLL_CTRL]   = 0x0001A008;
+     s->regs[IO_PLL_CTRL]    = 0x0001A008;
+     s->regs[PLL_STATUS]     = 0x0000003F;
