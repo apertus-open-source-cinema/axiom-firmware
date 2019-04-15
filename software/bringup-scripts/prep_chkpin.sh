@@ -1,9 +1,9 @@
 #!/bin/bash
 
-./../power_init.sh
-./../power_on.sh
-./../fclk_init.sh
-./../gpio.py init
+./../scripts/power_init.sh
+./../scripts/power_on.sh
+./../scripts/fclk_init.sh
+./../scripts/gpio.py init
 
 echo check_spkfan.bit > /sys/class/fpga_manager/fpga0/firmware
 sleep 0.2

@@ -1,7 +1,6 @@
 #!/bin/sh
 
-. ./bit.func
-
+. ../scripts/bit.func
 
 i2c0_get() {
     i2cget -y 0 $1 $2

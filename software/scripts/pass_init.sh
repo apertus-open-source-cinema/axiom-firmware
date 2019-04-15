@@ -11,5 +11,5 @@ for n in `seq 0 63`; do
     echo 0 >$gpio/value
 done
 
-./rf_disable.sh
+./../bringup-scripts/rf_disable.sh
 
