@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ./bit.func
+. ../scripts/bit.func
 
 
 i2c_test() {
