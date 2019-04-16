@@ -1,10 +1,10 @@
 #!/bin/bash
 
-./../scripts/power_init.sh
-./../scripts/power_on.sh
-./../scripts/fclk_init.sh
+../scripts/power_init.sh
+../scripts/power_on.sh
+../scripts/fclk_init.sh
 
-./../scripts/gpio.py init
+../scripts/gpio.py init
 
 . ../scripts/i2c0.func
 

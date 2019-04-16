@@ -1,8 +1,8 @@
 #!/bin/bash
 
-./../scripts/power_init.sh
-./../scripts/power_on.sh
-./../scripts/fclk_init.sh
+../scripts/power_init.sh
+../scripts/power_on.sh
+../scripts/fclk_init.sh
 
 echo icsp.bin > /sys/class/fpga_manager/fpga0/firmware
 

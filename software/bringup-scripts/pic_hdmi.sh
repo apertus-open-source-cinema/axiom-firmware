@@ -1,9 +1,9 @@
 #!/bin/bash
 
-./../scripts/power_init.sh
+../scripts/power_init.sh
 ./icsp_off.py /dev/ttyPS1
 sleep 1
-./../scripts/power_on.sh
+../scripts/power_on.sh
 sleep 0.5
 
 i2cset -y 0 0x23 0x14 0xFF	# reset pic
