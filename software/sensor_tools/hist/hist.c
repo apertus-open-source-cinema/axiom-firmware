@@ -226,14 +226,6 @@ int	main(int argc, char *argv[])
 	    (long unsigned)map_base, (long unsigned)map_size,
 	    (long unsigned)map_addr);
 
-	void *line = calloc(64*128, sizeof(uint16_t));
-	if (line == (void *)-1) {
-	    fprintf(stderr,
-		"error allocating memory\n%s\n",
-		strerror(errno));
-	    exit(3);
-	}
-
 	for (int i=0; i<4; i++) {
 	    if (buf_base[i] == -1)
 		buf_base[i] = get_fil_reg(FIL_REG_BUF0 + 2*i);
