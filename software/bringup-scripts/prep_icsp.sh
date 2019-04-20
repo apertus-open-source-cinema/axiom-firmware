@@ -6,7 +6,7 @@
 
 ../scripts/gpio.py init
 . ../scripts/i2c0.func
-popd 
+
 i2c0_bit_clr 0x22 0x15 7
 sleep 0.1
 i2c0_bit_set 0x22 0x15 7
