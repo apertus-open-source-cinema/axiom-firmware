@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
-. ../scripts/bit.func
+pushd $(dirname $(realpath ${BASH_SOURCE[0]}))
+. bit.func
+popd 
 
 i2c0_get() {
     i2cget -y 0 $1 $2
