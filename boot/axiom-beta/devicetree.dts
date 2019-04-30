@@ -37,6 +37,7 @@
 		spi0 = &spi0;
 		spi1 = &spi1;
 		mmc0 = &sdhci0;
+		mmc1 = &sdhci1;
         i2c0 = &i2c_gpio;
         i2c1 = &i2c0;
         i2c2 = &i2c1;
@@ -44,7 +45,6 @@
 
 	chosen {
 		bootargs = [00];
-//		bootargs = "bootargs=console=ttyPS0,115200n8 root=/dev/mmcblk0p2 rw rootfstype=ext4 rootwait debug verbose systemd.log_level=warning systemd.log_target=console kernel.sysrq=1 init=/usr/lib/systemd/systemd sdhci.debug_quirks=64 earlycon";
 		stdout-path = "serial0:115200n8";
 	};
 
@@ -370,6 +370,7 @@
 		sdhci1: sdhci@e0101000 {
 			compatible = "arasan,sdhci-8.9a";
 			status = "okay";
+			broken-cd;
 			clock-names = "clk_xin", "clk_ahb";
 			clocks = <&clkc 22>, <&clkc 33>;
 			interrupt-parent = <&intc>;
