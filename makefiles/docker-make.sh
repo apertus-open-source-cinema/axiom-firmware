@@ -14,6 +14,7 @@ docker ps > /dev/null
 mkdir -p build
 echo -e "\n\n\nstarting build at $(date) for commit $(git describe --always --abbrev=8 --dirty)" >> build/build.log
 docker run --privileged \
+    -t \
     -h "axiom-build" \
     -v /dev:/dev \
     -v $(pwd):/root/axiom-firmware/ \
@@ -21,5 +22,5 @@ docker run --privileged \
     -l axiom-build \
     $([ -z "$CI" ] && echo "-it" ) \
     vupvupvup/axiom_build:latest \
-    /bin/bash -c "make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) $*" \
+    /bin/bash -c "stty cols $COLUMNS rows $LINES; make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) $*" \
 | tee -a build/build.log
