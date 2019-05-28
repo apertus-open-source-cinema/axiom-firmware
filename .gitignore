@@ -8,3 +8,6 @@ build/
 # misc files
 **/.DS_Store
 .idea/
+
+# user specific vhdl files
+peripherals/soc_main/vhdl_ls.toml
