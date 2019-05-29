@@ -444,10 +444,11 @@
 			syscon = <&slcr>;
 		};
 
-		fclk: fclk {
+		fclk: fclk@0 {
 			compatible = "zynq-fclk";
 			clocks = <&clkc 15>, <&clkc 16>, <&clkc 17>, <&clkc 18>;
 			clock-names = "fclk0", "fclk1", "fclk2", "fclk3";
+			reg = <0 0>;
 		};
 
 		global_timer: timer@f8f00200 {
@@ -514,8 +515,9 @@
 		};
 
 
-		leds0: gpio-leds {
+		leds0: gpio-leds@1 {
 			compatible = "gpio-leds";
+			reg = <1 0>;
 
 			usr_led {
 				label = "led0";
@@ -524,9 +526,10 @@
 			};
 		};
 
-		keys0: gpio-keys {
+		keys0: gpio-keys@2 {
 			compatible = "gpio-keys";
 			autorepeat;
+			reg = <2 0>;
 
 			K1 {
 				label = "K1";
@@ -586,7 +589,7 @@
 		};
 	};
 
-	usb_phy0: phy@0 {
+	usb_phy0: phy@e0002000 {
 		compatible = "ulpi-phy";
 		#phy-cells = <0x0>;
 		reg = <0xe0002000 0x1000>;
