@@ -34,3 +34,10 @@ python-numpy
 
 # control daemon
 clang
+
+# various other packages
+lsof
+mlocate
+stress
+screen
+minicom
