@@ -35,6 +35,14 @@ if ! [ -d /home/$USERNAME ]; then
     rm -f /home/$USERNAME/.bashrc
 fi
 
+# add empty ~/.ssh/authorized_keys (see #80)
+SSH_AUTHORIZED_KEYS=/home/$USERNAME/.ssh/authorized_keys
+mkdir -p -m 700 $(dirname $SSH_AUTHORIZED_KEYS)
+chown $USERNAME:users $(dirname $SSH_AUTHORIZED_KEYS)
+touch $SSH_AUTHORIZED_KEYS
+chown $USERNAME:users $SSH_AUTHORIZED_KEYS
+chmod 600 $SSH_AUTHORIZED_KEYS
+
 # remove default arch linux arm user
 userdel -r -f alarm || true
 
