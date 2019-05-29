@@ -22,6 +22,11 @@ expect {
 
 send "sudo systemctl poweroff\r"
 expect {
+    "password for operator:" { }
+    timeout { puts "\ntimed out\n"; exit 1 }
+}
+send "axiom\n"
+expect {
     "Power-Off" { }
     timeout { puts "\ntimed out\n"; exit 1 }
 }
