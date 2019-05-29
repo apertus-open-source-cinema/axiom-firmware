@@ -118,6 +118,10 @@ if [ -d overlay ]; then
     fi
 fi
 
+# copy the full disclaimer to its place
+DISCLAIMER_FILE=/etc/DISCLAIMER.txt
+cp DISCLAIMER.txt $DISCLAIMER_FILE
+
 # install /etc/issue generating service
 cp software/configs/gen_etc_issue.service /etc/systemd/system/
 systemctl enable gen_etc_issue.service
@@ -127,9 +131,10 @@ echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > 
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update, run \"axiom-update\"." >> /etc/motd
 echo "" >> /etc/motd
-echo "$(tput setaf 1)$(cat DISCLAIMER.txt)$(tput sgr0)" >> /etc/motd
+echo "$(tput setaf 1)This device and it's software is provided without warranty of merchantability or fitness for any particular purpose. Be careful when doing anything potentially harmful to your camera. See full disclaimer in $DISCLAIMER_FILE $(tput sgr0)" >> /etc/motd
 echo "" >> /etc/motd
 
+# generate fstab
 echo "PARTUUID=f37043ff-02 /     ext4 defaults,rw 0 0"  > /etc/fstab
 echo "PARTUUID=f37043ff-01 /boot vfat defaults,rw 0 0" >> /etc/fstab
 
