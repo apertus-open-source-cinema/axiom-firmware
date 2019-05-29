@@ -48,14 +48,15 @@ function cdmake () {
 }
 
 mkdir -p /usr/axiom/bin/
-echo 'PATH=${PATH}:/usr/axiom/bin' >> /etc/environment
 for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
 mkdir -p /usr/axiom/script/
-echo 'PATH=$PATH:/usr/axiom/script' >> /etc/profile
 for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
 for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); done
+
+# TODO: find a better solution for this
+echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /etc/environment
 
 # build and install the control daemon
 (cd software/axiom-control-daemon/
