@@ -1,5 +1,6 @@
 [Unit]
 Description=generate the /etc/issue file used by getty
+Before=systemd-user-sessions.service
 
 [Service]
 Type=oneshot
@@ -8,4 +9,4 @@ KillMode=process
 
 [Install]
 WantedBy=multi-user.target
-WantedBy=serial-getty@ttyPS0.service
+
