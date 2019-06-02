@@ -1,0 +1,11 @@
+[Unit]
+Description=disable the logging of kernel messages to the serial console just before getty gets ready
+Before=systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=dmesg -n 1
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

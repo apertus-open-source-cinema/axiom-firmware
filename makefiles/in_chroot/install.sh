@@ -126,6 +126,10 @@ cp DISCLAIMER.txt $DISCLAIMER_FILE
 cp software/configs/gen_etc_issue.service /etc/systemd/system/
 systemctl enable gen_etc_issue.service
 
+# install kernel messages disabling system service
+cp software/configs/disable_kernel_messages.service /etc/systemd/system/
+systemctl enable disable_kernel_messages.service
+
 # generate the motd and indicate software version
 echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
