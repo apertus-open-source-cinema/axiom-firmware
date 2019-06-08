@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd "${0%/*}"		# change into script dir
 
