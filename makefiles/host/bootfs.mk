@@ -1,9 +1,9 @@
 ARCH = arm
 
-LINUX_VERSION = v4.20.4
+LINUX_VERSION = v5.2.14
 LINUX_SOURCE = build/linux-$(LINUX_VERSION).git
 
-UBOOT_VERSION = v2019.04
+UBOOT_VERSION = v2019.07
 UBOOT_SOURCE = build/u-boot-$(UBOOT_VERSION).git
 
 build/boot.fs/.install_stamp: $(LINUX_SOURCE)/arch/arm/boot/zImage $(UBOOT_SOURCE)/u-boot.img $(UBOOT_SOURCE)/spl/boot.bin build/boot.fs/devicetree.dtb \
@@ -54,7 +54,7 @@ U_BOOT_PATCHES = $(wildcard patches/u-boot/*.patch)
 $(UBOOT_SOURCE)/.config: $(U_BOOT_PATCHES)
 	@mkdir -p $(@D)
 	rm -rf $(@D)
-	git clone --branch $(UBOOT_VERSION) --depth 1 git://www.denx.de/git/u-boot.git $(@D)
+	git clone --branch $(UBOOT_VERSION) --depth 1 https://gitlab.denx.de/u-boot/u-boot.git $(@D)
 
 	./makefiles/host/patch_wrapper.sh $(@D) $(U_BOOT_PATCHES)
 	# remove -dirty from version
