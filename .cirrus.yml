@@ -14,6 +14,7 @@ docker_builder:
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
     fi;
     git reset --hard $CIRRUS_CHANGE_IN_REPO
+    git submodule update --init --recursive
   make_script: ./makefiles/docker-make.sh DEVICE=$DEVICE
   test_script: ./makefiles/docker-make.sh DEVICE=$DEVICE test
   release_script: |
