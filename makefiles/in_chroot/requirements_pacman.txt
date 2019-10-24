@@ -41,3 +41,9 @@ mlocate
 stress
 screen
 minicom
+
+# wifi utilities
+iw
+wpa_supplicant
+networkmanager
+dnsmasq

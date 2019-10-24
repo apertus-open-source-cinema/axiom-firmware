@@ -83,6 +83,11 @@ cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
 systemctl enable lighttpd
 cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 
+# configure NetworkManager
+cp -f software/configs/Hotspot.nmconnection /etc/NetworkManager/system-connections/
+chmod 600 /etc/NetworkManager/system-connections/Hotspot.nmconnection
+systemctl enable NetworkManager
+
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
 cdmake software/misc-tools-utilities/raw2dng
 
