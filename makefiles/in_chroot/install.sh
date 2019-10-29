@@ -74,9 +74,11 @@ echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /e
 	gcc --version
 	cc --version
 	c++ --version
+	command -v g++
+	command -v c++
 	find ..
 	echo $PATH
-    cmake -G Ninja ..
+    cmake -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
     ninja
     ./install_daemon.sh
 )
