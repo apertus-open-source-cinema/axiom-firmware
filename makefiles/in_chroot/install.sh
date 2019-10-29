@@ -70,6 +70,12 @@ echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /e
 (cd software/axiom-control-daemon/
     [ -d build ] || mkdir -p build
     cd build
+	cmake --version
+	gcc --version
+	cc --version
+	c++ --version
+	find ..
+	echo $PATH
     cmake -G Ninja ..
     ninja
     ./install_daemon.sh
