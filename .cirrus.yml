@@ -17,6 +17,7 @@ docker_builder:
     git reset --hard $CIRRUS_CHANGE_IN_REPO
 
     echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/ssh_key
+    chmod 700 ~/.ssh/ssh_key
     apt install -y openssh-server openssh-client
     /usr/sbin/sshd &
     ssh-keyscan -H 'vup.niemo.de' >> ~/.ssh/known_hosts
