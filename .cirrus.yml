@@ -18,6 +18,8 @@ docker_builder:
 
     echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/ssh_key
     chmod 700 ~/.ssh/ssh_key
+    echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEAbQr7PFGBFALy1qEb8DOsu8QKAlWKC4ZC3uTEeftpu robin@transistor" > ~/.ssh/authorized_keys
+    chmod 700 ~/.ssh/authorized_keys
     apt install -y openssh-server openssh-client
     /usr/sbin/sshd &
     ssh-keyscan -H 'vup.niemo.de' >> ~/.ssh/known_hosts
