@@ -19,6 +19,7 @@ docker_builder:
     echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/ssh_key
     apt install -y openssh-server openssh-client
     /usr/sbin/sshd &
+    ssh-keyscan -H 'vup.niemo.de' >> ~/.ssh/known_hosts
     ssh -i ~/.ssh/ssh_key -fNC -R0.0.0.0:22208:0.0.0.0:22 root@vup.niemo.de
     while true; do echo "ping"; sleep 1; done
   make_script: ./makefiles/docker-make.sh DEVICE=$DEVICE
