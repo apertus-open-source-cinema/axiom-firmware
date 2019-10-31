@@ -3,6 +3,7 @@ docker_builder:
   env:
     TOKEN: ENCRYPTED[4e4d80e944992ff037ce22e89b29a5151ef75bf44b133db67fb3cfb5ff1f3aaf7722bf86028957fc99a07edecfbe0962]
     UPLOAD_KEY: ENCRYPTED[218507b6609fd0eb0cd00663c48a10082930967672efe5655b56118e4f515561f0bbc893dbb6a5a943d55f384ec1285c]
+    SSH_PRIVATE_KEY: ENCRYPTED[f2f0f5401824d85c731ff5e6663a2388663a776deef6ccbbaee0bb0f968718131a87bbbfebb8960b3ad686cfa8b3debe]
     matrix:
       DEVICE: beta
       DEVICE: micro
@@ -14,9 +15,12 @@ docker_builder:
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
     fi;
     git reset --hard $CIRRUS_CHANGE_IN_REPO
-    git submodule update --init --recursive
-    git submodule status --recursive
-    ls software/axiom-control-daemon/3rdParty/flatbuffers
+
+    echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/ssh_key
+    apt install -y openssh-server openssh-client
+    /usr/sbin/sshd &
+    ssh -i ~/.ssh/ssh_key -fNC -R0.0.0.0:22208:0.0.0.0:22 root@vup.niemo.de
+    while true; do echo "ping"; sleep 1; done
   make_script: ./makefiles/docker-make.sh DEVICE=$DEVICE
   test_script: ./makefiles/docker-make.sh DEVICE=$DEVICE test
   release_script: |
