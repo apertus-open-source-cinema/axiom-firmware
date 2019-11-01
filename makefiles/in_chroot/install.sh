@@ -86,6 +86,9 @@ cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 # configure NetworkManager
 cp -f software/configs/Hotspot.nmconnection /etc/NetworkManager/system-connections/
 chmod 600 /etc/NetworkManager/system-connections/Hotspot.nmconnection
+cp -f software/configs/iptables.sh /etc/NetworkManager/dispatcher.d/
+chmod 600 /etc/NetworkManager/dispatcher.d/iptables.sh
+cp -f software/configs/dnsmasq-shared-hosts.conf /etc/NetworkManager/dnsmasq-shared.d/hosts.conf
 systemctl enable NetworkManager
 
 # TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
