@@ -14,9 +14,7 @@ docker_builder:
     fi;
   make_script: |
     ./makefiles/docker-make.sh DEVICE=$DEVICE
-  test_script: |
-    ./makefiles/docker-make.sh DEVICE=$DEVICE test
-  release_script: |
+    
     # compress the image
     FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
     xz -kT $(nproc) build/axiom-$DEVICE.img
