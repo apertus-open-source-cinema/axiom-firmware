@@ -20,7 +20,8 @@ docker run --privileged \
     -v $(pwd):/root/axiom-firmware/ \
     -w /root/axiom-firmware/ \
     -l axiom-build \
-    $([ -z "$CI" ] && echo "-it" ) \
-    vupvupvup/axiom_build:latest \
-    /bin/bash -c "stty cols $COLUMNS rows $LINES; make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) $*" \
+    --env COLUMNS=$COLUMNS --env LINES=$LINES --env CI \
+    $([ -z "$CI" ] && echo "-i" ) \
+    apertushq/axiom_build:latest \
+    ./makefiles/host/docker_entry.sh $* \
 | tee -a build/build.log

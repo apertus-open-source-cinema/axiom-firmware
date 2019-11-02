@@ -14,12 +14,7 @@ pacman --noconfirm --needed -Syu
 pacman --noconfirm -R linux-zedboard || true
 
 # install dependencies
-# pacman -R pkgconf --noconfirm || true
 pacman --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
-
-# evil hack because archlinux-arm has fucked up packages
-cat /etc/ca-certificates/extracted/cadir/* > /etc/ca-certificates/extracted/tls-ca-bundle.pem
-
 pip install -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users
@@ -70,7 +65,15 @@ echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /e
 (cd software/axiom-control-daemon/
     [ -d build ] || mkdir -p build
     cd build
-    cmake -G Ninja ..
+	cmake --version
+	gcc --version
+	cc --version
+	c++ --version
+	command -v g++
+	command -v c++
+	find ..
+	echo $PATH
+    cmake -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
     ninja
     ./install_daemon.sh
 )
