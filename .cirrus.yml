@@ -2,7 +2,6 @@ docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:
     TOKEN: ENCRYPTED[4e4d80e944992ff037ce22e89b29a5151ef75bf44b133db67fb3cfb5ff1f3aaf7722bf86028957fc99a07edecfbe0962]
-    SSH_PRIVATE_KEY: ENCRYPTED[f2f0f5401824d85c731ff5e6663a2388663a776deef6ccbbaee0bb0f968718131a87bbbfebb8960b3ad686cfa8b3debe]
     matrix:
       DEVICE: beta
       DEVICE: micro
@@ -16,16 +15,31 @@ docker_builder:
     git reset --hard $CIRRUS_CHANGE_IN_REPO
   make_script: |
     ./makefiles/docker-make.sh DEVICE=$DEVICE
-  test_script: |
-    ./makefiles/docker-make.sh DEVICE=$DEVICE test
-  gh_release_script: |
+
     # compress the image
-    [ -z $CIRRUS_PR ] || PR="-pr-$CIRRUS_PR"
-    FILE=axiom-$DEVICE$PR-$(git describe --always --abbrev=8).img.xz
+    FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
     xz -T $(nproc) build/axiom-$DEVICE.img
     mv build/axiom-$DEVICE.img.xz build/$FILE
-
+  image_upload_artifacts:
+    path: "build/axiom-*.img.xz"
+  image_notify_script: |
+    if [ $DEVICE = 'beta' ]; then
+        if [[ ! -z "$CIRRUS_PR" ]]; then
+            wget https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
+            chmod a+x github-commenter_linux_amd64
+            ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR \
+              -comment "
+                [//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa) 
+                Download a build of the latest (untested) commit at https://api.cirrus-ci.com/v1/artifact/task/$CIRRUS_TASK_ID/image/$(ls build/axiom-*.img.xz)
+              " \
+              -delete-comment-regex "wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa"
+        fi
+    fi
+  test_script: |
+    ./makefiles/docker-make.sh DEVICE=$DEVICE test
+  github_release_script: |
     if [ $CIRRUS_BRANCH = 'master' ]; then
+      FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
       # get the github-release tool
       wget https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
       tar -xf linux-amd64-github-release.tar.bz2
@@ -42,16 +56,4 @@ docker_builder:
       ./bin/linux/amd64/github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "$FILE" -f build/$FILE
     else
       echo "not creating a github release, because this is not a build for the master branch"
-    fi
-  image_artifacts:
-    path: "build/axiom-*.img.xz"
-  cirrus_artifact_post_url_script: |
-    if [ $DEVICE = 'beta' ]; then
-        if [[ ! -z "$CIRRUS_PR" ]]; then
-            wget https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
-            chmod a+x github-commenter_linux_amd64
-            ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR -comment "[//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa) 
-            
-    Download a build of the latest commit at https://example.org/ " -delete-comment-regex "wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa"
-        fi
     fi
