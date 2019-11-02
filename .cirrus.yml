@@ -2,7 +2,6 @@ docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:
     TOKEN: ENCRYPTED[4e4d80e944992ff037ce22e89b29a5151ef75bf44b133db67fb3cfb5ff1f3aaf7722bf86028957fc99a07edecfbe0962]
-    UPLOAD_KEY: ENCRYPTED[218507b6609fd0eb0cd00663c48a10082930967672efe5655b56118e4f515561f0bbc893dbb6a5a943d55f384ec1285c]
     SSH_PRIVATE_KEY: ENCRYPTED[f2f0f5401824d85c731ff5e6663a2388663a776deef6ccbbaee0bb0f968718131a87bbbfebb8960b3ad686cfa8b3debe]
     matrix:
       DEVICE: beta
@@ -16,8 +15,11 @@ docker_builder:
     fi;
     git reset --hard $CIRRUS_CHANGE_IN_REPO
   make_script: ./makefiles/docker-make.sh DEVICE=$DEVICE
+  image_artifacts:
+      path: build/axiom-*.img
+test_task:
   test_script: ./makefiles/docker-make.sh DEVICE=$DEVICE test
-  release_script: |
+  gh_release_script: |
     # compress the image
     [ -z $CIRRUS_PR ] || PR="-pr-$CIRRUS_PR"
     FILE=axiom-$DEVICE$PR-$(git describe --always --abbrev=8).img.xz
@@ -41,21 +43,16 @@ docker_builder:
       ./bin/linux/amd64/github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "$FILE" -f build/$FILE
     else
       echo "not creating a github release, because this is not a build for the master branch"
-    fi 
-
-    echo "$UPLOAD_KEY" | tr -d '\r' > /tmp/storage_key
-    chmod 600 /tmp/storage_key
-    scp -oStrictHostKeyChecking=no -i /tmp/storage_key -P 22201 build/$FILE file_storage@vup.niemo.de:/data/file_storage/data
-    rm /tmp/storage_key
-
-    echo "Download the image of this build at https://axiom-images.niemo.de/$FILE"
-
+    fi
+  image_artifacts:
+    path: "build/axiom-*.img"
+  cirrus_artifact_post_url: |
     if [ $DEVICE = 'beta' ]; then
         if [[ ! -z "$CIRRUS_PR" ]]; then
             wget https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
             chmod a+x github-commenter_linux_amd64
             ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR -comment "[//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa) 
             
-    Download a build of the latest commit at https://axiom-images.niemo.de/$FILE " -delete-comment-regex "wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa"
+    Download a build of the latest commit at https://example.org/ " -delete-comment-regex "wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa"
         fi
     fi
