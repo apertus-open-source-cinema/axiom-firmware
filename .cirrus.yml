@@ -14,11 +14,10 @@ docker_builder:
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
     fi;
     git reset --hard $CIRRUS_CHANGE_IN_REPO
-  make_script: ./makefiles/docker-make.sh DEVICE=$DEVICE
-  image_artifacts:
-      path: build/axiom-*.img
-test_task:
-  test_script: ./makefiles/docker-make.sh DEVICE=$DEVICE test
+  make_script: |
+    ./makefiles/docker-make.sh DEVICE=$DEVICE
+  test_script: |
+    ./makefiles/docker-make.sh DEVICE=$DEVICE test
   gh_release_script: |
     # compress the image
     [ -z $CIRRUS_PR ] || PR="-pr-$CIRRUS_PR"
@@ -45,7 +44,7 @@ test_task:
       echo "not creating a github release, because this is not a build for the master branch"
     fi
   image_artifacts:
-    path: "build/axiom-*.img"
+    path: "build/axiom-*.img.xz"
   cirrus_artifact_post_url: |
     if [ $DEVICE = 'beta' ]; then
         if [[ ! -z "$CIRRUS_PR" ]]; then
