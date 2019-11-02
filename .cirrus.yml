@@ -29,7 +29,7 @@ docker_builder:
             chmod a+x github-commenter_linux_amd64
             ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR \
               -comment "[//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa) 
-    Download a build of the latest (untested) commit at https://api.cirrus-ci.com/v1/artifact/task/$CIRRUS_TASK_ID/image/$(ls build/axiom-*.img.xz)" \
+    Download a build of the latest (untested) commit at https://api.cirrus-ci.com/v1/artifact/task/$CIRRUS_TASK_ID/image_upload/$(ls build/axiom-*.img.xz)" \
               -delete-comment-regex "wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa"
         fi
     fi
