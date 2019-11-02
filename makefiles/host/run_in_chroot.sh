@@ -16,7 +16,6 @@ mount -o bind /sys build/root.fs/sys
 
 # register binfmt for arm emulation
 mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc || echo "binfmt_misc already loaded"
-update-binfmts --display
 update-binfmts --enable qemu-aarch64
 update-binfmts --enable qemu-arm
 
