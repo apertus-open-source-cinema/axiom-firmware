@@ -45,7 +45,7 @@ docker_builder:
     fi
   image_artifacts:
     path: "build/axiom-*.img.xz"
-  cirrus_artifact_post_url: |
+  cirrus_artifact_post_url_script: |
     if [ $DEVICE = 'beta' ]; then
         if [[ ! -z "$CIRRUS_PR" ]]; then
             wget https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
