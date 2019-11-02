@@ -20,5 +20,9 @@ else
 fi
 
 make -f makefiles/host/main.mk -I makefiles/host -j $(nproc) $*
+RETURN_CODE=$?
+
 umount build/root.fs
 losetup -d /dev/loop0
+
+exit $RETURN_CODE
