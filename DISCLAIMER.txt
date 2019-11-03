@@ -1,4 +1,4 @@
-This device and it's software is provided without warranty of Merchantability or
+This device and its software is provided without warranty of Merchantability or
 fitness for any particular purpose. apertus° assumes no responsibility or
 liability for any loss or damage as a result of the use or misuse. USE AT YOUR
 OWN RISK. You have root access to this system and can potentially brick and

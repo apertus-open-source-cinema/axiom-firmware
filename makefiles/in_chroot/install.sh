@@ -138,7 +138,7 @@ echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > 
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update, run \"axiom-update\"." >> /etc/motd
 echo "" >> /etc/motd
-echo "$(tput setaf 1)This device and it's software is provided without warranty of merchantability or fitness for any particular purpose. Be careful when doing anything potentially harmful to your camera. See full disclaimer in $DISCLAIMER_FILE $(tput sgr0)" >> /etc/motd
+echo "$(tput setaf 1)This device and its software is provided without warranty of merchantability or fitness for any particular purpose. Be careful when doing anything potentially harmful to your camera. See full disclaimer in $DISCLAIMER_FILE $(tput sgr0)" >> /etc/motd
 echo "" >> /etc/motd
 
 # generate fstab
