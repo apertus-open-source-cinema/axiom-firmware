@@ -17,7 +17,7 @@ docker_builder:
 
     # compress the image
     FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
-    xz -T $(nproc) build/axiom-$DEVICE.img
+    xz -kT $(nproc) build/axiom-$DEVICE.img
     mv build/axiom-$DEVICE.img.xz build/$FILE
   image_upload_artifacts:
     path: "build/axiom-*.img.xz"
