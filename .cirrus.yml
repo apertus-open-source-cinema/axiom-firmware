@@ -12,13 +12,12 @@ docker_builder:
       git clone --recursive https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
     fi;
-    git reset --hard $CIRRUS_CHANGE_IN_REPO
   make_script: |
     ./makefiles/docker-make.sh DEVICE=$DEVICE
 
     # compress the image
     FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
-    xz -T $(nproc) build/axiom-$DEVICE.img
+    xz -kT $(nproc) build/axiom-$DEVICE.img
     mv build/axiom-$DEVICE.img.xz build/$FILE
   image_upload_artifacts:
     path: "build/axiom-*.img.xz"
@@ -34,7 +33,7 @@ docker_builder:
         fi
     fi
   test_script: |
-    ./makefiles/docker-make.sh DEVICE=$DEVICE test
+    ./makefiles/docker-make.sh DEVICE=$DEVICE -o build/axiom-$DEVICE.img -o build/boot.fs/.install_stamp test
   github_release_script: |
     if [ $CIRRUS_BRANCH = 'master' ]; then
       FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
