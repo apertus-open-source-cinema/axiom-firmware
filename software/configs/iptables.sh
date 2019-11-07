@@ -3,7 +3,7 @@
 # if the ip address is 10.42.0.1 (NetworkManager "shared")
 # this is nescessary for the captive portal functionality
 
-if (ip address show dev wlp109s0 | grep "10.42.0.1"); then 
+if (ip address show dev wlan0 | grep "10.42.0.1"); then 
     iptables -t nat -A PREROUTING -i wlan0 -p tcp ! -d 10.42.0.1 --dport 80  -j DNAT --to 10.42.0.1:81
 else
     iptables -t nat -D PREROUTING -i wlan0 -p tcp ! -d 10.42.0.1 --dport 80  -j DNAT --to 10.42.0.1:81
