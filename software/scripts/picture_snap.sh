@@ -4,6 +4,7 @@
 #
 cd $(dirname $(realpath $0))    # change into script dir
 
+. ./cmv.func
 
 PARAMS=$1
 IMAGENAME=`date +%Y%m%d_%H%M%S`
@@ -14,6 +15,7 @@ echo /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 fil_reg 15 0
 
 #capture frame
+../sensor_tools/snap/snap -e $PARAMS -2 -r -b > /dev/null
 ../sensor_tools/snap/snap -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 
 echo "raw12 written"
@@ -22,7 +24,7 @@ echo "raw12 written"
 fil_reg 15 0x01000100
 
 #convert to DNG
-./raw2dng /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12 --swap-lines 
+raw2dng /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12 --swap-lines
 
 echo "DNG written"
 
@@ -36,7 +38,7 @@ convert /opt/picture-snap/$IMAGENAME/$IMAGENAME.ppm /opt/picture-snap/$IMAGENAME
 
 echo "JPG written"
 
-md5sum /root/darkframe-x1.pgm >  /opt/picture-snap/$IMAGENAME/$IMAGENAME.meta
+# md5sum /root/darkframe-x1.pgm >  /opt/picture-snap/$IMAGENAME/$IMAGENAME.meta
 
 
 echo "all done!"
