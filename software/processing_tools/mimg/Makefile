@@ -12,8 +12,8 @@ LDLIBS += -lm
 install:
 	$(STRIP) $(TARGETS)
 	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/axiom/bin/axiom-$$TARGET; chmod u+s $$TARGET; done
-	mkdir -p /opt/overlays
-	ln -sf $$(pwd)/overlays/ /opt/overlays/
+	mkdir -p /opt/
+	ln -sf $$(pwd)/overlays /opt/overlays
 
 clean:
 	rm -f *.o
