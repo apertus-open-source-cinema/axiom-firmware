@@ -8,15 +8,17 @@ cd /opt/axiom-firmware
 # configure pacman & do sysupdate
 sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf
 sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
+# use fixed mirror, because the alarm loadbalancing and some mirrors are broken
+echo 'Server = http://de3.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman --noconfirm --needed -Syu
-pacman --noconfirm -R linux-zedboard || true
+pacman --noprogressbar --noconfirm --needed -Syu
+pacman --noprogressbar --noconfirm -R linux-zedboard || true
 
 # install dependencies
-pacman --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
+pacman --noprogressbar --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
 pip install wheel
-pip install -r makefiles/in_chroot/requirements_pip.txt
+pip install --progress-bar off -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users
 if ! grep "dont log in as root" /root/.profile; then
@@ -68,27 +70,31 @@ echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /e
 echo 'PYTHONPATH=/opt/axiom-firmware/software/scripts' >> /etc/environment
 echo 'BASH_ENV=/etc/profile.d/apertus.sh' >> /etc/environment
 
-# build and install the control daemon
-(cd software/axiom-control-daemon/
-    [ -d build ] || mkdir -p build
-    cd build
-	cmake --version
-	gcc --version
-	cc --version
-	c++ --version
-	command -v g++
-	command -v c++
-	find ..
-	echo $PATH
-    cmake -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
-    ninja
-    ./install_daemon.sh
-)
+
+# install nctrl (the central control-daemon)
+mkdir -p /axiom-api/
+if [ -f /etc/axiom-yml ]; then
+    unlink /etc/axiom-yml
+fi
+if [[ $DEVICE == 'micro' ]]; then
+    ln -s /opt/axiom-firmware/software/nctrl/camera_descriptions/micro_r2/micro_r2.yml /etc/axiom-yml
+else
+    ln -s /opt/axiom-firmware/software/nctrl/camera_descriptions/beta/beta.yml /etc/axiom-yml
+fi
+cp software/configs/nctrl.service /etc/systemd/system/
+systemctl enable nctrl
+
+# install the webui
+(cd software/webui; yarn install --production)
+unlink software/webui/nctrl_mountpoint
+ln -s /axiom-api/ software/webui/nctrl_mountpoint
+cp software/configs/webui.service /etc/systemd/system/
+systemctl enable webui
+
 
 # configure lighttpd
 cp -f software/configs/lighttpd.conf /etc/lighttpd/lighttpd.conf
 systemctl enable lighttpd
-cp -rf software/http/AXIOM-WebRemote/* /srv/http/
 
 # configure NetworkManager
 cp -f software/configs/Hotspot.nmconnection /etc/NetworkManager/system-connections/
@@ -98,7 +104,7 @@ chmod 700 /etc/NetworkManager/dispatcher.d/iptables.sh
 cp -f software/configs/dnsmasq-shared-hosts.conf /etc/NetworkManager/dnsmasq-shared.d/hosts.conf
 systemctl enable NetworkManager
 
-# TODO: build the misc tools from: https://github.com/apertus-open-source-cinema/misc-tools-utilities/tree/master/raw2dng
+# build raw2dng
 cdmake software/misc-tools-utilities/raw2dng
 
 # download prebuilt fpga binaries & select the default binary
@@ -107,7 +113,7 @@ mkdir -p /opt/bitstreams/
 BITSTREAMS="BETA/cmv_hdmi3_dual_60.bit BETA/cmv_hdmi3_dual_30.bit BETA/ICSP/icsp.bit check_pin10.bit check_pin20.bit"
 for bit in $BITSTREAMS; do
     NAME=$(basename $bit)
-    (cd /opt/bitstreams && wget http://vserver.13thfloor.at/Stuff/AXIOM/$bit -O $NAME)
+    (cd /opt/bitstreams && wget --no-verbose http://vserver.13thfloor.at/Stuff/AXIOM/$bit -O $NAME)
     ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$NAME /opt/bitstreams/"$(basename ${NAME%.bit}).bin"
     ln -sf /opt/bitstreams/"${NAME%.bit}.bin" /lib/firmware
 done
@@ -115,11 +121,9 @@ ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
 cp software/scripts/axiom_start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
-    systemctl disable axiom
+    systemctl disable axiom-start
 else
-    # TODO(robin): disable for now, as it hangs the camera	
-    # systemctl enable axiom-start
-    true
+    systemctl enable axiom-start
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf

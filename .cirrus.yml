@@ -13,6 +13,7 @@ docker_builder:
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
       git reset --hard $CIRRUS_CHANGE_IN_REPO
     fi;
+    git submodule update --init --recursive
   make_script: |
     ./makefiles/docker-make.sh DEVICE=$DEVICE
     
@@ -25,7 +26,7 @@ docker_builder:
   image_notify_script: |
     if [ $DEVICE = 'beta' ]; then
         if [[ ! -z "$CIRRUS_PR" ]]; then
-            wget https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
+            wget --no-verbose https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
             chmod a+x github-commenter_linux_amd64
             ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR \
               -comment "[//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa) 
@@ -39,7 +40,7 @@ docker_builder:
     if [ $CIRRUS_BRANCH = 'master' ]; then
       FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
       # get the github-release tool
-      wget https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
+      wget --no-verbose https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
       tar -xf linux-amd64-github-release.tar.bz2
       # create the release and upload the compressed image
       ./bin/linux/amd64/github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Unstable Development Snapshot $(./bin/linux/amd64/github-release info -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME | grep "Build on" | wc -l)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \

@@ -1,4 +1,4 @@
-QEMU_VERSION = xilinx-v2018.3
+QEMU_VERSION = branch/xilinx-v2020.1
 QEMU_SOURCE = build/qemu-$(QEMU_VERSION).git
 
 QEMU_MAKE = $(MAKE) -C $(QEMU_SOURCE)

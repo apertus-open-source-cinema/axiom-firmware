@@ -2,7 +2,9 @@
 	path = software/misc-tools-utilities
 	url = https://github.com/apertus-open-source-cinema/misc-tools-utilities.git
 	branch = master
-[submodule "software/axiom-control-daemon"]
-	path = software/axiom-control-daemon
-	url = https://github.com/apertus-open-source-cinema/axiom-control-daemon.git
-	branch = master
+[submodule "software/nctrl"]
+	path = software/nctrl
+	url = https://github.com/apertus-open-source-cinema/nctrl
+[submodule "software/webui"]
+	path = software/webui
+	url = https://github.com/apertus-open-source-cinema/webui
