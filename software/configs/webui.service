@@ -1,0 +1,11 @@
+[Unit]
+Description=The AXIOM webui server
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/axiom-firmware/software/webui
+ExecStart=/usr/bin/yarn start
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

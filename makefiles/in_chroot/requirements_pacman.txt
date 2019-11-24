@@ -21,6 +21,8 @@ dcraw
 imagemagick
 # control daemon uses ninja now
 ninja
+# new control daemon uses fuse
+fuse
 
 # convenience tools
 vim
@@ -33,12 +35,11 @@ man-pages
 
 # webserver
 lighttpd
+yarn
 
 # python-stuff
 python-numpy
 
-# control daemon
-clang
 
 # various other packages
 lsof
