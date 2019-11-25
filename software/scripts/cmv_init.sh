@@ -6,7 +6,9 @@ cd $(dirname $(realpath $0))    # change into script dir
 # defaults
 cmv_reg  0       0
 cmv_reg  1    3072
+
 for n in `seq 2 65`; do cmv_reg $n 0; done
+
 cmv_reg  66      0
 cmv_reg  67      1
 
@@ -41,7 +43,10 @@ cmv_reg  87   1910	# Dark Level Offset Bottom
 #cmv_reg  88   1824	# Dark Level Offset Top
 cmv_reg  88   1910	# Dark Level Offset Top
 
-cmv_reg  89     85
+
+#cmv_reg  89     85
+cmv_reg  89 35477 #Black_col_en[15], Training_pattern[11:0]
+
 
 cmv_reg  90 0x5555	# disable unused LVDS
 cmv_reg  91 0x5555	# disable unused LVDS
@@ -64,15 +69,16 @@ cmv_reg 105   8256
 cmv_reg 106   8256
 cmv_reg 107   11102	# Datsheet default: 12384, 5.17.4 12-BIT MODE suggests 11102
 cmv_reg 108   12381	
+cmv_reg 109  14448  # Datasheet 7.7.3
 cmv_reg 110 12368 # Datasheet Fixed Value: 12368
 cmv_reg 111  34952
 cmv_reg 112    277	# Datasheet V2.6 from 22/08/2014 suggests Reg 112 = 277 
 
 
-# cmv_reg 115      0	# Unity Gain
-# cmv_reg 115      1	# Analog Gain 2x
-# cmv_reg 115      3	# Analog Gain 3x
-cmv_reg 115        7	# Analog Gain 4x
+cmv_reg 115      0	# Unity Gain PGA_div[3], PGA_gain[2:0]
+# cmv_reg 115      1	# Analog Gain 2x PGA_div[3], PGA_gain[2:0]
+# cmv_reg 115      3	# Analog Gain 3x PGA_div[3], PGA_gain[2:0]
+# cmv_reg 115        7	# Analog Gain 4x PGA_div[3], PGA_gain[2:0]
 
 
 cmv_reg 116    0x3FF	# Adc Range Slope
@@ -101,19 +107,9 @@ cmv_reg  84    257
 cmv_reg  85    257
 cmv_reg  86    257
 cmv_reg  98  39433
-cmv_reg 107  11102
-cmv_reg 109  14448
+
 cmv_reg 113    542
 cmv_reg 114    200
 
 # read temperature
 cmv_reg 127
-
-
-# ingmar
-cmv_reg  89 35477 #Black_col_en[15], Training_pattern[11:0]
-#cmv_reg 107 10462
-#cmv_reg 109 14448
-cmv_reg 115     0 # PGA_div[3], PGA_gain[2:0]
-
-
