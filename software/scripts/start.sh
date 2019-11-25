@@ -34,7 +34,7 @@ while sleep 1; do
 done
 
 ./setup.sh
-./ingmar.sh
+# ./ingmar.sh # obsolete
 # ./hdmi_init.sh
 # ./pic_jtag_pcie.py 0x00 0x12
 
