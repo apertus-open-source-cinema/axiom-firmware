@@ -49,11 +49,11 @@ cmv_reg 126    770
 cmv_reg  69      2	# Flip in Y
 # cmv_reg  69      0	# No Flipping
 
-cmv_reg 102   8312	# 8302
+cmv_reg 102   8302	# Datasheet V2.7 from 18/12/2014 suggests to change Register 102 to 8302 to decrease column PFN 
 cmv_reg 107   9814	# 12384
 cmv_reg 108  12381	
 
-cmv_reg 112    277	# 5
+cmv_reg 112    277	# Datasheet V2.6 from 22/08/2014 suggests Reg 112 = 277 
 cmv_reg 124      5	# 15
 
 # cmv_reg 118      2	# 8bit
