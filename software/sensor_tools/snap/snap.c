@@ -200,7 +200,7 @@ void    write_dvalue(uint32_t val)
         putchar(val & 0xFF);
 }
 
-inline void __attribute__((optimize("-O3,-funroll-loops"))) __attribute__ ((section(".dump_asm")))
+static inline void __attribute__((optimize("-O3,-funroll-loops"))) __attribute__ ((section(".dump_asm")))
 split_dline_12(uint64_t *ptr, unsigned count, uint8_t * outA, uint8_t * outB)
 {
     for (int c = 0; c < count; c++)
