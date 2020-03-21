@@ -1,6 +1,7 @@
 # This file contains a list of all the pip  packages, that are needed inside the image
 # install them via: pip install -r requirements_pip.txt
 
-pypng
+# see https://github.com/apertus-open-source-cinema/axiom-beta-firmware/issues/132
+pypng==0.0.18
 bitarray
 pyserial
