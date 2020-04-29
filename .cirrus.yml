@@ -1,7 +1,7 @@
 docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:
-    TOKEN: ENCRYPTED[4e4d80e944992ff037ce22e89b29a5151ef75bf44b133db67fb3cfb5ff1f3aaf7722bf86028957fc99a07edecfbe0962]
+    TOKEN: ENCRYPTED[64daf2f8fbeaca02bfe024de054c12914298cff8d09eed14ef6e89d3730ad95b4b3f9efce43959f98318e31fcec7e53f]
     matrix:
       DEVICE: beta
       DEVICE: micro
