@@ -10,10 +10,9 @@ cd $(dirname $(realpath $0))    # change into script dir
 # ./gen_init.sh 1080p60
 # ./gen_init.sh 1080p50
 # ./gen_init.sh 1080p30
-# ./gen_init.sh SHOGUN
-
-#./gen_init.sh 1080p60
+# ./gen_init.sh 1080p24
 ./gen_init.sh SHOGUN
+
 ./data_init.sh
 ./rmem_conf.sh
 ./wmem_conf.sh
