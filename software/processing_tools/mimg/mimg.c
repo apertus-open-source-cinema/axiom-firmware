@@ -223,6 +223,20 @@ uint64_t calc_tpat(unsigned num, unsigned col, unsigned row)
 		return (cr << CH0) | (cg << CH1) |
 		       (cg << CH2) | (cb << CH3);
 	    };
+		case 8: {
+		uint64_t cb = (((col >> 8) & 0x7) << 5) | (((row >> 8) & 0x3) << 3);
+		uint64_t cg = (row & 0xFF);
+		uint64_t cr = (col & 0xFF);
+		unsigned cc = (col == 0) || (col == 0x77F) ||
+		              (row == 0) || (row == 0x437) ? 0xFF : 0x00;
+
+		cr = cc ? 0xFFF : (cr << 4) + (cr >> 4);
+		cg = cc ? 0xFFF : (cg << 4) + (cg >> 4);
+		cb = cc ? 0xFFF : (cb << 4) + (cb >> 4);
+
+		return (cr << CH0) | (cg << CH1) |
+		       (cg << CH2) | (cb << CH3);
+		};
 	    default:
 		return 0;
 	}
