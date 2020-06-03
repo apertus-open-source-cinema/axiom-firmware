@@ -15,6 +15,7 @@ pacman --noconfirm -R linux-zedboard || true
 
 # install dependencies
 pacman --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
+pip install wheel
 pip install -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users

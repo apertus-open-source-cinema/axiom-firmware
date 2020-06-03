@@ -5,3 +5,6 @@
 pypng==0.0.18
 bitarray
 pyserial
+IntelHex
+wheel
+smbus-cffi

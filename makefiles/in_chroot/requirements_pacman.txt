@@ -28,6 +28,8 @@ nano
 python-pip
 python-numpy
 dtc
+man
+man-pages
 
 # webserver
 lighttpd
@@ -50,3 +52,7 @@ iw
 wpa_supplicant
 networkmanager
 dnsmasq
+
+# tools required to compile pic firmware
+sdcc
+gputils
