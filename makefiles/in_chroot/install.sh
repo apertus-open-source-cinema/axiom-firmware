@@ -147,6 +147,9 @@ systemctl enable gen_etc_issue.service
 cp software/configs/disable_kernel_messages.service /etc/systemd/system/
 systemctl enable disable_kernel_messages.service
 
+# systemd is being stupid:
+sed -i 's/kernel.sysrq = 16/kernel.sysrq = 1/' /usr/lib/sysctl.d/50-default.conf
+
 # generate the motd and indicate software version
 echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
