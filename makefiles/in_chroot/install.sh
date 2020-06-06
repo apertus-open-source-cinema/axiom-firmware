@@ -43,8 +43,9 @@ chmod 600 $SSH_AUTHORIZED_KEYS
 userdel -r -f alarm || true
 
 # configure ssh
-grep -x 'XPermitRootLogin no' build/root.fs/etc/ssh/sshd_config || echo "PermitRootLogin no" >> /etc/ssh/sshd_config
-grep -x 'X11Forwarding yes' build/root.fs/etc/ssh/sshd_config || echo "X11Forwarding yes" >> /etc/ssh/sshd_config
+grep 'PermitRootLogin' /etc/ssh/sshd_config && sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin without-password/' /etc/ssh/sshd_config
+grep 'PermitRootLogin' /etc/ssh/sshd_config || echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
+grep -x 'X11Forwarding yes' /etc/ssh/sshd_config || echo "X11Forwarding yes" >> /etc/ssh/sshd_config
 
 # build all the tools
 function cdmake () {
