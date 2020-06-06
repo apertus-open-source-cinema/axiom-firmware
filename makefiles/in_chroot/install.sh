@@ -20,7 +20,7 @@ pip install -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users
 if ! grep "dont log in as root" /root/.profile; then
-    echo 'echo -e "\033[31;5municorns dont log in as root\033[0m"' >> /root/.profile
+    echo 'echo -e "\033[31municorns dont log in as root\033[0m"' >> /root/.profile
 fi
 
 PASS=axiom
@@ -151,7 +151,7 @@ systemctl enable disable_kernel_messages.service
 sed -i 's/kernel.sysrq = 16/kernel.sysrq = 1/' /usr/lib/sysctl.d/50-default.conf
 
 # generate the motd and indicate software version
-echo -e "\033[38;5;15m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
+echo -e "\033[97m$(tput bold)$(figlet "AXIOM ${DEVICE^}")  $(tput sgr0)" > /etc/motd
 echo "Software version $(git describe --always --abbrev=8 --dirty). Last updated on $(date +"%d.%m.%y %H:%M UTC")" >> /etc/motd
 echo "To update, run \"axiom-update\"." >> /etc/motd
 echo "" >> /etc/motd
