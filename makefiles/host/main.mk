@@ -23,7 +23,7 @@ qemu-shell: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/.in
 # test targets
 .PHONY: test
 test: $(QEMU_SOURCE)/aarch64-softmmu/qemu-system-aarch64 build/boot.fs/.install_stamp build/$(IMAGE) makefiles/host/run_qemu.expect
-	QEMU_SOURCE=$(QEMU_SOURCE) IMAGE=$(IMAGE) makefiles/host/run_qemu.expect
+	QEMU_SOURCE=$(QEMU_SOURCE) IMAGE=$(IMAGE) DEVICE=$(DEVICE) makefiles/host/run_qemu.expect
 
 # cleaning rules
 clean: clean-rootfs clean-kernel clean-u-boot clean-qemu
