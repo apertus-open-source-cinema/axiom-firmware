@@ -57,12 +57,10 @@ for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 
 mkdir -p /usr/axiom/script/
-for script in software/scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); chmod a+x $(pwd)/$script; done
-for script in software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom-$(basename $script | sed "s/_/-/g"); chmod a+x $(pwd)/$script; done
+for script in software/scripts/*.sh software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom_$(basename $script | sed "s/-/_/g"); chmod a+x $(pwd)/$script; done
 
 mkdir -p /usr/axiom/bringup-script/
-for script in software/bringup-scripts/*.sh; do ln -sf $(pwd)/$script /usr/axiom/bringup-script/axiom-$(basename $script | sed "s/_/-/g"); chmod a+x $(pwd)/$script; done
-for script in software/bringup-scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/bringup-script/axiom-$(basename $script | sed "s/_/-/g"); chmod a+x $(pwd)/$script; done
+for script in software/bringup-scripts/*.sh software/bringup-scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/bringup-script/axiom_$(basename $script | sed "s/-/_/g"); chmod a+x $(pwd)/$script; done
 
 # TODO: find a better solution for this
 echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /etc/environment
