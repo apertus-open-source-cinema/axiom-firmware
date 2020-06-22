@@ -17,7 +17,7 @@ perf : perf.o
 
 install:
 	$(STRIP) $(TARGETS)
-	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/axiom/bin/axiom-$$TARGET; chmod u+s $$TARGET; done
+	for TARGET in $(TARGETS); do ln -sf $$(pwd)/$$TARGET /usr/axiom/bin/axiom_$$TARGET; chmod u+s $$TARGET; done
 
 clean:
 	rm -f *.o

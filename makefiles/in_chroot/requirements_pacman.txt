@@ -16,7 +16,7 @@ devmem
 i2c-tools
 cmake
 bc
-## axiom-picture-snap.sh
+## axiom_picture_snap.sh
 dcraw
 imagemagick
 # control daemon uses ninja now

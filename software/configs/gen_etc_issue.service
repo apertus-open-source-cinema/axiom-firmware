@@ -4,7 +4,7 @@ Before=systemd-user-sessions.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/axiom/script/axiom-gen-etc-issue.sh
+ExecStart=/usr/axiom/script/axiom_gen_etc_issue.sh
 KillMode=process
 
 [Install]
