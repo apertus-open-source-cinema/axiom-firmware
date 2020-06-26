@@ -139,7 +139,7 @@ $(ZLIB_SOURCE)/.install_stamp: $(ZLIB_SOURCE) $(ARM_SYSROOT)
 
 
 BTRFS_PROGS_VERSION = v5.6.1
-BTRFS_PROGS_SOURCE = build/btrfs-progs-$(ZLIB_VERSION).git
+BTRFS_PROGS_SOURCE = build/btrfs-progs-$(BTRFS_PROGS_VERSION).git
 
 $(BTRFS_PROGS_SOURCE):
 	rm -rf $@
@@ -152,8 +152,25 @@ $(BTRFS_PROGS_SOURCE)/.install_stamp: $(BTRFS_PROGS_SOURCE) $(ARM_SYSROOT) $(ZLI
 
 INITRAMFS_SOURCE = build/initramfs
 
-$(INITRAMFS_SOURCE)/.install_stamp: $(BTRFS_PROGS_SOURCE)/.install_stamp
+BUSYBOX_VERSION = 1.31.1
+BUSYBOX_SOURCE = build/busybox-$(BUSYBOX_VERSION)
+
+$(BUSYBOX_SOURCE):
+	rm -rf $@
+	(cd build; $(CURL) https://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2 | tar xj)
+
+$(BUSYBOX_SOURCE)/.install_stamp: $(BUSYBOX_SOURCE)
+	+$(MAKE) -C $(@D) ARCH=arm CROSS_COMPILE=arm-buildroot-linux-musleabihf- defconfig
+	sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' $(BUSYBOX_SOURCE)/.config
+	+$(MAKE) -C $(@D) ARCH=arm CROSS_COMPILE=arm-buildroot-linux-musleabihf-
+	touch $@
+
+INITRAMFS_SOURCE = build/initramfs
+
+$(INITRAMFS_SOURCE)/.install_stamp: $(BTRFS_PROGS_SOURCE)/.install_stamp $(BUSYBOX_SOURCE)/.install_stamp
 	rm -rf $(@D)
 	mkdir -p $(@D)
 	cp $(BTRFS_PROGS_SOURCE)/btrfs.static $(@D)/btrfs
+	arm-buildroot-linux-musleabihf-strip $(@D)/btrfs
+	cp $(BUSYBOX_SOURCE)/busybox $(@D)/busybox
 	touch $@
