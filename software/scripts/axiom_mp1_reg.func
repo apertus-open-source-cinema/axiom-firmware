@@ -1,0 +1,41 @@
+#!/bin/bash
+
+axiom_scn_reg() {
+    addr=$(( 0x80000100 + ($1 * 2) ))
+    axiom_mem_reg -2 $addr $2
+}
+
+axiom_scn_regi() {
+    addr=$(( 0x80000000 + ($1 * 2) ))
+    axiom_mem_reg -2 $addr $2
+}
+
+axiom_gen_reg() {
+    addr=$(( 0x80100100 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_gen_regi() {
+    addr=$(( 0x80100000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_mat_reg() {
+    addr=$(( 0x80200100 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_mat_regi() {
+    addr=$(( 0x80200000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_pll_reg() {
+    addr=$(( 0x80400000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_lut_reg() {
+    addr=$(( 0x80500000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}

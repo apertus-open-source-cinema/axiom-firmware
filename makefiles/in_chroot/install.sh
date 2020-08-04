@@ -55,15 +55,18 @@ function cdmake () {
 mkdir -p /usr/axiom/bin/
 for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
+cdmake software/memtool
 
 mkdir -p /usr/axiom/script/
-for script in software/scripts/*.sh software/scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/script/axiom_$(basename $script | sed "s/-/_/g"); chmod a+x $(pwd)/$script; done
+for script in $(cat <(ls software/scripts) software/scripts/bringup_scripts.list | sort | uniq -u | grep -E  '\.sh$|\.py$'); do ln -sf $(pwd)/software/scripts/$script /usr/axiom/script/$script; chmod a+x $(pwd)/software/scripts/$script; done
 
 mkdir -p /usr/axiom/bringup-script/
-for script in software/bringup-scripts/*.sh software/bringup-scripts/*.py; do ln -sf $(pwd)/$script /usr/axiom/bringup-script/axiom_$(basename $script | sed "s/-/_/g"); chmod a+x $(pwd)/$script; done
+for script in $(cat software/scripts/bringup_scripts.list); do ln -sf $(pwd)/software/scripts/$script /usr/axiom/bringup-script/$script; chmod a+x $(pwd)/software/scripts/$script; done
 
 # TODO: find a better solution for this
 echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/axiom/bin:/usr/axiom/script' >> /etc/environment
+echo 'PYTHONPATH=/opt/axiom-firmware/software/scripts' >> /etc/environment
+echo 'BASH_ENV=/etc/profile.d/apertus.sh' >> /etc/environment
 
 # build and install the control daemon
 (cd software/axiom-control-daemon/
@@ -99,7 +102,7 @@ systemctl enable NetworkManager
 cdmake software/misc-tools-utilities/raw2dng
 
 # download prebuilt fpga binaries & select the default binary
-# also convert the bitstreams to the format expected by the linux kernel 
+# also convert the bitstreams to the format expected by the linux kernel
 mkdir -p /opt/bitstreams/
 BITSTREAMS="BETA/cmv_hdmi3_dual_60.bit BETA/cmv_hdmi3_dual_30.bit BETA/ICSP/icsp.bit check_pin10.bit check_pin20.bit"
 for bit in $BITSTREAMS; do
@@ -123,6 +126,7 @@ echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
 echo "ledtrig-heartbeat" > /etc/modules-load.d/ledtrig.conf
 
 # configure bash & vim
+cp software/configs/apertus.sh /etc/profile.d/apertus.sh
 cp software/configs/bashrc /etc/bash.bashrc
 cp software/configs/vimrc /etc/vimrc
 

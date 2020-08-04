@@ -1,0 +1,31 @@
+#!/bin/bash
+
+axiom_cmv_reg() {
+    addr=$(( 0x60000000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_fil_reg() {
+    addr=$(( 0x60100100 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_fil_regi() {
+    addr=$(( 0x60100000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_del_reg() {
+    addr=$(( 0x60200000 + ($1 * 4) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_rcn_reg() {
+    addr=$(( 0x60300000 + ($1 * 2) ))
+    axiom_mem_reg -4 $addr $2
+}
+
+axiom_lin_reg() {
+    addr=$(( 0x60500000 + ($1 * 2) ))
+    axiom_mem_reg -4 $addr $2
+}

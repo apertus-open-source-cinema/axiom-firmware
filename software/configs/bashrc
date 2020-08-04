@@ -5,6 +5,8 @@ else
     export PS1="[\[\033[0m\]\[\033[38;5;214m\]\u\[\033[0m\]@\[\033[38;5;214m\]\h\[\033[0m\]] \[\033[38;5;6m\]\w\[\033[0m\]\[\033[38;5;15m\] \\$ \[\033[0m\]"
 fi
 
+for f in /opt/axiom-firmware/software/scripts/*.func; do source $f; done
+
 export LS_COLORS='di=1;35;40:ln=1;35;40:so=1;31;40:pi=1;33;40:ex=1;32;40:bd=34;46:cd=34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43:'
 alias ls='ls -Fh --color=always'
 

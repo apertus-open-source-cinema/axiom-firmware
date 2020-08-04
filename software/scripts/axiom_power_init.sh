@@ -1,0 +1,26 @@
+#!/bin/bash
+for id in 0x20 0x21; do
+    axiom_i2c_test $id || continue
+
+    axiom_i2c_set $id 0x00 0x55
+    axiom_i2c_set $id 0x01 0x55
+
+    axiom_i2c_set $id 0x0c 0xAA
+    axiom_i2c_set $id 0x0d 0xAA
+
+    axiom_i2c_set $id 0x14 0x00
+    axiom_i2c_set $id 0x15 0x00
+done
+
+for id in 0x22 0x23; do
+    axiom_i2c_test $id || continue
+
+    axiom_i2c_set $id 0x00 0xA5
+    axiom_i2c_set $id 0x01 0xC3
+
+    axiom_i2c_set $id 0x0c 0x5A
+    axiom_i2c_set $id 0x0d 0x3C
+
+    axiom_i2c_set $id 0x14 0x00
+    axiom_i2c_set $id 0x15 0x00
+done
