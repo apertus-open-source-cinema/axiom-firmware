@@ -9,17 +9,21 @@ export LS_COLORS='di=1;35;40:ln=1;35;40:so=1;31;40:pi=1;33;40:ex=1;32;40:bd=34;4
 alias ls='ls -Fh --color=always'
 
 # Navigational convenience
+alias ll="ls -la"
 alias l="ls -lah"
 alias ..="cd .."
 alias cd..="cd .."
 alias back="cd -"
 
 # better looking grep.
-alias grep="grep -Hn --color=auto"
-alias egrep="egrep -Hn --color=auto"
-alias pgrep="pgrep -Hn --color=auto"
+alias grep="grep --color=auto"
+alias egrep="egrep --color=auto"
+alias pgrep="pgrep --color=auto"
 
 # make sure that the root rm / cp / mv commands are prompting.
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+
+# editor
+alias vi='vim'

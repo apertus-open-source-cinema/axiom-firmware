@@ -122,8 +122,9 @@ fi
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
 echo "ledtrig-heartbeat" > /etc/modules-load.d/ledtrig.conf
 
-# configure bash
+# configure bash & vim
 cp software/configs/bashrc /etc/bash.bashrc
+cp software/configs/vimrc /etc/vimrc
 
 # install overlay, if any is found
 if [ -d overlay ]; then
