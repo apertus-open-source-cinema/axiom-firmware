@@ -74,7 +74,7 @@ $(UBOOT_SOURCE)/spl/boot.bin: $(UBOOT_SOURCE)/.config $(UBOOT_SOURCE)/u-boot.img
 
 build/boot.fs/devicetree.dtb: boot/axiom-$(DEVICE)/devicetree.dts
 	@mkdir -p $(@D)
-	dtc -I dts -O dtb -o $@ $<
+	dtc -@ -I dts -O dtb -o $@ $<
 
 build/boot.fs/devicetree.dts: boot/axiom-$(DEVICE)/devicetree.dts
 	@mkdir -p $(@D)
