@@ -113,7 +113,7 @@ for bit in $BITSTREAMS; do
 done
 ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
-cp software/scripts/axiom-start.service /etc/systemd/system/
+cp software/scripts/axiom_start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
     systemctl disable axiom
 else
