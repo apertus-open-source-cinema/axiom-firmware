@@ -2,7 +2,7 @@
 
 axiom_mem_reg() {
     [ $# -gt 2 ] \
-	&& memtool $1 $4 -W $3 $2 \
+	&& memtool $1 -W $3 $2 \
 	|| memtool $1 -R $2
 }
 
