@@ -121,9 +121,9 @@ ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
 
 cp software/scripts/axiom_start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
-    systemctl disable axiom-start
+    systemctl disable axiom_start
 else
-    systemctl enable axiom-start
+    systemctl enable axiom_start
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
