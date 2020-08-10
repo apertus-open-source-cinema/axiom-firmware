@@ -10,20 +10,20 @@ VS2l=("BETA_5V" "PCIE_N_V" "PCIE_S_V" "IOW_V" "IOE_V" "VCCO_13" "VCCO_34" "N_VW"
 
 for i in `seq 1 ${#PACn[*]}`; do n=$[i-1]
   ID="${PACn[$n]}"
-  axiom_i2c_test $ID || continue
+  i2c_test $ID || continue
 
-  axiom_i2c_set $ID 0x0A 0xFF		# 20ms sample, average 8
-  axiom_i2c_set $ID 0x0B 0xFF		# 320ms sample, average 8, 80mV
-  axiom_i2c_set $ID 0x0C 0xFF		# 320ms sample, average 8, 80mV
+  i2c_set $ID 0x0A 0xFF		# 20ms sample, average 8
+  i2c_set $ID 0x0B 0xFF		# 320ms sample, average 8, 80mV
+  i2c_set $ID 0x0C 0xFF		# 320ms sample, average 8, 80mV
 
-  VV1i=$[ (`axiom_i2c_get $ID 0x11` << 8) | `axiom_i2c_get $ID 0x12` ]
-  VV2i=$[ (`axiom_i2c_get $ID 0x13` << 8) | `axiom_i2c_get $ID 0x14` ]
+  VV1i=$[ (`i2c_get $ID 0x11` << 8) | `i2c_get $ID 0x12` ]
+  VV2i=$[ (`i2c_get $ID 0x13` << 8) | `i2c_get $ID 0x14` ]
 
   VV1f=`dc -e "5k $VV1i 20 * 32768 / p"`
   VV2f=`dc -e "5k $VV2i 20 * 32768 / p"`
 
-  VS1i=$[ (`axiom_i2c_get $ID 0x0D` << 4) | (`axiom_i2c_get $ID 0x0E` >> 4) ]
-  VS2i=$[ (`axiom_i2c_get $ID 0x0F` << 4) | (`axiom_i2c_get $ID 0x10` >> 4) ]
+  VS1i=$[ (`i2c_get $ID 0x0D` << 4) | (`i2c_get $ID 0x0E` >> 4) ]
+  VS2i=$[ (`i2c_get $ID 0x0F` << 4) | (`i2c_get $ID 0x10` >> 4) ]
 
   [ $VS1i -ge 2048 ] && VS1v=$[ $VS1i - 4096 ] || VS1v=$VS1i
   [ $VS2i -ge 2048 ] && VS2v=$[ $VS2i - 4096 ] || VS2v=$VS2i

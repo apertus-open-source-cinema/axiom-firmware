@@ -1,49 +1,49 @@
 #!/bin/bash
 
-axiom_i2c2_get() {
+i2c2_get() {
     i2cget -y 2 $@
 }
 
-axiom_i2c2_set() {
+i2c2_set() {
     i2cset -y 2 $@
 }
 
-axiom_i2c2_bit_get() {
-    local val=`axiom_i2c2_get $1 $2`
+i2c2_bit_get() {
+    local val=`i2c2_get $1 $2`
     local msk=`bit_msk $3`
     local bit=$(( (val & msk) >> $3 ))
     printf "%d" $bit
     return $bit
 }
 
-axiom_i2c2_bit_set() {
+i2c2_bit_set() {
     local val=`axiom i2c2_get $1 $2`
     local msk=`bit_msk $3`
     val=$(( val | msk ))
-    axiom_i2c2_set $1 $2 $val
+    i2c2_set $1 $2 $val
 }
 
-axiom_i2c2_bit_clr() {
-    local val=`axiom_i2c2_get $1 $2`
+i2c2_bit_clr() {
+    local val=`i2c2_get $1 $2`
     local msk=`bit_msk $3`
     val=$(( val & ~msk ))
-    axiom_i2c2_set $1 $2 $val
+    i2c2_set $1 $2 $val
 }
 
-axiom_i2c2_map() {
-    local val=`axiom_i2c2_get $1 $2`
+i2c2_map() {
+    local val=`i2c2_get $1 $2`
     val=`bit_map $val $3 $4 $5`
-    axiom_i2c2_set $1 $2 $val
+    i2c2_set $1 $2 $val
 }
 
-axiom_i2c2_bit() {
+i2c2_bit() {
     [ -n "$4" ] && \
-      axiom_i2c2_map $1 $2 $3 $3 $4 ||
-      axiom_i2c2_bit_get $1 $2 $3
+      i2c2_map $1 $2 $3 $3 $4 ||
+      i2c2_bit_get $1 $2 $3
 }
 
-axiom_i2c2_mbv() {
-    local val=`axiom_i2c2_get $1 $2`
+i2c2_mbv() {
+    local val=`i2c2_get $1 $2`
     local msk=`bit_msk $3 $4`
     val=$(( (val & msk) >> $3 ))
     printf "%d" $val
