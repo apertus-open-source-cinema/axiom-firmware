@@ -6,7 +6,7 @@
 axiom_fclk_init.sh
 axiom_zynq_info.sh
 
-echo axiom-fpga-main.bin > /sys/class/fpga_manager/fpga0/firmware
+echo axiom_fpga_main.bin > /sys/class/fpga_manager/fpga0/firmware
 
 axiom_mem_reg -4 0xF8006210 0x00001
 axiom_mem_reg -4 0xF8006214 0x00001

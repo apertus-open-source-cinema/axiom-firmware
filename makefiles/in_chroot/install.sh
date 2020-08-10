@@ -112,17 +112,21 @@ systemctl enable NetworkManager
 # build raw2dng
 cdmake software/misc-tools-utilities/raw2dng
 
-# download prebuilt fpga binaries & select the default binary
+# copy prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel
 mkdir -p /opt/bitstreams/
-BITSTREAMS="BETA/cmv_hdmi3_dual_60.bit BETA/cmv_hdmi3_dual_30.bit BETA/ICSP/icsp.bit check_pin10.bit check_pin20.bit"
-for bit in $BITSTREAMS; do
+for bit in peripherals/bitstreams/*.bit; do
     NAME=$(basename $bit)
-    (cd /opt/bitstreams && wget --no-verbose http://vserver.13thfloor.at/Stuff/AXIOM/$bit -O $NAME)
+    ln -sf $(pwd)/$bit /opt/bitstreams
     ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$NAME /opt/bitstreams/"$(basename ${NAME%.bit}).bin"
     ln -sf /opt/bitstreams/"${NAME%.bit}.bin" /lib/firmware
 done
-ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom-fpga-main.bin
+
+if [[ $DEVICE == 'micro' ]]; then
+  ln -sf /opt/bitstreams/micro_main.bin /lib/firmware/axiom_fpga_main.bin
+else
+  ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom_fpga_main.bin
+fi
 
 cp software/scripts/axiom_start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
