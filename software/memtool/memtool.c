@@ -635,7 +635,7 @@ rskip:
 		char end = (col == (num_cols - 1)) ? '\n' : ' ';
 
 		if (col == 0)
-		    printf("%08lX: ", mem_addr + (ptr - mem_ptr));
+		    printf("%08X: ", mem_addr + (ptr - mem_ptr));
 
 		switch (opt_ds) {
 		case DS_8:
@@ -657,7 +657,7 @@ rskip:
 		    break;
 
 		case DS_64:
-		    printf("%016lX%c", *(uint64_t *)ptr, end);
+		    printf("%016llX%c", *(uint64_t *)ptr, end);
 		    ptr += 8;
 		    cnt -= 8;
 		    break;
@@ -731,7 +731,7 @@ rmode:
 	        break;
 
 	    case DS_64:
-	        printf("0x%016lX\n", *(uint64_t *)mem_ptr);
+	        printf("0x%016llX\n", *(uint64_t *)mem_ptr);
 	        break;
 
 	    default:
