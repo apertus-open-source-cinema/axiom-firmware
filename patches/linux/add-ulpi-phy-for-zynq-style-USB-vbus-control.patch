@@ -99,18 +99,15 @@ index a43c49369..0f7f6eb16 100644
  struct usb_phy *
  otg_ulpi_create(struct usb_phy_io_ops *ops,
  		unsigned int flags)
-@@ -262,6 +293,7 @@ otg_ulpi_create(struct usb_phy_io_ops *ops,
- 	phy->io_ops	= ops;
- 	phy->otg	= otg;
- 	phy->init	= ulpi_init;
+@@ -262,3 +293,4 @@ static void otg_ulpi_init(struct usb_phy *phy, struct usb_otg *otg,
 +	phy->set_vbus	= usbphy_set_vbus;
  
  	otg->usb_phy	= phy;
  	otg->set_host	= ulpi_set_host;
-@@ -271,3 +303,70 @@ otg_ulpi_create(struct usb_phy_io_ops *ops,
+@@ -271,2 +303,70 @@ devm_otg_ulpi_create(struct device *dev,
  }
- EXPORT_SYMBOL_GPL(otg_ulpi_create);
- 
+ EXPORT_SYMBOL_GPL(devm_otg_ulpi_create);
++ 
 +static int ulpi_phy_probe(struct platform_device *pdev)
 +{
 +	struct device_node *np = pdev->dev.of_node;
@@ -183,11 +180,11 @@ index 63758c399..be9aaf54e 100644
 --- a/include/linux/usb/chipidea.h
 +++ b/include/linux/usb/chipidea.h
 @@ -60,7 +60,8 @@ struct ci_hdrc_platform_data {
- #define CI_HDRC_OVERRIDE_RX_BURST	BIT(11)
  #define CI_HDRC_OVERRIDE_PHY_CONTROL	BIT(12) /* Glue layer manages phy */
  #define CI_HDRC_REQUIRES_ALIGNED_DMA	BIT(13)
  #define CI_HDRC_IMX_IS_HSIC		BIT(14)
-+#define CI_HDRC_PHY_VBUS_CONTROL	BIT(15)
+ #define CI_HDRC_PMQOS			BIT(15)
++#define CI_HDRC_PHY_VBUS_CONTROL	BIT(16)
  	enum usb_dr_mode	dr_mode;
  #define CI_HDRC_CONTROLLER_RESET_EVENT		0
  #define CI_HDRC_CONTROLLER_STOPPED_EVENT	1
