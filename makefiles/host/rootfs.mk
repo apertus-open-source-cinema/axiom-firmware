@@ -57,14 +57,19 @@ build/nctrl/target/release/nctrl: build/nctrl/.copy_stamp
 	FUSE_CROSS_STATIC_LIB=fuse \
 	cargo build --release --target=armv7-unknown-linux-musleabihf
 
-build/root.fs/opt/openocd: build/root.fs/.base_install
+OPENOCD_VERSION = d46f28c2ea2611f5fbbc679a5eed253d3dcd2fe3
+OPENOCD_SOURCE = build/openocd-$(LINUX_VERSION).git
+
+$(OPENOCD_SOURCE): build/root.fs/.base_install
 	@mkdir -p $(@D)
 	rm -rf $@
-	git clone --depth 1 https://repo.or.cz/openocd.git $@
+	git clone https://repo.or.cz/openocd.git $@
+	(cd $@ && git reset --hard $(OPENOCD_VERSION))
 	touch $@/.scmversion
 
-build/root.fs/opt/openocd/.build_stamp: build/root.fs/opt/openocd
+$(OPENOCD_SOURCE)/.build_stamp: $(OPENOCD_SOURCE)
 	(cd $(@D) && ./bootstrap)
-	(cd $(@D) && ./configure --enable-sysfsgpio)
-	(cd $(@D) &&  $(MAKE) CROSS_COMPILE=$(CROSS) ARCH=$(ARCH))
+	(cd $(@D) && ./configure --target $(CROSS) --prefix ../root.fs/ --enable-sysfsgpio )
+	(cd $(@D) &&  +$(MAKE))
+	(cd $(@D) &&  +$(MAKE) install)
 	touch $@
