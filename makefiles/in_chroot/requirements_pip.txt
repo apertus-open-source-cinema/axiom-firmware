@@ -8,3 +8,4 @@ pyserial
 IntelHex
 wheel
 smbus-cffi
+spidev
