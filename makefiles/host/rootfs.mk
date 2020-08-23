@@ -2,7 +2,7 @@ include bootfs.mk
 
 LINUX_BASE_IMAGE=ArchLinuxARM-zedboard-latest.tar.gz
 
-build/root.fs/.install_stamp: $(shell find makefiles/in_chroot/) build/root.fs/opt/axiom-firmware/.install_stamp $(LINUX_SOURCE)/arch/arm/boot/zImage build/root.fs/.base_install build/webui/dist/index.html build/nctrl/target/release/nctrl
+build/root.fs/.install_stamp: $(shell find makefiles/in_chroot/) build/root.fs/opt/axiom-firmware/.install_stamp $(LINUX_SOURCE)/arch/arm/boot/zImage build/root.fs/.base_install build/webui/dist/index.html build/nctrl/target/release/nctrl build/root.fs/opt/openocd/.build_stamp
 	rsync -aK build/kernel_modules.fs/ $(@D)
 
 	cp -r build/webui/dist $(@D)/opt/axiom-firmware/software/webui
@@ -56,3 +56,15 @@ build/nctrl/target/release/nctrl: build/nctrl/.copy_stamp
 	FUSE_CROSS_STATIC_PATH=./thirdparty/ \
 	FUSE_CROSS_STATIC_LIB=fuse \
 	cargo build --release --target=armv7-unknown-linux-musleabihf
+
+build/root.fs/opt/openocd: build/root.fs/.base_install
+	@mkdir -p $(@D)
+	rm -rf $@
+	git clone --depth 1 https://repo.or.cz/openocd.git $@
+	touch $@/.scmversion
+
+build/root.fs/opt/openocd/.build_stamp: build/root.fs/opt/openocd
+	(cd $(@D) && ./bootstrap)
+	(cd $(@D) && ./configure --enable-sysfsgpio)
+	(cd $(@D) &&  $(MAKE) CROSS_COMPILE=$(CROSS) ARCH=$(ARCH))
+	touch $@

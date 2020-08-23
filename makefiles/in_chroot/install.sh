@@ -54,6 +54,9 @@ grep 'PermitRootLogin' /etc/ssh/sshd_config && sed -i 's/^.*PermitRootLogin.*$/P
 grep 'PermitRootLogin' /etc/ssh/sshd_config || echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 grep -x 'X11Forwarding yes' /etc/ssh/sshd_config || echo "X11Forwarding yes" >> /etc/ssh/sshd_config
 
+# install (already build) openocd
+(cd /opt/openocd && make install)
+
 # build all the tools
 function cdmake () {
     [[ -d "$1" ]] && make -C "$1" && make -C "$1" install
