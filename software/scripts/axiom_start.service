@@ -4,9 +4,9 @@ Description="Setup the AXIOM Beta image pipeline
 [Service]
 Type=oneshot
 EnvironmentFile=-/etc/environment
-ExecStart=/opt/axiom-firmware/software/scripts/start.sh
+ExecStart=/opt/axiom-firmware/software/scripts/axiom_start.sh
 RemainAfterExit=true
-ExecStop=/opt/axiom-firmware/software/scripts/halt.sh
+ExecStop=/opt/axiom-firmware/software/scripts/axiom_halt.sh
 StandardOutput=journal
 
 [Install]
