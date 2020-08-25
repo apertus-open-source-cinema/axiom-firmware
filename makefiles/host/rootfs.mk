@@ -70,6 +70,6 @@ $(OPENOCD_SOURCE): build/root.fs/.base_install
 $(OPENOCD_SOURCE)/.build_stamp: $(OPENOCD_SOURCE) build/root.fs/.base_install
 	(cd $(@D) && ./bootstrap)
 	(cd $(@D) && ./configure --target=$(CROSS) --prefix=$${PWD}/../root.fs/ --enable-sysfsgpio )
-	(cd $(@D) &&  +$(MAKE))
-	(cd $(@D) &&  +$(MAKE) install)
+	+(cd $(@D) &&  $(MAKE))
+	+(cd $(@D) &&  $(MAKE) install)
 	touch $@
