@@ -3,7 +3,7 @@ include bootfs.mk
 LINUX_BASE_IMAGE=ArchLinuxARM-zedboard-latest.tar.gz
 
 OPENOCD_VERSION = d46f28c2ea2611f5fbbc679a5eed253d3dcd2fe3
-OPENOCD_SOURCE = build/openocd-$(LINUX_VERSION).git
+OPENOCD_SOURCE = build/openocd-$(OPENOCD_VERSION).git
 
 build/root.fs/.install_stamp: $(shell find makefiles/in_chroot/) build/root.fs/opt/axiom-firmware/.install_stamp $(LINUX_SOURCE)/arch/arm/boot/zImage build/root.fs/.base_install build/webui/dist/index.html build/nctrl/target/release/nctrl $(OPENOCD_SOURCE)/.build_stamp
 	rsync -aK build/kernel_modules.fs/ $(@D)
@@ -69,7 +69,7 @@ $(OPENOCD_SOURCE): build/root.fs/.base_install
 
 $(OPENOCD_SOURCE)/.build_stamp: $(OPENOCD_SOURCE) build/root.fs/.base_install
 	(cd $(@D) && ./bootstrap)
-	(cd $(@D) && ./configure --target $(CROSS) --prefix ../root.fs/ --enable-sysfsgpio )
+	(cd $(@D) && ./configure --target $(CROSS) --prefix $(pwd)/../root.fs/ --enable-sysfsgpio )
 	(cd $(@D) &&  +$(MAKE))
 	(cd $(@D) &&  +$(MAKE) install)
 	touch $@
