@@ -324,14 +324,7 @@
             interrupt-parent = <&intc>;
 
 
-            phy-mode = "rgmii";
-            phy-handle = <&phy0>;
-
-            phy0: phy@0 {
-//                compatible = "ethernet-phy-id004d.d072", "ethernet-phy-ieee802.3-c22";
-                device_type = "ethernet-phy";
-                reg = <0>;
-            };
+            phy-mode = "rgmii-id";
         };
 
         gem1: ethernet@e000c000 {
