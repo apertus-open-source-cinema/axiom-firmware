@@ -115,7 +115,7 @@ systemctl enable NetworkManager
 cp software/configs/usb-gadget.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
     systemctl enable usb-gadget
-else
+fi
 
 # build raw2dng
 cdmake software/misc-tools-utilities/raw2dng
