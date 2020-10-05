@@ -15,6 +15,8 @@ axiom_fil_reg 15 0
 axiom_snap -e $PARAMS -2 -r -b > /dev/null
 axiom_snap -e $PARAMS -2 -r -b > /opt/picture-snap/$IMAGENAME/$IMAGENAME.raw12
 
+sync
+
 echo "raw12 written"
 
 # restart HDMI live stream
