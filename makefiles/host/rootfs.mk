@@ -69,7 +69,7 @@ $(OPENOCD_SOURCE): build/root.fs/.base_install
 
 $(OPENOCD_SOURCE)/.build_stamp: $(OPENOCD_SOURCE) build/root.fs/.base_install
 	(cd $(@D) && ./bootstrap)
-	(cd $(@D) && PKG_CONFIG=/root/armv7-eabihf--musl--bleeding-edge-2020.02-2/bin/pkg-config ./configure --host=arm-buildroot-linux-musleabihf --disable-shared --disable-backtrace --enable-static --prefix=$${PWD}/../root.fs/usr/ --enable-sysfsgpio )
+	(cd $(@D) && PKG_CONFIG=/root/armv7-eabihf--musl--bleeding-edge-2020.02-2/bin/pkg-config ./configure --host=arm-buildroot-linux-musleabihf --enable-static --enable-sysfsgpio --prefix=$${PWD}/../root.fs/usr/ CFLAGS=-static)
 	+(cd $(@D) &&  $(MAKE))
 	+(cd $(@D) &&  $(MAKE) install)
 	touch $@
