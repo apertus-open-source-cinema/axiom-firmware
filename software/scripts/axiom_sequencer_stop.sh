@@ -1,2 +1,2 @@
 #!/bin/bash
-axiom_fil_reg.sh 15 0
+axiom_fil_reg 15 0
