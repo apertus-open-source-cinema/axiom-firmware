@@ -57,3 +57,6 @@ dnsmasq
 # tools required to compile pic firmware
 sdcc
 gputils
+
+# lsusb
+usbutils
