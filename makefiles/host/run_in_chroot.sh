@@ -22,7 +22,7 @@ update-binfmts --enable qemu-arm
 # change the resolv conf. systemd is not running in chroot.
 [ -f build/root.fs/etc/resolv.conf.bak ] || readlink -v build/root.fs/etc/resolv.conf > build/root.fs/etc/resolv.conf.bak
 unlink build/root.fs/etc/resolv.conf
-echo "nameserver 185.121.177.177" > build/root.fs/etc/resolv.conf
+echo "nameserver 1.1.1.1" > build/root.fs/etc/resolv.conf
 
 # use local package cache
 rm -rf build/root.fs/var/cache/pacman/*
