@@ -1,4 +1,0 @@
-image : {
-        [bootloader]fsbl.elf
-        u-boot.elf
-}

@@ -4,6 +4,7 @@ docker_builder:
     TOKEN: ENCRYPTED[64daf2f8fbeaca02bfe024de054c12914298cff8d09eed14ef6e89d3730ad95b4b3f9efce43959f98318e31fcec7e53f]
     matrix:
       DEVICE: beta
+      DEVICE: pynqz2
       DEVICE: micro
   clone_script: |
     if [[ -z "$CIRRUS_PR" ]]; then
