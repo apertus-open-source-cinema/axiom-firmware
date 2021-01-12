@@ -15,130 +15,71 @@ new file mode 100644
 index 00000000..555915f6
 --- /dev/null
 +++ b/arch/arm/dts/zynq-pynqz2.dts
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,65 @@
 +/dts-v1/;
 +#include "zynq-7000.dtsi"
 +
 +/ {
-+	model = "Pynq-Z2";
++	model = "Zynq Pynq-Z2 Development Board";
 +	compatible = "xlnx,zynq-7000";
 +
 +	aliases {
-+		serial0 = &uart0;
 +		ethernet0 = &gem0;
++		serial0 = &uart0;
 +		spi0 = &qspi;
 +		mmc0 = &sdhci0;
 +	};
 +
-+	memory@0 {
++	memory {
 +		device_type = "memory";
-+		reg = <0 0x20000000>;
++		reg = <0x0 0x20000000>;
 +	};
 +
 +	chosen {
-+		bootargs = "earlyprintk";
++		bootargs = "";
 +		stdout-path = "serial0:115200n8";
 +	};
 +
-+        cpus {
-+                cpu@0 {
-+                        operating-points = <650000 1000000 325000 1000000>;
-+                };
-+        };
++	usb_phy0: phy0 {
++		compatible = "usb-nop-xceiv";
++		#phy-cells = <0>;
++		reset-gpios = <&gpio0 46 1>;
++	};
++};
 +
-+        amba {
-+
-+                fabric@40000000 {
-+                        compatible = "generic-uio";
-+                        reg = <0x40000000 0x10000>;
-+                        interrupt-parent = <&intc>;
-+                        interrupts = <0x0 0x1d 0x4>;
-+                };
-+
-+                audio0:audio-codec-ctrl@43c00000 {
-+                        compatible = "xlnk,audio-codec-ctrl-1.0";
-+                        reg = <0x43c00000 0x10000>;
-+                };
-+
-+                ethernet@e000b000 {
-+                        phy-handle = <&ethernet_phy>;
-+                        ethernet_phy: ethernet-phy@1{
-+                                reg = <1>;
-+                        };
-+                };
-+
-+                slcr@f8000000 {
-+                        clkc@100 {
-+                                fclk-enable = <0xf>;
-+                        };
-+                };
-+        };
-+        usb_phy0: phy0 {
-+                compatible = "ulpi-phy";
-+                #phy-cells = <0>;
-+                reg = <0xe0002000 0x1000>;
-+                view-port = <0x170>;
-+                drv-vbus;
-+        };
++&clkc {
++	ps-clk-frequency = <50000000>;
 +};
 +
 +&gem0 {
-+        enet-reset = <&gpio0 9 0>;
-+        phy-mode = "rgmii-id";
-+        status = "okay";
-+        xlnx,ptp-enet-clock = <0x6750918>;
++	status = "okay";
++	phy-mode = "rgmii-id";
++	phy-handle = <&ethernet_phy>;
++
++	ethernet_phy: ethernet-phy@0 { /* rtl8211e-vl */
++		reg = <1>;
++	};
 +};
-+&gpio0 {
-+        emio-gpio-width = <64>;
-+        gpio-mask-high = <0x0>;
-+        gpio-mask-low = <0x5600>;
-+};
-+&i2c0 {
-+        clock-frequency = <400000>;
-+        status = "okay";
-+};
-+&i2c1 {
-+        clock-frequency = <400000>;
-+        status = "okay";
-+};
-+&intc {
-+        num_cpus = <2>;
-+        num_interrupts = <96>;
-+};
++
 +&qspi {
-+        is-dual = <0>;
-+        num-cs = <1>;
-+        spi-rx-bus-width = <4>;
-+        spi-tx-bus-width = <4>;
-+        status = "okay";
++	u-boot,dm-pre-reloc;
++	status = "okay";
 +};
++
 +&sdhci0 {
-+        status = "okay";
-+        xlnx,has-cd = <0x1>;
-+        xlnx,has-power = <0x0>;
-+        xlnx,has-wp = <0x0>;
++	u-boot,dm-pre-reloc;
++	status = "okay";
 +};
++
 +&uart0 {
-+        device_type = "serial";
-+        port-number = <0>;
-+        status = "okay";
-+};
-+&usb0 {
-+        phy_type = "ulpi";
-+        status = "okay";
-+        usb-reset = <&gpio0 46 0>;
-+};
-+&clkc {
-+        fclk-enable = <0x0>;
-+        ps-clk-frequency = <50000000>;
++	u-boot,dm-pre-reloc;
++	status = "okay";
 +};
 +
 +&usb0 {
-+        usb-phy = <&usb_phy0>;
-+};
-+
-+&audio0 {
-+       compatible = "generic-uio";
++	status = "okay";
++	dr_mode = "host";
++	usb-phy = <&usb_phy0>;
 +};
 diff --git a/board/xilinx/zynq/zynq-pynqz2/ps7_init_gpl.c b/board/xilinx/zynq/zynq-pynqz2/ps7_init_gpl.c
 new file mode 100644
