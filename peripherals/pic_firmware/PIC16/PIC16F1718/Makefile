@@ -12,6 +12,7 @@ clean:
 	rm -f *.lst *.map
 	rm -f *.hex
 	rm -f *.bin
+	rm -f *.asm
 	rm -f *~ *.orig
 
 # 	block normal .c -> .o
