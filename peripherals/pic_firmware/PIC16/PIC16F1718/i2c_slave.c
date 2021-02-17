@@ -3,7 +3,7 @@
 //
 // simple i2c slave interface
 
-/*  Copyright (C) 2015 H.Poetzl
+/*  Copyright (C) 2015-2019 H.Poetzl
 **	
 **  This program is free software: you can redistribute it and/or
 **  modify it under the terms of the GNU General Public License
@@ -32,16 +32,30 @@ CONFIG(CONFIG2,  _PPS1WAY_OFF & _BORV_HI & _LPBOR_ON & _PLLEN_ON);
 #define SDA_PPS		0b10001
 #define SDA_PPSP	0b01111
 
+
 #define TMS_PORT	PORTCbits.RC3
 #define TDI_PORT	PORTCbits.RC1
 #define TDO_PORT	PORTCbits.RC0
 #define TCK_PORT	PORTCbits.RC2
+
+#define	MB_V034
+
+#ifdef	MB_V034
+#define TDI2_PORT	PORTAbits.RA3
+#define TCK2_PORT	PORTAbits.RA4
+#else
+#define TDI2_PORT	PORTAbits.RA0
+#define TCK2_PORT	PORTAbits.RA1
+#endif
+#define TDO2_PORT	PORTBbits.RB3
+#define TMS2_PORT	PORTBbits.RB4
 
 
 static unsigned volatile char buf[32] = { 0 };
 static unsigned volatile char v = 0;
 static unsigned volatile char i = 0;
 static unsigned volatile char c = 0;
+static unsigned volatile char f = 0;
 
 
 void tms_out(unsigned char val, unsigned char cnt)
@@ -136,6 +150,131 @@ void tdi_tdo(unsigned char val, unsigned char cnt, unsigned char tms)
 }
 
 
+void tms_out2(unsigned char val, unsigned char cnt)
+{
+    while (cnt) {
+        TCK2_PORT = 0;
+	if (val & 1) {
+	    TMS2_PORT = 1;
+	} else {
+	    TMS2_PORT = 0;
+	}
+	val = val >> 1;
+	TCK2_PORT = 1;
+	cnt--;
+    }
+}
+
+void tdi_out2(unsigned char val, unsigned char cnt, unsigned char tms)
+{
+    TMS2_PORT = 0;
+    while (--cnt) {
+        TCK2_PORT = 0;
+	if (val & 1) {
+	    TDI2_PORT = 1;
+	} else {
+	    TDI2_PORT = 0;
+	}
+	val = val >> 1;
+	TCK2_PORT = 1;
+    }
+    TCK2_PORT = 0;
+    if (val & 1) {
+        TDI2_PORT = 1;
+    } else {
+        TDI2_PORT = 0;
+    }
+    TMS2_PORT = tms;
+    TCK2_PORT = 1;
+}
+
+unsigned char tdo_in2(unsigned char cnt, unsigned char tms)
+{
+    unsigned char val = 0;
+    unsigned char bit = 0;
+
+    TMS2_PORT = 0;
+    while (--cnt) {
+	val = val << 1;
+        TCK2_PORT = 0;
+	val = val | bit;
+	bit = TDO2_PORT;
+	TCK2_PORT = 1;
+    }
+    val = val << 1;
+    TCK2_PORT = 0;
+    val = val | bit;
+    bit = TDO2_PORT;
+    TMS2_PORT = tms;
+    TCK2_PORT = 1;
+    val = val << 1 | bit;
+    return val;
+}
+
+void tdi_tdo2(unsigned char val, unsigned char cnt, unsigned char tms)
+{
+    unsigned char bit = 0;
+
+    TMS2_PORT = 0;
+    while (--cnt) {
+        v = (v << 1) | bit;
+        TCK2_PORT = 0;
+	if (val & 1) {
+	    TDI2_PORT = 1;
+	} else {
+	    TDI2_PORT = 0;
+	}
+	bit = TDO2_PORT;
+	val = val >> 1;
+	TCK2_PORT = 1;
+    }
+    v = (v << 1) | bit;
+    TCK2_PORT = 0;
+    if (val & 1) {
+        TDI2_PORT = 1;
+    } else {
+        TDI2_PORT = 0;
+    }
+    bit = TDO2_PORT;
+    TMS2_PORT = tms;
+    TCK2_PORT = 1;
+    v = v << 1 | bit;
+}
+
+
+void feat_update(void)
+{
+    if (f & 2) {
+	TRISCbits.TRISC4 = 0;
+	TRISCbits.TRISC5 = 0;
+
+	CLC1CONbits.LC1EN = 1;
+	CLC2CONbits.LC2EN = 1;
+    } else {
+	TRISCbits.TRISC4 = 1;
+	TRISCbits.TRISC5 = 1;
+
+	CLC1CONbits.LC1EN = 0;
+	CLC2CONbits.LC2EN = 0;
+    }
+}
+
+
+#define	COND	(f & 1)
+
+#define	TDO_IN(c, t)	\
+	(COND ? tdo_in2(c, t) : tdo_in(c, t))
+
+#define	TMS_OUT(v, c)	\
+	(COND ? tms_out2(v, c) : tms_out(v, c))
+
+#define	TDI_OUT(v, c, t)	\
+	(COND ? tdi_out2(v, c, t) : tdi_out(v, c, t))
+
+#define	TDI_TDO(v, c, t)	\
+	(COND ? tdi_tdo2(v, c, t) : tdi_tdo(v, c, t))
+
+
 void irq(void) __interrupt 0
 {
     static unsigned char a = 0;
@@ -147,11 +286,10 @@ void irq(void) __interrupt 0
 	if (SSPSTATbits.BF) {
 	    if (SSP1CON3bits.ACKTIM) {			/* (n)ack */
 		// LED_PIN = 1;
-		SSP1CON1bits.CKP = 1;
 	    } else {
 		if (SSP1STATbits.D_NOT_A) {		/* data */
 		    if (SSP1STATbits.R_NOT_W) {		/* read */
-			;
+			SSPBUF = 0x5A;			/* default */
 		    } else {				/* write */
 			switch (a & 0x2F) {
 			    case 0x00:			/* buf data */
@@ -159,53 +297,58 @@ void irq(void) __interrupt 0
 				break;
 
 			    case 0x02:
-				tms_out(SSPBUF, 8);
+				TMS_OUT(SSPBUF, 8);
 				break;
 			    case 0x03:
 				if (i++)
-				    tms_out(SSPBUF, c);
+				    TMS_OUT(SSPBUF, c);
 				else
 				    c = SSPBUF;
 				break;
 
 			    case 0x04:
-				tdi_tdo(SSPBUF, 8, 1);
+				TDI_TDO(SSPBUF, 8, 1);
 				break;
 			    case 0x05:
 				if (i++)
-				    tdi_tdo(SSPBUF, c, 1);
+				    TDI_TDO(SSPBUF, c, 1);
 				else
 				    c = SSPBUF;
 				break;
 
 			    case 0x06:
-				tdi_out(SSPBUF, 8, 1);
+				TDI_OUT(SSPBUF, 8, 1);
 				break;
 			    case 0x07:
 				if (i++)
-				    tdi_out(SSPBUF, c, 1);
+				    TDI_OUT(SSPBUF, c, 1);
 				else
 				    c = SSPBUF;
 				break;
 
 			    case 0x08:
-				tdi_tdo(SSPBUF, 8, 0);
+				TDI_TDO(SSPBUF, 8, 0);
 				break;
 			    case 0x09:
 				if (i++)
-				    tdi_tdo(SSPBUF, c, 0);
+				    TDI_TDO(SSPBUF, c, 0);
 				else
 				    c = SSPBUF;
 				break;
 
 			    case 0x0A:
-				tdi_out(SSPBUF, 8, 0);
+				TDI_OUT(SSPBUF, 8, 0);
 				break;
 			    case 0x0B:
 				if (i++)
-				    tdi_out(SSPBUF, c, 0);
+				    TDI_OUT(SSPBUF, c, 0);
 				else
 				    c = SSPBUF;
+				break;
+
+			    case 0x0F:
+				f = SSPBUF;		/* features */
+				feat_update();
 				break;
 
 			    case 0x20:			/* tris A */
@@ -261,7 +404,6 @@ void irq(void) __interrupt 0
 				t = SSPBUF;
 				break;
 			}
-			SSP1CON1bits.CKP = 1;
 		    }
 		} else {				/* address */
 		    a = SSPBUF >> 1;
@@ -278,10 +420,10 @@ void irq(void) __interrupt 0
 				break;
 
 			    case 0x06:
-				SSPBUF = tdo_in(8, 1);
+				SSPBUF = TDO_IN(8, 1);
 				break;
 			    case 0x07:
-				SSPBUF = tdo_in(c, 1);
+				SSPBUF = TDO_IN(c, 1);
 				break;
 
 			    case 0x08:
@@ -290,10 +432,14 @@ void irq(void) __interrupt 0
 				break;
 
 			    case 0x0A:
-				SSPBUF = tdo_in(8, 0);
+				SSPBUF = TDO_IN(8, 0);
 				break;
 			    case 0x0B:
-				SSPBUF = tdo_in(c, 0);
+				SSPBUF = TDO_IN(c, 0);
+				break;
+
+			    case 0x0F:
+				SSPBUF = f;
 				break;
 
 			    case 0x20:			/* tris A */
@@ -348,17 +494,24 @@ void irq(void) __interrupt 0
 			    default:
 				SSPBUF = 0xA5;		/* default */
 			}
-			SSP1CON1bits.CKP = 1;
 		    } else {				/* write */
 			;
 		    }
 		}
 	    }
+	} else {
+	    if (SSP1STATbits.R_NOT_W) {			/* read */
+		switch (a & 0x2F) {
+		    case 0x00:				/* buf data */
+			SSPBUF = buf[i++];
+			break;
+		    default:
+			SSPBUF = 0xAB;			/* default */
+			break;
+		}
+	    }
 	}
-	
-	// LED_PIN = SSPCON1bits.SSPOV;
-	// LED_PIN = SSP1STATbits.D_NOT_A;
-	// LED_PIN = SSP1STATbits.R_NOT_W;
+	SSP1CON1bits.CKP = 1;
     }
 }
 
@@ -394,7 +547,7 @@ void main()
     SSP1CON1bits.SSPEN = 1;	/* enable I2C */
     SSP1CON1bits.CKP = 1;	/* enable I2C clock */
     SSP1CON2 = 0;
-    SSP1CON2bits.SEN = 0;	/* clock stretching disabled */
+    SSP1CON2bits.SEN = 1;	/* clock stretching disabled */
     SSP1CON3 = 0;
     SSP1CON3bits.BOEN = 1;	/* buffer override enabled */
 
@@ -407,7 +560,45 @@ void main()
     
     NCO1CON = 0b10100000;
 
-    // RC2PPS = 0b00011;		/* NCO to TCK_W */
+    // RC2PPS = 0b00011;	/* NCO to TCK_W */
+
+
+    CLC1CON = 0;
+
+    CLC1SEL0 = 0b00010;		/* CLCIN2 */
+    CLC1SEL1 = 0b00010;		/* CLCIN2 */
+    CLC1SEL2 = 0b00010;		/* CLCIN2 */
+    CLC1SEL3 = 0b00010;		/* CLCIN2 */
+
+    CLC1GLS0 = 0b01010101;	/* AND */
+    CLC1GLS1 = 0b01010101;	/* AND */
+    CLC1GLS2 = 0b01010101;	/* AND */
+    CLC1GLS3 = 0b01010101;	/* AND */
+
+    CLC1POL = 0b00001111;	/* AND */
+    CLC1CON = 0b00000010;	/* AND-4 */
+
+    CLCIN2PPS = 0b01110;	/* RB6 */
+    RC4PPS = 0b00100;		/* *_SCL */
+
+    CLC2CON = 0;
+
+    CLC2SEL0 = 0b00011;		/* CLCIN3 */
+    CLC2SEL1 = 0b00011;		/* CLCIN3 */
+    CLC2SEL2 = 0b00011;		/* CLCIN3 */
+    CLC2SEL3 = 0b00011;		/* CLCIN3 */
+
+    CLC2GLS0 = 0b01010101;	/* AND */
+    CLC2GLS1 = 0b01010101;	/* AND */
+    CLC2GLS2 = 0b01010101;	/* AND */
+    CLC2GLS3 = 0b01010101;	/* AND */
+
+    CLC2POL = 0b00001111;	/* AND */
+    CLC2CON = 0b00000010;	/* AND-4 */
+
+    CLCIN3PPS = 0b01111;	/* RB7 */
+    RC5PPS = 0b00101;		/* *_SDA */
+
 
     PIR1bits.SSP1IF = 0;	/* clear I2C irq */
     PIE1bits.SSP1IE = 1;	/* enable I2C irq */
