@@ -132,7 +132,7 @@ cp software/scripts/axiom_start.service /etc/systemd/system/
 if [[ $DEVICE == 'micro' ]]; then
     systemctl disable axiom_start
 else
-    systemctl enable axiom_start
+    systemctl disable axiom_start
 fi
 
 echo "i2c-dev" > /etc/modules-load.d/i2c-dev.conf
