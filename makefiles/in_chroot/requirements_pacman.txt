@@ -60,3 +60,6 @@ gputils
 
 # lsusb
 usbutils
+
+# wireguard
+wireguard-tools
