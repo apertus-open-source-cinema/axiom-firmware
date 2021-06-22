@@ -1,0 +1,550 @@
+From e7a7c27e93ea0a223ba306f59f67ac708f10f0d5 Mon Sep 17 00:00:00 2001
+From: Swaraj Hota <swarajhota353@gmail.com>
+Date: Fri, 28 Aug 2020 00:07:00 +0530
+Subject: [PATCH] rfdev_jtag: add axiom beta rfdev jtag interface driver
+
+---
+ configure.ac                  |  21 ++-
+ src/jtag/drivers/Makefile.am  |   4 +
+ src/jtag/drivers/rfdev-jtag.c | 335 ++++++++++++++++++++++++++++++++++
+ src/jtag/drivers/rfdev-uapi.h |  72 ++++++++
+ src/jtag/interfaces.c         |   6 +
+ 5 files changed, 437 insertions(+), 1 deletion(-)
+ create mode 100644 src/jtag/drivers/rfdev-jtag.c
+ create mode 100644 src/jtag/drivers/rfdev-uapi.h
+
+diff --git a/configure.ac b/configure.ac
+index 90ac2a98c..3b4208bb2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -147,6 +147,9 @@ m4_define([LIBJAYLINK_ADAPTERS],
+ m4_define([PCIE_ADAPTERS],
+ 	[[[xlnx_pcie_xvc], [Xilinx XVC/PCIe], [XLNX_PCIE_XVC]]])
+ 
++m4_define([JTAGIF_ADAPTERS],
++	[[[rfdev_jtag], [Axiom Beta RFDev JTAG Interface], [RFDEV_JTAG]]])
++
+ 
+ AC_ARG_ENABLE([doxygen-html],
+   AS_HELP_STRING([--disable-doxygen-html],
+@@ -333,6 +336,10 @@ AC_ARG_ENABLE([xlnx_pcie_xvc],
+   AS_HELP_STRING([--enable-xlnx-pcie-xvc], [Enable building support for Xilinx XVC/PCIe.]),
+   [build_xlnx_pcie_xvc=$enableval], [build_xlnx_pcie_xvc=no])
+ 
++AC_ARG_ENABLE([rfdev_jtag],
++  AS_HELP_STRING([--enable-rfdev-jtag], [Enable building support for Axiom Beta RFDev JTAG Interface]),
++  [build_rfdev_jtag=$enableval], [build_rfdev_jtag=no])
++
+ AS_CASE([$host_os],
+   [linux*], [],
+   [
+@@ -348,6 +355,10 @@ AS_CASE([$host_os],
+       AC_MSG_ERROR([xlnx_pcie_xvc is only available on linux])
+     ])
+ 
++    AS_IF([test "x$build_rfdev_jtag" = "xyes"], [
++      AC_MSG_ERROR([rfdev_jtag is only available on linux])
++    ])
++
+     AS_CASE([$host_os], [freebsd*], [],
+     [
+       AS_IF([test "x$build_rshim" = "xyes"], [
+@@ -622,6 +633,13 @@ AS_IF([test "x$build_xlnx_pcie_xvc" = "xyes"], [
+   AC_DEFINE([BUILD_XLNX_PCIE_XVC], [0], [0 if you don't want Xilinx XVC/PCIe driver.])
+ ])
+ 
++AS_IF([test "x$build_rfdev_jtag" = "xyes"], [
++  build_rfdev_jtag=yes
++  AC_DEFINE([BUILD_RFDEV_JTAG], [1], [1 if you want the Axiom Beta RFDev JTAG Interface driver.])
++], [
++  AC_DEFINE([BUILD_RFDEV_JTAG], [0], [0 if you don't want Axiom Beta RFDev JTAG Interface driver.])
++])
++
+ PKG_CHECK_MODULES([LIBUSB1], [libusb-1.0], [
+ 	use_libusb1=yes
+ 	AC_DEFINE([HAVE_LIBUSB1], [1], [Define if you have libusb-1.x])
+@@ -745,6 +763,7 @@ AM_CONDITIONAL([REMOTE_BITBANG], [test "x$build_remote_bitbang" = "xyes"])
+ AM_CONDITIONAL([BUSPIRATE], [test "x$build_buspirate" = "xyes"])
+ AM_CONDITIONAL([SYSFSGPIO], [test "x$build_sysfsgpio" = "xyes"])
+ AM_CONDITIONAL([XLNX_PCIE_XVC], [test "x$build_xlnx_pcie_xvc" = "xyes"])
++AM_CONDITIONAL([RFDEV_JTAG], [test "x$build_rfdev_jtag" = "xyes"])
+ AM_CONDITIONAL([USE_LIBUSB0], [test "x$use_libusb0" = "xyes"])
+ AM_CONDITIONAL([USE_LIBUSB1], [test "x$use_libusb1" = "xyes"])
+ AM_CONDITIONAL([IS_CYGWIN], [test "x$is_cygwin" = "xyes"])
+@@ -826,7 +845,7 @@ echo --------------------------------------------------
+ m4_foreach([adapter], [USB1_ADAPTERS, USB0_ADAPTERS,
+ 	HIDAPI_ADAPTERS, HIDAPI_USB1_ADAPTERS, LIBFTDI_ADAPTERS,
+ 	LIBGPIOD_ADAPTERS,
+-	LIBJAYLINK_ADAPTERS, PCIE_ADAPTERS],
++	LIBJAYLINK_ADAPTERS, PCIE_ADAPTERS, JTAGIF_ADAPTERS],
+ 	[s=m4_format(["%-40s"], ADAPTER_DESC([adapter]))
+ 	AS_CASE([$ADAPTER_VAR([adapter])],
+ 		[auto], [
+diff --git a/src/jtag/drivers/Makefile.am b/src/jtag/drivers/Makefile.am
+index c860833b3..64c48bd1e 100644
+--- a/src/jtag/drivers/Makefile.am
++++ b/src/jtag/drivers/Makefile.am
+@@ -179,6 +179,9 @@ endif
+ if XDS110
+ DRIVERFILES += %D%/xds110.c
+ endif
++if RFDEV_JTAG
++DRIVERFILES += %D%/rfdev-jtag.c
++endif
+ 
+ DRIVERHEADERS = \
+ 	%D%/bitbang.h \
+@@ -187,6 +190,7 @@ DRIVERHEADERS = \
+ 	%D%/libusb_helper.h \
+ 	%D%/minidriver_imp.h \
+ 	%D%/mpsse.h \
++	%D%/rfdev-uapi.h \
+ 	%D%/rlink.h \
+ 	%D%/rlink_dtc_cmd.h \
+ 	%D%/rlink_ep1_cmd.h \
+diff --git a/src/jtag/drivers/rfdev-jtag.c b/src/jtag/drivers/rfdev-jtag.c
+new file mode 100644
+index 000000000..77507ceb6
+--- /dev/null
++++ b/src/jtag/drivers/rfdev-jtag.c
+@@ -0,0 +1,335 @@
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include <jtag/interface.h>
++#include <sys/ioctl.h>
++
++#include "rfdev-uapi.h"
++
++#define DEV_NAME_SIZE	256
++#define MAX_TX_SIZE	64
++
++static char rfdev_jtag_device[DEV_NAME_SIZE];
++static int device_handle;
++
++static uint8_t rf_state(tap_state_t state)
++{
++	/* map tap_state_t to driver specific enum jtag_endstate */
++	switch (state) {
++		case TAP_DREXIT2:
++			return JTAG_STATE_EXIT2DR;
++		case TAP_DREXIT1:
++			return JTAG_STATE_EXIT1DR;
++		case TAP_DRSHIFT:
++			return JTAG_STATE_SHIFTDR;
++		case TAP_DRPAUSE:
++			return JTAG_STATE_PAUSEDR;
++		case TAP_IRSELECT:
++			return JTAG_STATE_SELECTIR;
++		case TAP_DRUPDATE:
++			return JTAG_STATE_UPDATEDR;
++		case TAP_DRCAPTURE:
++			return JTAG_STATE_CAPTUREDR;
++		case TAP_DRSELECT:
++			return JTAG_STATE_SELECTDR;
++		case TAP_IREXIT2:
++			return JTAG_STATE_EXIT2IR;
++		case TAP_IREXIT1:
++			return JTAG_STATE_EXIT1IR;
++		case TAP_IRSHIFT:
++			return JTAG_STATE_SHIFTIR;
++		case TAP_IRPAUSE:
++			return JTAG_STATE_PAUSEIR;
++		case TAP_IDLE:
++			return JTAG_STATE_IDLE;
++		case TAP_IRUPDATE:
++			return JTAG_STATE_UPDATEIR;
++		case TAP_IRCAPTURE:
++			return JTAG_STATE_CAPTUREDR;
++		case TAP_RESET:
++			return JTAG_STATE_TLRESET;
++		case TAP_INVALID:
++			return 0xff;
++	}
++
++	return state;
++}
++
++static void rfdev_jtag_ioctl_setstate(uint8_t state, uint8_t tck,
++				      uint8_t reset)
++{
++	struct jtag_end_tap_state endstate = {
++		.reset = reset,
++		.endstate = state,
++		.tck = tck,
++	};
++	int ret = ioctl(device_handle, JTAG_SIOCSTATE, &endstate);
++
++	assert(ret >= 0);
++}
++
++static void rfdev_jtag_ioctl_xfer(uint8_t type, uint8_t direction,
++				  uint8_t endstate, uint32_t length,
++				  uint8_t *tdio)
++{
++	struct jtag_xfer xfer = {
++		.type = type,
++		.direction = direction,
++		.endstate = endstate,
++		.length = length,
++		.tdio = (uintptr_t) tdio,
++	};
++	int ret = ioctl(device_handle, JTAG_IOCXFER, &xfer);
++
++	assert(ret >= 0);
++}
++
++static void rfdev_jtag_state_move(void)
++{
++	tap_state_t end_state = tap_get_end_state();
++
++	rfdev_jtag_ioctl_setstate(rf_state(end_state), 0, 0);
++	tap_set_state(end_state);
++}
++
++static void rfdev_jtag_end_state(tap_state_t state)
++{
++	if (tap_is_state_stable(state))
++		tap_set_end_state(state);
++	else {
++		LOG_ERROR("BUG: %i is not a valid end state", state);
++		exit(-1);
++	}
++}
++
++static void rfdev_jtag_runtest(int num_cycles)
++{
++	tap_state_t saved_end_state = tap_get_end_state();
++
++	/* only do a state_move when we're not already in IDLE */
++	if (tap_get_state() != TAP_IDLE) {
++		rfdev_jtag_end_state(TAP_IDLE);
++		rfdev_jtag_state_move();
++	}
++
++	rfdev_jtag_ioctl_setstate(rf_state(TAP_IDLE), num_cycles, 0);
++
++	rfdev_jtag_end_state(saved_end_state);
++	if (tap_get_state() != tap_get_end_state())
++		rfdev_jtag_state_move();
++}
++
++static void rfdev_jtag_stableclocks(int num_cycles)
++{
++	rfdev_jtag_ioctl_setstate(rf_state(tap_get_state()), num_cycles, 0);
++}
++
++static void rfdev_jtag_scan(bool ir_scan, enum scan_type type,
++			    uint8_t *buf, int scan_len)
++{
++	uint8_t tx_type, tx_dir, tx_endstate;
++	int bytes, bits, i = 0;
++
++	tx_type = ir_scan ? JTAG_SIR_XFER : JTAG_SDR_XFER;
++
++	if (type == SCAN_IN)
++		tx_dir = JTAG_READ_XFER;
++	else if (type == SCAN_OUT)
++		tx_dir = JTAG_WRITE_XFER;
++	else
++		tx_dir = JTAG_READ_WRITE_XFER;
++
++	/* stay in shift state while not last transfer */
++	tx_endstate = ir_scan ? rf_state(TAP_IRSHIFT) : rf_state(TAP_DRSHIFT);
++
++	bits  = scan_len;
++	bytes = DIV_ROUND_UP(scan_len, 8);
++
++	while (bytes > 0) {
++		int c = bytes < MAX_TX_SIZE ? bytes : MAX_TX_SIZE;
++
++		if (bytes <= MAX_TX_SIZE) {
++			/* handle last transfer */
++			tx_endstate = rf_state(tap_get_end_state());
++			rfdev_jtag_ioctl_xfer(tx_type, tx_dir, tx_endstate,
++					bits, &buf[i]);
++			tap_set_state(tap_get_end_state());
++			break;
++		}
++
++		rfdev_jtag_ioctl_xfer(tx_type, tx_dir, tx_endstate,
++				c * 8, &buf[i]);
++
++		bits  -= c * 8;
++		bytes -= c;
++		i += c;
++	}
++}
++
++static void rfdev_jtag_path_move(int num_states, tap_state_t *path)
++{
++	int i;
++
++	for(i = 0; i < num_states; i++) {
++		if (path[i] != tap_state_transition(tap_get_state(), false) &&
++		    path[i] != tap_state_transition(tap_get_state(), true)) {
++			LOG_ERROR("BUG: %s -> %s isn't a valid TAP transition",
++				tap_state_name(tap_get_state()),
++				tap_state_name(path[i]));
++			exit(-1);
++		}
++		rfdev_jtag_ioctl_setstate(rf_state(path[i]), 0, 0);
++		tap_set_state(path[i]);
++	}
++	rfdev_jtag_end_state(tap_get_state());
++}
++
++static int rfdev_jtag_execute_command(struct jtag_command *cmd)
++{
++	enum scan_type type;
++	uint8_t *buf;
++	int len, tmp, retval;
++
++	retval = ERROR_OK;
++
++	switch (cmd->type) {
++		case JTAG_STABLECLOCKS:
++			LOG_DEBUG_IO("stableclocks %i cycles in %s",
++					cmd->cmd.runtest->num_cycles,
++					tap_state_name(tap_get_state()));
++			rfdev_jtag_stableclocks(cmd->cmd.stableclocks->num_cycles);
++			break;
++		case JTAG_RESET:
++			LOG_DEBUG_IO("reset");
++			rfdev_jtag_end_state(TAP_RESET);
++			rfdev_jtag_state_move();
++			break;
++		case JTAG_RUNTEST:
++			LOG_DEBUG_IO("runtest %i cycles, end in %s",
++				cmd->cmd.runtest->num_cycles,
++				tap_state_name(cmd->cmd.runtest->end_state));
++			rfdev_jtag_end_state(cmd->cmd.runtest->end_state);
++			rfdev_jtag_runtest(cmd->cmd.runtest->num_cycles);
++			break;
++		case JTAG_TLR_RESET:
++			LOG_DEBUG_IO("statemove end in %s",
++				tap_state_name(cmd->cmd.statemove->end_state));
++			rfdev_jtag_end_state(cmd->cmd.statemove->end_state);
++			rfdev_jtag_state_move();
++			break;
++		case JTAG_SCAN:
++			rfdev_jtag_end_state(cmd->cmd.scan->end_state);
++			len  = jtag_build_buffer(cmd->cmd.scan, &buf);
++			type = jtag_scan_type(cmd->cmd.scan);
++			LOG_DEBUG_IO("%s scan, %i bits, end in %s",
++				(cmd->cmd.scan->ir_scan) ? "IR" : "DR", len,
++				tap_state_name(tap_get_end_state()));
++
++			rfdev_jtag_scan(cmd->cmd.scan->ir_scan, type, buf, len);
++			if (jtag_read_buffer(buf, cmd->cmd.scan) != ERROR_OK)
++				retval = ERROR_JTAG_QUEUE_FAILED;
++			if (buf)
++				free(buf);
++			break;
++		case JTAG_PATHMOVE:
++			tmp = cmd->cmd.pathmove->num_states;
++			LOG_DEBUG_IO("pathmove %i states, end in %s", tmp,
++				tap_state_name(cmd->cmd.pathmove->path[tmp - 1]));
++			rfdev_jtag_path_move(tmp, cmd->cmd.pathmove->path);
++			break;
++		case JTAG_SLEEP:
++			LOG_DEBUG_IO("sleep %" PRIi32, cmd->cmd.sleep->us);
++			jtag_sleep(cmd->cmd.sleep->us);
++			break;
++		default:
++			LOG_ERROR("BUG: Unknown JTAG command type encountered: %d", cmd->type);
++			return ERROR_JTAG_QUEUE_FAILED;
++	}
++
++	return retval;
++}
++
++static int rfdev_jtag_execute_queue(void)
++{
++	int ret;
++	struct jtag_command *cmd = jtag_command_queue;
++
++	while (cmd != NULL) {
++		ret = rfdev_jtag_execute_command(cmd);
++
++		if (ret != ERROR_OK)
++			return ret;
++
++		cmd = cmd->next;
++	}
++
++	return ERROR_OK;
++}
++
++static int rfdev_jtag_speed(int speed)
++{
++	return ERROR_OK;
++}
++
++static int rfdev_jtag_init(void)
++{
++	if (!rfdev_jtag_device[0]) {
++		LOG_ERROR("specify the device using rfdev_set_device command");
++		return ERROR_JTAG_INIT_FAILED;
++	}
++
++	if (device_handle > 0)
++		close(device_handle);
++
++	device_handle = open(rfdev_jtag_device, O_NONBLOCK);
++
++	if (device_handle < 0) {
++		LOG_ERROR("cannot open device: %s", rfdev_jtag_device);
++		return ERROR_JTAG_INIT_FAILED;
++	}
++
++	return ERROR_OK;
++}
++
++static int rfdev_jtag_quit(void)
++{
++	return ERROR_OK;
++}
++
++COMMAND_HANDLER(rfdev_jtag_handle_rfdev_set_device_command)
++{
++	if (CMD_ARGC != 1)
++		return ERROR_COMMAND_SYNTAX_ERROR;
++
++	strncpy(rfdev_jtag_device, CMD_ARGV[0], DEV_NAME_SIZE - 1);
++
++	return ERROR_OK;
++}
++
++static const struct command_registration rfdevjtag_command_handlers[] = {
++	{
++		.name = "rfdev_set_device",
++		.handler = &rfdev_jtag_handle_rfdev_set_device_command,
++		.mode = COMMAND_ANY,
++		.help = "set the routing fabric device to use",
++		.usage = "<path to device file>",
++	},
++	COMMAND_REGISTRATION_DONE
++};
++
++static struct jtag_interface rfdev_jtag_interface = {
++	.execute_queue = rfdev_jtag_execute_queue,
++};
++
++struct adapter_driver rfdev_jtag_adapter_driver = {
++	.name = "rfdev_jtag",
++	.transports = jtag_only,
++	.commands = rfdevjtag_command_handlers,
++
++	.init = rfdev_jtag_init,
++	.quit = rfdev_jtag_quit,
++	.speed = rfdev_jtag_speed,
++
++	.jtag_ops = &rfdev_jtag_interface,
++};
+diff --git a/src/jtag/drivers/rfdev-uapi.h b/src/jtag/drivers/rfdev-uapi.h
+new file mode 100644
+index 000000000..23fbef438
+--- /dev/null
++++ b/src/jtag/drivers/rfdev-uapi.h
+@@ -0,0 +1,72 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * User API Header File for Routing Fabrics in AXIOM Beta Main Board
++ * Defines JTAG interface for Lattice MachXO2 FPGA
++ *
++ * Copyright (C) 2020 Swaraj Hota <swarajhota353@gmail.com>
++ */
++
++#ifndef RFDEV_UAPI_H
++#define RFDEV_UAPI_H
++
++#include <linux/types.h>
++
++#define JTAG_MAX_XFER_DATA_LEN 65535
++
++enum jtag_endstate {
++	JTAG_STATE_TLRESET = 0,
++	JTAG_STATE_IDLE,
++	JTAG_STATE_SELECTDR,
++	JTAG_STATE_CAPTUREDR,
++	JTAG_STATE_SHIFTDR,
++	JTAG_STATE_EXIT1DR,
++	JTAG_STATE_PAUSEDR,
++	JTAG_STATE_EXIT2DR,
++	JTAG_STATE_UPDATEDR,
++	JTAG_STATE_SELECTIR,
++	JTAG_STATE_CAPTUREIR,
++	JTAG_STATE_SHIFTIR,
++	JTAG_STATE_EXIT1IR,
++	JTAG_STATE_PAUSEIR,
++	JTAG_STATE_EXIT2IR,
++	JTAG_STATE_UPDATEIR,
++};
++
++enum jtag_reset {
++	JTAG_NO_RESET = 0,
++	JTAG_FORCE_RESET = 1,
++};
++
++enum jtag_xfer_type {
++	JTAG_SIR_XFER = 0,
++	JTAG_SDR_XFER = 1,
++};
++
++enum jtag_xfer_direction {
++	JTAG_READ_XFER = 1,
++	JTAG_WRITE_XFER = 2,
++	JTAG_READ_WRITE_XFER = 3,
++};
++
++struct jtag_end_tap_state {
++	__u8	reset;
++	__u8	endstate;
++	__u8	tck;
++};
++
++struct jtag_xfer {
++	__u8	type;
++	__u8	direction;
++	__u8	endstate;
++	__u8	padding;
++	__u32	length;
++	__u64	tdio;
++};
++
++/* ioctl interface */
++#define RFDEV_IOC_MAGIC '['
++#define JTAG_SIOCSTATE	_IOW(RFDEV_IOC_MAGIC, 0, struct jtag_end_tap_state)
++#define JTAG_GIOCENDSTATE _IOR(RFDEV_IOC_MAGIC, 1, enum jtag_endstate)
++#define JTAG_IOCXFER	_IOWR(RFDEV_IOC_MAGIC, 2, struct jtag_xfer)
++
++#endif
+diff --git a/src/jtag/interfaces.c b/src/jtag/interfaces.c
+index 45e30c9b0..f4ec61fb5 100644
+--- a/src/jtag/interfaces.c
++++ b/src/jtag/interfaces.c
+@@ -147,6 +147,9 @@ extern struct adapter_driver stlink_dap_adapter_driver;
+ #if BUILD_RSHIM == 1
+ extern struct adapter_driver rshim_dap_adapter_driver;
+ #endif
++#if BUILD_RFDEV_JTAG == 1
++extern struct adapter_driver rfdev_jtag_adapter_driver;
++#endif
+ #endif /* standard drivers */
+ 
+ /**
+@@ -264,6 +267,9 @@ struct adapter_driver *adapter_drivers[] = {
+ #if BUILD_RSHIM == 1
+ 		&rshim_dap_adapter_driver,
+ #endif
++#if BUILD_RFDEV_JTAG == 1
++		&rfdev_jtag_adapter_driver,
++#endif
+ #endif /* standard drivers */
+ 		NULL,
+ 	};
+-- 
+2.28.0
+

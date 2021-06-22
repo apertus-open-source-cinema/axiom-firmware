@@ -60,16 +60,19 @@ build/nctrl/target/release/nctrl: build/nctrl/.copy_stamp
 	FUSE_CROSS_STATIC_LIB=fuse \
 	cargo build --release --target=armv7-unknown-linux-musleabihf
 
-$(OPENOCD_SOURCE): build/root.fs/.base_install
+OPENOCD_PATCHES = $(wildcard patches/openocd/*.patch)
+$(OPENOCD_SOURCE)/.source: build/root.fs/.base_install $(OPENOCD_PATCHES)
 	@mkdir -p $(@D)
-	rm -rf $@
-	git clone https://repo.or.cz/openocd.git $@
-	(cd $@ && git reset --hard $(OPENOCD_VERSION))
-	touch $@/.scmversion
+	rm -rf $(@D)
+	git clone https://repo.or.cz/openocd.git $(@D)
+	(cd $(@D) && git reset --hard $(OPENOCD_VERSION))
+	./makefiles/host/patch_wrapper.sh $(@D) $(OPENOCD_PATCHES)
+	touch $(@D)/.scmversion
+	touch $@
 
-$(OPENOCD_SOURCE)/.build_stamp: $(OPENOCD_SOURCE) build/root.fs/.base_install
+$(OPENOCD_SOURCE)/.build_stamp: $(OPENOCD_SOURCE)/.source build/root.fs/.base_install
 	(cd $(@D) && ./bootstrap)
-	(cd $(@D) && PKG_CONFIG=/root/armv7-eabihf--musl--bleeding-edge-2020.02-2/bin/pkg-config ./configure --host=arm-buildroot-linux-musleabihf --enable-static --enable-sysfsgpio --prefix=$${PWD}/../root.fs/usr/ CFLAGS="--static")
+	(cd $(@D) && PKG_CONFIG=/root/armv7-eabihf--musl--bleeding-edge-2020.02-2/bin/pkg-config ./configure --host=arm-buildroot-linux-musleabihf --enable-static --enable-rfdev-jtag --enable-sysfsgpio --prefix=$${PWD}/../root.fs/usr/ CFLAGS="--static")
 	+(cd $(@D) &&  $(MAKE))
 	+(cd $(@D) &&  $(MAKE) install)
 	touch $@
