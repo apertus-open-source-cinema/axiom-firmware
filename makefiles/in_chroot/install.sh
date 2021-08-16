@@ -178,6 +178,10 @@ echo "" >> /etc/motd
 echo "PARTUUID=f37043ff-02 /     ext4 defaults,rw 0 0"  > /etc/fstab
 echo "PARTUUID=f37043ff-01 /boot vfat defaults,rw 0 0" >> /etc/fstab
 
+# cleanup
+## remove yarn cache
+yarn cache clean --all
+
 # Generate file list for integrity check
 VERIFY_DIRECTORIES="/etc /usr /opt"
 HASH_LOCATION="/opt/integrity_check"
