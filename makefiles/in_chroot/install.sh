@@ -28,7 +28,8 @@ fi
 PASS=axiom
 USERNAME=operator
 if ! [ -d /home/$USERNAME ]; then
-    useradd -p $(openssl passwd -1 $PASS) -d /home/"$USERNAME" -m -g users -s /bin/bash "$USERNAME"
+    useradd -e "" -p $(openssl passwd -1 $PASS) -d /home/"$USERNAME" -m -g users -s /bin/bash "$USERNAME"
+    chage -d -1 -M -1 -E -1 $USERNAME
     echo "$USERNAME      ALL=(ALL) PASSWD: ALL" >> /etc/sudoers
     rm -f /home/$USERNAME/.bashrc
 fi
