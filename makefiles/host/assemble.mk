@@ -5,7 +5,7 @@ include rootfs.mk
 SHELL := /bin/bash
 
 # define the layout of the image
-IMGSIZE = 3800MiB
+IMGSIZE = 4096MiB
 BOOTSIZE = 50MiB
 ROOTSIZE = 3700MiB
 LABEL_ID = f37043ff
