@@ -27,7 +27,7 @@ expect {
 }
 send "axiom\n"
 expect {
-    "Power-Off" { }
+    "reboot: System halted" { }
     timeout { puts "\ntimed out while waiting for power off\n"; exit 1 }
 }
 
