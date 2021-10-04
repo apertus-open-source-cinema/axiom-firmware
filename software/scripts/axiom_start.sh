@@ -13,6 +13,7 @@ axiom_mem_reg -4 0xF8006214 0x00001
 axiom_mem_reg -4 0xF8000600 0x84
 
 axiom_power_init.sh
+axiom_gpio.py init
 axiom_power_on.sh
 axiom_pac1720_info.sh
 
