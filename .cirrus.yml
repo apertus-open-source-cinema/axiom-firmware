@@ -38,7 +38,7 @@ docker_builder:
   test_script: |
     ./makefiles/docker-make.sh DEVICE=$DEVICE -o build/axiom-$DEVICE.img -o build/boot.fs/.install_stamp test
   github_release_script: |
-    if [ $CIRRUS_BRANCH = 'master' ]; then
+    if [ $CIRRUS_BRANCH = 'main' ]; then
       FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
       # get the github-release tool
       wget --no-verbose https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
@@ -55,5 +55,5 @@ docker_builder:
       " || true
       ./bin/linux/amd64/github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "$FILE" -f build/$FILE
     else
-      echo "not creating a github release, because this is not a build for the master branch"
+      echo "not creating a github release, because this is not a build for the main branch"
     fi
