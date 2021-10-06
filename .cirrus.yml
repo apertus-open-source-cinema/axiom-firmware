@@ -41,10 +41,11 @@ docker_builder:
     if [ $CIRRUS_BRANCH = 'main' ]; then
       FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
       # get the github-release tool
-      wget --no-verbose https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2
-      tar -xf linux-amd64-github-release.tar.bz2
+      wget --no-verbose https://github.com/github-release/github-release/releases/download/v0.10.0/linux-amd64-github-release.bz2
+      bzip2 -d linux-amd64-github-release.bz2
+      chmod a+x linux-amd64-github-release
       # create the release and upload the compressed image
-      ./bin/linux/amd64/github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Unstable Development Snapshot $(./bin/linux/amd64/github-release info -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME | grep "Build on" | wc -l)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \
+      ./linux-amd64-github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Unstable Development Snapshot $(./bin/linux/amd64/github-release info -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME | grep "Build on" | wc -l)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \
       A development snapshot of the axiom firmware.
       Build on $(date) for commit $(git describe --always --abbrev=8).
 
@@ -53,7 +54,7 @@ docker_builder:
       - Only continue, if you know, what you are doing!
       \`\`\`
       " || true
-      ./bin/linux/amd64/github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "$FILE" -f build/$FILE
+      ./linux-amd64-github-release upload -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "$FILE" -f build/$FILE
     else
       echo "not creating a github release, because this is not a build for the main branch"
     fi
