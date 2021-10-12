@@ -14,7 +14,7 @@ def crev(bits, cond):
     return bits[::-1] if cond else bits
 
 def bit_split(bits):
-    total = bits.length()
+    total = len(bits)
     data, mod, val = [], total % 8, 0
     for p in range(0, total, 8):
         seq = bits[p:min(p+8, total)]
