@@ -45,7 +45,7 @@ docker_builder:
       bzip2 -d linux-amd64-github-release.bz2
       chmod a+x linux-amd64-github-release
       # create the release and upload the compressed image
-      ./linux-amd64-github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Unstable Development Snapshot $(./bin/linux/amd64/github-release info -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME | grep "Build on" | wc -l)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \
+      ./linux-amd64-github-release release -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME -t "nightly/$(git describe --always --abbrev=8)" -s $TOKEN -n "Unstable Development Snapshot $(./linux-amd64-github-release info -u $CIRRUS_REPO_OWNER -r $CIRRUS_REPO_NAME | grep "Build on" | wc -l)" -c $CIRRUS_CHANGE_IN_REPO --pre-release -d " \
       A development snapshot of the axiom firmware.
       Build on $(date) for commit $(git describe --always --abbrev=8).
 
