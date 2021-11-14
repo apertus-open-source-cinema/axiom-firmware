@@ -3,7 +3,7 @@
 **
 **  memtool.c
 **
-**  Copyright (C) 2020 Herbert Poetzl
+**  Copyright (C) 2020-2021 Herbert Poetzl
 **
 **  Memory Tool
 **
@@ -332,7 +332,7 @@ static void action(const char *name)
 }
 
 
-#define VERSION "V0.3"
+#define VERSION "V0.4"
 #define	OPTIONS "h1248dlnqrvwC:F:N:RW:"
 
 int main(int argc, char *argv[])
@@ -565,6 +565,7 @@ rskip:
 		    exit(4);
 		}
 		cnt -= len;
+		ptr += len;
 	    }
 	}
 
