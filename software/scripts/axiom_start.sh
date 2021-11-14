@@ -8,11 +8,13 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+MODE=${1:-normal}
 
 axiom_fclk_init.sh
 axiom_zynq_info.sh
 
-echo axiom_fpga_main.bin > /sys/class/fpga_manager/fpga0/firmware
+[ "$MODE" == "raw" ] && echo cmv_hdmi3_raw.bin > /sys/class/fpga_manager/fpga0/firmware
+[ "$MODE" == "normal" ] && echo axiom_fpga_main.bin > /sys/class/fpga_manager/fpga0/firmware
 
 axiom_mem_reg -4 0xF8006210 0x00001
 axiom_mem_reg -4 0xF8006214 0x00001
@@ -29,20 +31,26 @@ while sleep 1; do
     axiom_fil_reg 15 0x08000800
     axiom_fil_reg 15 0x0
 
+    [ "$MODE" == "raw" ] && axiom_fil_reg 11 0x00000031
+
     axiom_cmv_init.sh
     axiom_train && break
 
     axiom_power_init.sh
+    axiom_gpio.py init
 done
 
-axiom_setup.sh
+[ "$MODE" == "raw" ] && i2c0_bit_set 0x22 0x15 7
+
+axiom_setup.sh $MODE
 # ./ingmar.sh # obsolete
 # ./hdmi_init.sh
 # ./pic_jtag_pcie.py 0x00 0x12
 
 axiom_fil_reg 15 0x01000100
 
-axiom_mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
+[ "$MODE" == "normal" ] && axiom_mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
+[ "$MODE" == "raw" ] && axiom_mimg -O -P0
 
 # axiom_scn_reg 32  264		# pream_s
 # axiom_scn_reg 33  264		# guard_s
@@ -50,12 +58,17 @@ axiom_mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
 # axiom_scn_reg  9  2100
 # axiom_scn_reg  8  0
 
-#./hdmi_init2.sh
+axiom_hdmi_init3.sh
 axiom_rf_sel.py A
 axiom_pic_jtag_pcie.py 0x92 0x92
 
 # ./rest_pll.sh <PLL/5000kHz.pll
 
 axiom_set_gain.sh 1
+
+[ "$MODE" == "raw" ] && axiom_scn_reg 28 0x7700
+[ "$MODE" == "raw" ] && axiom_scn_reg 28 0x7000
+
+
 #./rcn_darkframe.py darkframe-x1.pgm
 
