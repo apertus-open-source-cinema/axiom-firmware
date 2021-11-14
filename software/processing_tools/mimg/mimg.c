@@ -279,8 +279,8 @@ void	write_line(uint8_t *bp, uint64_t *dp, unsigned row)
 	uint64_t mask = 0;
 	unsigned inc;
 
-	if (opt_colover)
-	    inc = 4;
+	if (opt_overlay)
+	    inc = 1;
 	else if (opt_word)
 	    inc = 6;
 	else
@@ -310,7 +310,7 @@ void	write_line(uint8_t *bp, uint64_t *dp, unsigned row)
 		    val = (val << 4) | (bp[1] >> 4);
 		    val = (val << 4) | (bp[2] >> 4);
 		    // val |= (bp[3] > 0x80) ? 0x1000 : 0x0000;
-		} else if (opt_raw) {
+		} else if (opt_raw && opt_word) {
 		    val = bp[0];
 		    val = (val << 8) | bp[1];
 		    val = (val << 8) | bp[2];
@@ -318,6 +318,12 @@ void	write_line(uint8_t *bp, uint64_t *dp, unsigned row)
 		    val = (val << 8) | bp[4];
 		    val = (val << 8) | bp[5];
 		    val = (val << 16);
+		} else if (opt_raw) {
+		    val = bp[0];
+		    val = (val << 12) | bp[1];
+		    val = (val << 12) | bp[2];
+		    val = (val << 12) | bp[3];
+		    val = (val << 20);
 		} else if (opt_word) {
 		    val = (bp[1] << 4LL) | bp[0] >> 4LL;
 		    val = (val << 12) | (bp[3] << 4LL) | (bp[2] >> 4LL);
@@ -375,9 +381,11 @@ int	main(int argc, char *argv[])
 		break;
 	    case 'o':
 		opt_overlay = true;
+		opt_colover = false;
 		break;
 	    case 'O':
 		opt_colover = true;
+		opt_overlay = false;
 		break;
 	    case 'r':
 		opt_raw = true;
@@ -484,9 +492,7 @@ int	main(int argc, char *argv[])
 	    uint8_t *bp = buf;
 	    size_t buf_size;
 
-	    if (opt_colover)
-		buf_size = 1920*4;
-	    else if (opt_overlay)
+	    if (opt_overlay)
 		buf_size = 1920*1;
 	    else
 		buf_size = 1920*3;
