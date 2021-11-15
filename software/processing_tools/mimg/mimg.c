@@ -1,9 +1,9 @@
 /**********************************************************************
 **  mimg.c
 **	Upload RGB or RAW Image to HDMI Memory
-**	Version 1.8
+**	Version 2.0
 **
-**  Copyright (C) 2013-2016 H.Poetzl
+**  Copyright (C) 2013-2021 H.Poetzl
 **
 **	This program is free software: you can redistribute it and/or
 **	modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@
 
 #include "scn_reg.h"
 
-#define	VERSION	"V1.8"
+#define	VERSION	"V2.0"
 
 static char *cmd_name = NULL;
 
@@ -45,6 +45,8 @@ static char *dev_mem = "/dev/mem";
 
 static uint32_t num_tpat = 0;
 static uint64_t num_pixel = 0;
+static uint32_t num_width = 1920;
+static uint32_t num_height = 1080;
 
 static bool opt_word = false;
 static bool opt_raw = false;
@@ -57,10 +59,10 @@ static uint32_t buf_base[4] = { -1, -1, -1, -1 };
 static uint32_t buf_epat[4] = { -1, -1, -1, -1 };
 
 
-typedef long long int (stoll_t)(const char *, char **, int);
+typedef long long unsigned int (stoull_t)(const char *, char **, int);
 
-long long int argtoll(
-	const char *str, const char **end, stoll_t stoll)
+long long int argtoull(
+	const char *str, const char **end, stoull_t stoull)
 {
 	int bit, inv = 0;
 	long long int val = 0;
@@ -68,8 +70,8 @@ long long int argtoll(
 
 	if (!str)
 	    return -1;
-	if (!stoll)
-	    stoll = strtoll;
+	if (!stoull)
+	    stoull = strtoull;
 	
 	switch (*str) {
 	case '~':
@@ -87,10 +89,10 @@ long long int argtoll(
 		val ^= (1LL << bit);
 		break;
 	    case '&':
-		val &= stoll(str+1, &eptr, 0);
+		val &= stoull(str+1, &eptr, 0);
 		break;
 	    case '|':
-		val |= stoll(str+1, &eptr, 0);
+		val |= stoull(str+1, &eptr, 0);
 		break;
 	    case '-':
 	    case '+':
@@ -99,7 +101,7 @@ long long int argtoll(
 	    case '/':
 		break;
 	    default:
-		val = stoll(str, &eptr, 0);
+		val = stoull(str, &eptr, 0);
 		break;
 	    }
 	    if (eptr == str)
@@ -153,8 +155,8 @@ uint64_t calc_tpat(unsigned num, unsigned col, unsigned row)
 		       ((rc & 2) ? (rv << CH3) : 0);
 	    };
 	    case 4: {
-		float cf = col / (1920.0 - 1);
-		float rf = row / (1080.0 - 1);
+		float cf = col / (num_width - 1.0);
+		float rf = row / (num_height - 1.0);
 		float mf = (1<<12) - 1;
 		uint64_t cr = (1-rf)*mf;
 		uint64_t cg = cf*mf;
@@ -172,8 +174,8 @@ uint64_t calc_tpat(unsigned num, unsigned col, unsigned row)
 		return (cc << 12) | (cr << 8) | (cg << 4) | cb;
 	    };
 	    case 6: {
-		float cf = col / (1920.0 - 1);
-		float rf = row / (1080.0 - 1);
+		float cf = col / (num_width - 1.0);
+		float rf = row / (num_height - 1.0);
 		float mf = (1<<12) - 1;
 		float h = cf * 6.0;
 		float s = 1.0 - rf;
@@ -198,8 +200,8 @@ uint64_t calc_tpat(unsigned num, unsigned col, unsigned row)
 		       (cg << CH2) | (cb << CH3);
 	    };
 	    case 7: {
-		float cf = col / (1920.0 - 1);
-		float rf = row / (1080.0 - 1);
+		float cf = col / (num_width - 1.0);
+		float rf = row / (num_height - 1.0);
 		float mf = (1<<12) - 1;
 		float h = cf * 6.0;
 		float s = 1.0;
@@ -223,20 +225,6 @@ uint64_t calc_tpat(unsigned num, unsigned col, unsigned row)
 		return (cr << CH0) | (cg << CH1) |
 		       (cg << CH2) | (cb << CH3);
 	    };
-		case 8: {
-		uint64_t cb = (((col >> 8) & 0x7) << 5) | (((row >> 8) & 0x3) << 3);
-		uint64_t cg = (row & 0xFF);
-		uint64_t cr = (col & 0xFF);
-		unsigned cc = (col == 0) || (col == 0x77F) ||
-		              (row == 0) || (row == 0x437) ? 0xFF : 0x00;
-
-		cr = cc ? 0xFFF : (cr << 4) + (cr >> 4);
-		cg = cc ? 0xFFF : (cg << 4) + (cg >> 4);
-		cb = cc ? 0xFFF : (cb << 4) + (cb >> 4);
-
-		return (cr << CH0) | (cg << CH1) |
-		       (cg << CH2) | (cb << CH3);
-		};
 	    default:
 		return 0;
 	}
@@ -247,12 +235,12 @@ const char *parse_addrs(const char *ptr, uint32_t *gr, uint32_t *gb)
 {
 	const char *sep = NULL;
 
-	*gr = argtoll(ptr, &sep, strtoll);
+	*gr = argtoull(ptr, &sep, strtoull);
 	switch (sep[0]) {
 	case ',':
 	case ';':
 	    ptr = sep + 1;
-	    *gb = argtoll(ptr, &sep, strtoll);
+	    *gb = argtoull(ptr, &sep, strtoull);
 	    break;
 	}
 
@@ -280,7 +268,9 @@ void	write_line(uint8_t *bp, uint64_t *dp, unsigned row)
 	unsigned inc;
 
 	if (opt_overlay)
-	    inc = 1;
+	    inc = 2;
+	else if (opt_colover)
+	    inc = 4;
 	else if (opt_word)
 	    inc = 6;
 	else
@@ -291,7 +281,7 @@ void	write_line(uint8_t *bp, uint64_t *dp, unsigned row)
 	else
 	    mask = ~0xFFFF;
 
-	for (unsigned col = 0; col < 1920; col++) {
+	for (unsigned col = 0; col < num_width; col++) {
 	    if (opt_pixel) {
 		val = num_pixel;
 		if (!opt_overlay)
@@ -309,7 +299,6 @@ void	write_line(uint8_t *bp, uint64_t *dp, unsigned row)
 		    val = (val << 4) | (bp[0] >> 4);
 		    val = (val << 4) | (bp[1] >> 4);
 		    val = (val << 4) | (bp[2] >> 4);
-		    // val |= (bp[3] > 0x80) ? 0x1000 : 0x0000;
 		} else if (opt_raw && opt_word) {
 		    val = bp[0];
 		    val = (val << 8) | bp[1];
@@ -394,20 +383,26 @@ int	main(int argc, char *argv[])
 		opt_word = true;
 		break;
 	    case 'P':
-		num_pixel = argtoll(optarg, NULL, NULL);
+		num_pixel = argtoull(optarg, NULL, NULL);
 		opt_pixel = true;
 		break;
 	    case 'T':
-		num_tpat = argtoll(optarg, NULL, NULL);
+		num_tpat = argtoull(optarg, NULL, NULL);
+		break;
+	    case 'W':
+		num_width = argtoull(optarg, NULL, NULL);
+		break;
+	    case 'H':
+		num_height = argtoull(optarg, NULL, NULL);
 		break;
 	    case 'B':
-		map_base = argtoll(optarg, NULL, NULL);
+		map_base = argtoull(optarg, NULL, NULL);
 		break;
 	    case 'S':
-		map_size = argtoll(optarg, NULL, NULL);
+		map_size = argtoull(optarg, NULL, NULL);
 		break;
 	    case 'A':
-		map_addr = argtoll(optarg, NULL, NULL);
+		map_addr = argtoull(optarg, NULL, NULL);
 		break;
 	    case '?':
 	    default:
@@ -487,18 +482,19 @@ int	main(int argc, char *argv[])
 	    "read buffer = 0x%08lX\n",
 	    (unsigned long)buf_base[rsel]);
 	
-	for (unsigned row = 0; row < 1080; row++) {
-	    uint8_t buf[1920*6];
+	for (unsigned row = 0; row < num_height; row++) {
+	    uint8_t buf[num_width*6];
 	    uint8_t *bp = buf;
 	    size_t buf_size;
 
 	    if (opt_overlay)
-		buf_size = 1920*1;
+		buf_size = num_width*2;
+	    else if (opt_colover)
+		buf_size = num_width*4;
+	    else if (opt_word)
+		buf_size = num_width*6;
 	    else
-		buf_size = 1920*3;
-
-	    if (opt_word)
-		buf_size *= 2;
+		buf_size = num_width*3;
 
 	    if ((num_tpat == 0) && !opt_pixel) {
 		size_t total = 0;
