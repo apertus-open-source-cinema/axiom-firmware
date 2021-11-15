@@ -13,6 +13,9 @@ MODE=${1:-normal}
 axiom_fclk_init.sh
 axiom_zynq_info.sh
 
+# clear the in memory framebuffers
+memtool -1 -F 0x0 0x18000000 0x8000000
+
 [ "$MODE" == "raw" ] && echo cmv_hdmi3_raw.bin > /sys/class/fpga_manager/fpga0/firmware
 [ "$MODE" == "normal" ] && echo axiom_fpga_main.bin > /sys/class/fpga_manager/fpga0/firmware
 
