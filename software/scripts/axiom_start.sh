@@ -3,6 +3,12 @@
 # this script initializes and starts the image streaming pipeline
 # it was previously known as kick.sh / kick-manual.sh
 
+if [ "$EUID" -ne 0 ]
+  then echo "please run as root, 'sudo axiom_start.sh'"
+  exit
+fi
+
+
 axiom_fclk_init.sh
 axiom_zynq_info.sh
 
