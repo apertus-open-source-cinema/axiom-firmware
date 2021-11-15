@@ -7,7 +7,7 @@ all : $(TARGETS)
 
 CC = gcc
 STRIP = strip
-CFLAGS += -ggdb -Wall -std=gnu99 -O2
+CFLAGS += -ggdb -Wall -std=gnu99 -O2 -mfpu=neon -flto
 LDFLAGS += -lm -lpthread
 
 install:
