@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if [ "$EUID" -ne 0 ]
+  then echo "please run as root, 'sudo axiom_halt.sh'"
+  exit
+fi
+
 axiom_fil_reg 11 0xFC01F010	# block writer
 
 axiom_mimg -a -P 0
