@@ -11,3 +11,21 @@ build/
 
 # user specific vhdl files
 peripherals/soc_main/vhdl_ls.toml
+
+# object files
+*.o
+
+# BERTLS upstream stuff
+BERTL/
+
+software/memtool/memtool
+software/processing_tools/lut_conf/lut_conf
+software/processing_tools/mimg/mimg
+software/sensor_tools/hist/hist
+software/sensor_tools/perf/perf
+software/sensor_tools/snap/snap
+software/sensor_tools/train/train
+
+
+**/__pycache__
+*~
