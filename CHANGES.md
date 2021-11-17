@@ -1,4 +1,4 @@
-This file lists major or notable changes to the AXIOM Beta Firmware in chronological order. This is not
+This file lists major or notable changes to the AXIOM Beta Firmware in chronological order (YYYY-MM-DD format). This is not
 a complete change list, only those that may directly interest or affect users.
 
 # 2021-11-17
