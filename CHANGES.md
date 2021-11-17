@@ -5,7 +5,7 @@ a complete change list, only those that may directly interest or affect users.
 
 ## CHANGES.md file crated, recent additions are:
 
-* snap_neon added: This tool to capture single images on the AXIOM Beta utilizes the NEON acceleration engine making the process significantly faster.
+* snap_neon added: This tool to capture single images on the AXIOM Beta utilizing the Zynq NEON acceleration engine making the process significantly faster.
 * HDMI raw output mode added for transfering A&B frames over HDMI at double framerate, documentation on wiki will follow soon. (currently in Google Doc for those interested)
 * axiom_start.sh and axiom_halt.sh now warn the user and exit if not executed as root (would before crash the camera)
 * mimg and memtool updated to latest versions
