@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2017 David Kleuker
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 shw_grey () {
     echo $(tput bold)$(tput setaf 0)$@$(tput sgr 0)
 }

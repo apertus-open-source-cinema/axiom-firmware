@@ -1,7 +1,14 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2016 Sebastian Pichelhofer <sp@apertus.org>
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Capture an image with a unique name
 #
+
+
+
+
 
 PARAMS=$1
 IMAGENAME=`date +%Y%m%d_%H%M%S`
