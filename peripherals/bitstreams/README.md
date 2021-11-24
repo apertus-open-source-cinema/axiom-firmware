@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: © 2020 Robin Ole Heinemann <robin.ole.heinemann@gmail.com>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # bitstreams
 Unfortunately building the gateware in a automated fashion is currently quite hard, as it needs vivado.
 Until nextpnr, yosys and ghdl are ready to build this gateware or we have switched to a nmigen based gateware, this folder will hold verious perbuilt bitstreams

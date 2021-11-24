@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2018 Robin Ole Heinemann <robin.ole.heinemann@gmail.com>
+# SPDX-FileCopyrightText: © 2019 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:

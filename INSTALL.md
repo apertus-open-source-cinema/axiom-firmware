@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 ## Download Nightly Firmware
 If you want to experiment with the latest changes and dont mind, when the camera isnt working, you try use the untested nightly firmware images.
 ```diff

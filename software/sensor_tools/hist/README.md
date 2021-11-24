@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: © 2017 Jaro Habiger <jarohabiger@googlemail.com>
+SPDX-FileCopyrightText: © 2019 Sebastian Pichelhofer <sp@apertus.org>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # hist
 
 This is a tool to read and output histogram data from the image sensor inside the AXIOM Beta.

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+SPDX-FileCopyrightText: © 2019 Sebastian Pichelhofer <sp@apertus.org>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # makefiles
 This directory contains tools for building and testing the main firmware image, that gets put on the sdcard.
 

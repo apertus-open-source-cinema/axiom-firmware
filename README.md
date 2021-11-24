@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: © 2017 Jaro Habiger <jarohabiger@googlemail.com>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # AXIOM Beta Software
 [![Build Status](https://api.cirrus-ci.com/github/apertus-open-source-cinema/axiom-beta-firmware.svg?branch=master)](https://cirrus-ci.com/github/apertus-open-source-cinema/axiom-beta-firmware)
 [![download nightly image](https://img.shields.io/badge/download-nightly%20image-blue.svg)](INSTALL.md)
