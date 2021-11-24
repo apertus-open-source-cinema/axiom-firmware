@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2017 David Kleuker <dkl@basecom.de>
+
 shw_grey () {
     echo $(tput bold)$(tput setaf 0)$@$(tput sgr 0)
 }

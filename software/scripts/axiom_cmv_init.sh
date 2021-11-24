@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2015 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 # defaults
 axiom_cmv_reg  0       0
 axiom_cmv_reg  1    3072

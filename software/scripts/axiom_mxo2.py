@@ -1,6 +1,7 @@
 #!/bin/env python3
 
-# Copyright (C) 2016 Herbert Poetzl
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
 
 def rev(s):
     return s[::-1]

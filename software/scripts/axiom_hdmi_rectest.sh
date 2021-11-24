@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 # set gain x1, full 12-bit range
 axiom_set_gain.sh 1
 

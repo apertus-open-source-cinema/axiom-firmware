@@ -1,5 +1,8 @@
 #!/bin/env python3
 
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 from axiom_mat4_conf import *
 import numpy as np
 import numpy.linalg as linalg

@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 # This script is only meant to be executed within the makefiles. it modifies the image to be able to run 
 # a user specified command in a changeroot.
 

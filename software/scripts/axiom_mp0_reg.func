@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2020 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 axiom_cmv_reg() {
     addr=$(( 0x60000000 + ($1 * 4) ))
     axiom_mem_reg -4 $addr $2

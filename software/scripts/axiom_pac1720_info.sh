@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 VM=(20 10 5 2.5 1.25 0.625 0.3125 0.1563 0.0781 0.0390 0.0195)
 
 PACn=(0x28 0x29 0x2a 0x2c 0x2d 0x48 0x49 0x4a 0x4b 0x4c 0x4d)

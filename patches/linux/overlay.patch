@@ -1,3 +1,5 @@
+SPDX-FileCopyrightText: © 2013 Pantelis Antoniou <panto@antoniou-consulting.com>
+SPDX-License-Identifier: GPL-2.0-or-later
 diff --git a/Documentation/devicetree/configfs-overlays.txt b/Documentation/devicetree/configfs-overlays.txt
 new file mode 100644
 index 000000000000..185d85ef52e4

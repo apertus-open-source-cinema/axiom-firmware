@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2015 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 MIN=-131072
 MAX=131071
 FACTOR=`dc -e "5k ${1:-1.0} 0.5 * p"`

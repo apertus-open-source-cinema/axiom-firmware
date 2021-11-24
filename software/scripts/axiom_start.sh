@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2017 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 # this script initializes and starts the image streaming pipeline
 # it was previously known as kick.sh / kick-manual.sh
 

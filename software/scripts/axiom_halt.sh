@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2017 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 if [ "$EUID" -ne 0 ]
   then echo "please run as root, 'sudo axiom_halt.sh'"
   exit

@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2015 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 cadr=$[ 0x60300000 + ${1:-0}*4 ]
 radr=$[ 0x60304000 + ${2:-0}*4 ]
 

@@ -1,2 +1,5 @@
+" SPDX-FileCopyrightText: © 2020 Jaro Habiger <jarohabiger@googlemail.com>
+" SPDX-License-Identifier: CC-BY-SA-4.0
+
 set mouse=r
 syntax on

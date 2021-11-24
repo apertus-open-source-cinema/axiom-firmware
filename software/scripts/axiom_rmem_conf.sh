@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 xo=${1:-64}
 yo=${2:-228}
 off=$[ ((xo & ~1) + yo*2048)*8 ]

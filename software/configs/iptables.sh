@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# SPDX-FileCopyrightText: © 2019 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 # inserts iptables rules that redirect all http traffic to the camera
 # if the ip address is 10.42.0.1 (NetworkManager "shared")
 # this is nescessary for the captive portal functionality

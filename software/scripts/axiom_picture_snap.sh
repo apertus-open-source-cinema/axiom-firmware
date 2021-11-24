@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2017 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Capture an image with a unique name
 #

@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 # this script is called from the docker-make.sh script and sets up everything in the 
 # docker container & executes make
 

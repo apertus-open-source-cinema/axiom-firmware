@@ -1,4 +1,8 @@
 #!/usr/bin/python
+
+# SPDX-FileCopyrightText: © 2012 Mike Looijmans <mike.looijmans@topic.nl>
+# SPDX-License-Identifier: GPL-2.0-only
+
 import sys
 import os
 import struct

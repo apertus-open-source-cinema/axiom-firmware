@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 # build the whole image inside a docker image, but with mounted files
 cd $(dirname $(realpath $0))/../
 set -eo pipefail

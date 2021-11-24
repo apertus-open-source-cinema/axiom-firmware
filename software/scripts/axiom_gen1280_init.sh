@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2014 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 axiom_scn_reg  0 1664
 axiom_scn_reg  1  798
 axiom_scn_reg  2   60

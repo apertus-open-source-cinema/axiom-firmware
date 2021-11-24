@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2018 Robin Ole Heinemann <robin.ole.heinemann@gmail.com>
+# SPDX-License-Identifier: CC-BY-SA-4.0
+
 [Unit]
 Description=generate the /etc/issue file used by getty
 Before=systemd-user-sessions.service

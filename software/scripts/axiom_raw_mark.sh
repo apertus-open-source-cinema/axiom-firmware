@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2021 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 buf=(`axiom_gen_reg 0` `axiom_gen_reg 2` `axiom_gen_reg 4` `axiom_gen_reg 6`)
 act=(`axiom_scn_reg 4` `axiom_scn_reg 5` `axiom_scn_reg 6` `axiom_scn_reg 7`)
 AW=$[ ${act[1]} - ${act[0]} ]

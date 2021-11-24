@@ -1,4 +1,8 @@
 #!/usr/bin/expect -f
+
+# SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 puts stdout "starting qemu!\n\n"
 set timeout 300
 

@@ -1,5 +1,8 @@
 #!/bin/env python3
 
+# SPDX-FileCopyrightText: © 2015 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 import os
 import sys
 import mmap

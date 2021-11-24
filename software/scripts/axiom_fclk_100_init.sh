@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 [ -e /sys/class/fclk/fclk0 ] || \
     echo fclk0 >/sys/devices/soc0/amba/f8007000.devcfg/fclk_export
 [ -e /sys/class/fclk/fclk1 ] || \

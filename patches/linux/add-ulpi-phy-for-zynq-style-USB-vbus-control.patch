@@ -1,3 +1,5 @@
+SPDX-FileCopyrightText: © 2015 Xilinx
+SPDX-License-Identifier: GPL-2.0-only
 diff --git a/drivers/usb/chipidea/ci_hdrc_usb2.c b/drivers/usb/chipidea/ci_hdrc_usb2.c
 index c044fba46..83238293e 100644
 --- a/drivers/usb/chipidea/ci_hdrc_usb2.c

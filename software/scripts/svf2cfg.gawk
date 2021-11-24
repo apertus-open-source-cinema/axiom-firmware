@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
 
 BEGIN			{ FS="[ \t()]+"; }
 

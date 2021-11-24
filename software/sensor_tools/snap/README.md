@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: © 2017 Jaro Habiger <jarohabiger@googlemail.com>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # snap
 
 This is a tool to capture still images and control related image sensor registers inside the AXIOM Beta.

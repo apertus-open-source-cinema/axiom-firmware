@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2017 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 # echo fclk0 >/sys/devices/axi.0/f8007000.ps7-dev-cfg/fclk_export
 # echo fclk1 >/sys/devices/axi.0/f8007000.ps7-dev-cfg/fclk_export
 # echo fclk2 >/sys/devices/axi.0/f8007000.ps7-dev-cfg/fclk_export

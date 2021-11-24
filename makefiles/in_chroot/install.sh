@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-FileCopyrightText: © 2018 Robin Ole Heinemann <robin.ole.heinemann@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 set -xeuo pipefail
 DEVICE=$(cat /etc/hostname)
 

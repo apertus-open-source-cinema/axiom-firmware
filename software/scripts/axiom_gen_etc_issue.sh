@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: © 2019 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 echo "apertus axiom $(cat /etc/hostname) running Arch Linux ARM [\m]" > /etc/issue
 echo "Kernel \r" >> /etc/issue
 echo "Build $(cd /opt/axiom-firmware; git describe --always --abbrev=8 --dirty)" >> /etc/issue

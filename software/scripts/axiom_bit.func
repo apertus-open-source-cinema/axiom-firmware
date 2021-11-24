@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 bit_msk() {
     local a=$1; local b=${2:-$1}; local val=0
     for i in `seq $a $b`; do

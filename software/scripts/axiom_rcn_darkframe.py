@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# SPDX-FileCopyrightText: © 2016 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-License-Identifier: GPL-2.0-only
+
 # set RCN offsets from a dark frame
 # example:
 #    raw2dng dark*x1*.raw12 --calc-darkframe --no-blackcol     # creates darkframe-x1.pgm

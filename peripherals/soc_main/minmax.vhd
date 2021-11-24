@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
+--  SPDX-FileCopyrightText: © 2013 Herbert Poetzl <herbert@13thfloor.at>
+--  SPDX-License-Identifier: GPL-2.0-or-later
+
 -- This package name is temporary.  I expect it to be added to the
 -- numeric_std package.
 package minmax is

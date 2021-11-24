@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2018 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-FileCopyrightText: © 2018 Robin Ole Heinemann <robin.ole.heinemann@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 # colors
 if [ $(id -u) -eq 0 ]; then
     export PS1="[\[\033[0m\]\[\033[01;31m\]\u\[\033[0m\]@\[\033[01;31m\]\h\[\033[0m\]] \[\033[36m\]\w\[\033[0m\]\[\033[37m\] \\$ \[\033[0m\]"

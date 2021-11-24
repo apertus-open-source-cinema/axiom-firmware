@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: © 2017 Jaro Habiger <jarohabiger@googlemail.com>
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # mimg
 
 This is a tool to display overlays on the AXIOM Beta.
