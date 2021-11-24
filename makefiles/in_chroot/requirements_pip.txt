@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2017 Jaro Habiger <jarohabiger@googlemail.com>
+# SPDX-License-Identifier: CC-BY-SA-4.0
+
 # This file contains a list of all the pip  packages, that are needed inside the image
 # install them via: pip install -r requirements_pip.txt
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2019 Robin Ole Heinemann <robin.ole.heinemann@gmail.com>
+# SPDX-License-Identifier: CC-BY-SA-4.0
+
 FROM ubuntu:rolling
 RUN echo "Europe/Berlin" > /etc/timezone
 RUN apt-get update -q
