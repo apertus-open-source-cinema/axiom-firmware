@@ -1,7 +1,7 @@
 /**********************************************************************
 **  snap.c
 **      Control Image Capture and Data Dump
-**      Version 1.11
+**      Version 1.12
 **
 **  SPDX-FileCopyrightText: © 2013 Herbert Poetzl <herbert@13thfloor.at>
 **  SPDX-License-Identifier: GPL-2.0-or-later
@@ -26,7 +26,7 @@
 #include "cmv_reg.h"
 #include "scn_reg.h"
 
-#define VERSION "cmv_snap3 V1.11"
+#define VERSION "cmv_snap3 V1.12"
 
 static char *cmd_name = NULL;
 
@@ -69,17 +69,19 @@ static bool out_12 = false;
 static bool out_16 = true;
 static bool out_buf = false;
 
-// static bool opt_bcols = false;
+static bool opt_bcols = false;
 static bool opt_tpat = false;
 static bool opt_dumpr = false;
 static bool opt_prime = false;
 static bool opt_zero = false;
+static bool opt_keep = false;
 
 static uint16_t reg82;
 // static uint16_t reg83;
 // static uint16_t reg84;
 static uint16_t reg85;
 // static uint16_t reg86;
+static uint16_t reg89;
 
 
 double lvds = 250e6;
@@ -566,7 +568,7 @@ static void cmv_sem_init_and_lock()
     atexit(cmv_sem_unlock_and_cleanup);
 }
 
-#define OPTIONS "h82dbprtze:v:s:S:P:R:"
+#define OPTIONS "h82dbprtzEe:v:s:S:P:R:"
 
 int     main(int argc, char *argv[])
 {
@@ -594,6 +596,7 @@ int     main(int argc, char *argv[])
                     "-r        dump sensor registers\n"
                     "-t        enable cmv test pattern\n"
                     "-z        produce no data output\n"
+                    "-E        keep current exposure\n"
         //          "-n <num>  number of frames\n"
                     "-e <exp>  exposure times\n"
                     "-v <exp>  exposure voltages\n"
@@ -617,7 +620,7 @@ int     main(int argc, char *argv[])
                 out_buf = true;
                 break;
             case 'b':
-                // opt_bcols = true;
+                opt_bcols = true;
                 break;
             case 'p':
                 opt_prime = true;
@@ -630,6 +633,9 @@ int     main(int argc, char *argv[])
                 break;
             case 'z':
                 opt_zero = true;
+                break;
+            case 'E':
+                opt_keep = true;
                 break;
         /*  case 'n':
                 num_frames = argtoll(optarg, NULL, NULL);
@@ -749,7 +755,7 @@ int     main(int argc, char *argv[])
         }
 
 
-        if (num_times == 0)
+        if ((num_times == 0) && !opt_keep)
             goto regs;
 
         if (opt_prime) {
@@ -765,6 +771,12 @@ int     main(int argc, char *argv[])
 
         reg82 = get_cmv_reg(82);
         reg85 = get_cmv_reg(85);
+        reg89 = get_cmv_reg(89);
+
+        if (opt_bcols && ((reg89 & 0x8000) == 0))
+            set_cmv_reg(89, reg89 | 0x8000);
+        if (!opt_bcols && ((reg89 & 0x8000) != 0))
+            set_cmv_reg(89, reg89 & ~0x8000);
 
 
         if (num_times > 2) {
@@ -828,7 +840,7 @@ regs:
         reg82 = get_cmv_reg(82);
         reg85 = get_cmv_reg(85);
 
-        if (num_times == 0)
+        if ((num_times == 0) && !opt_keep)
             goto skip;
 
         exp_time[0] = get_cmv_reg(72) << 16 | get_cmv_reg(71);
