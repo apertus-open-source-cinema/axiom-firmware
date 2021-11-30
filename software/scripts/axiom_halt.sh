@@ -8,6 +8,13 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+# running axiom_halt.sh twice or once if the service isnt actually running will crash the camera, this should prevent that from happening
+FILE=/tmp/axiom.started
+if [[ ! -f "$FILE" ]]; then
+    echo "AXIOM service does not seem to be running."
+    exit
+fi
+
 axiom_fil_reg 11 0xFC01F010	# block writer
 
 axiom_mimg -a -P 0
