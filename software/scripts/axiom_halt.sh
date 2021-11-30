@@ -17,3 +17,6 @@ axiom_gen_reg 11 0x0004F010	# block reader
 axiom_fil_reg 15 0x10
 axiom_gen_reg 11 0x10
 
+# running axiom_start.sh twice will crash the camera, this should prevent that from happening
+rm /tmp/axiom.started
+

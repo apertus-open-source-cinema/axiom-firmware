@@ -11,6 +11,14 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+# running axiom_start.sh twice will crash the camera, this should prevent that from happening
+FILE=/tmp/axiom.started
+if [[ -f "$FILE" ]]; then
+    echo "AXIOM service seems to be running already, if that is not the case please remove the /tmp/axiom.started file and try again."
+    exit
+fi
+
+
 MODE=${1:-normal}
 
 axiom_fclk_init.sh
@@ -77,4 +85,8 @@ axiom_set_gain.sh 1
 
 
 #./rcn_darkframe.py darkframe-x1.pgm
+
+# running axiom_start.sh twice will crash the camera, this should prevent that from happening
+touch /tmp/axiom.started
+
 
