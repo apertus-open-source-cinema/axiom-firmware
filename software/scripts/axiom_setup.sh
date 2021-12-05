@@ -13,7 +13,7 @@ MODE=${1:-normal}
 # axiom_gen_init.sh 1080p24
 
 [ "$MODE" == "normal" ] && axiom_gen_init.sh SHOGUN
-[ "$MODE" == "raw" ] && axiom_gen_init.sh 1080p60
+[ "$MODE" == "raw" ] && axiom_gen_init_hdmi.sh 1080p60
 
 axiom_data_init.sh
 axiom_rmem_conf.sh
