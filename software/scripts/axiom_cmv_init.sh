@@ -67,7 +67,7 @@ axiom_cmv_reg 103   4032
 axiom_cmv_reg 104     64
 axiom_cmv_reg 105   8256
 axiom_cmv_reg 106   8256
-axiom_cmv_reg 107   11102	# Datsheet default: 12384, 5.17.4 12-BIT MODE suggests 11102
+axiom_cmv_reg 107   10462	# as suggested by Datsheet 7.7.4 Clock Speed with 12 bit mode and 250MHz Clk
 axiom_cmv_reg 108   12381	
 axiom_cmv_reg 109  14448  # Datasheet 7.7.3
 axiom_cmv_reg 110 12368 # Datasheet Fixed Value: 12368
