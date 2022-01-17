@@ -57,7 +57,6 @@ done
 [ "$MODE" == "raw" ] && i2c0_bit_set 0x22 0x15 7
 
 axiom_setup.sh $MODE
-# ./ingmar.sh # obsolete
 # ./hdmi_init.sh
 # ./pic_jtag_pcie.py 0x00 0x12
 
