@@ -17,7 +17,7 @@ import struct
 import math
 from time import sleep
 import numpy
-import png
+from PIL import Image
 
 base_addr = 0x18100000
 length = 0x08000000
@@ -51,11 +51,8 @@ def rcn_set(i, x, v):
     rcn[i][x*4:x*4+4] = struct.pack("<L", v)
 
 # http://stackoverflow.com/a/14668590
-def read_pnm( filename, endian='>' ):
-   fd = open(filename,'rb')
-   format, width, height, samples, maxval = png.read_pnm_header( fd )
-   pixels = numpy.fromfile( fd, dtype='u1' if maxval < 256 else endian+'u2' )
-   return pixels.reshape(height,width,samples)
+def read_pnm(filename):
+    return numpy.array(Image.open(filename))
 
 filename = 'darkframe-x1.pgm'
 target_black = 128
