@@ -8,5 +8,3 @@
 [submodule "software/webui"]
 	path = software/webui
 	url = https://github.com/apertus-open-source-cinema/webui
-[submodule "software/nctrl/"]
-	branch = main
