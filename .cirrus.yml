@@ -5,7 +5,7 @@
 docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:
-    TOKEN: ENCRYPTED[e0b381c7a8f6c639e6946657936ed8db2ae027a911e8fa2abdd3dfb8b7785a56f393f324e9938b08e00d781085e710f7]
+    TOKEN: ENCRYPTED[cff6f06239aa2434cd631f124cb5dc8b391ff3bd57e8e651e8bf28493751cb9826f0f02aaed47d98d545ed8d5b5f1135]
     matrix:
       DEVICE: beta
 #      DEVICE: pynqz2
@@ -26,11 +26,22 @@ docker_builder:
     FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
     xz -kT $(nproc) build/axiom-$DEVICE.img
     mv build/axiom-$DEVICE.img.xz build/$FILE
+  environment:
+    RCLONE_CONFIG: ENCRYPTED[a10afb269a79413205bfe8a943b8cdd85342a91a54a352fe897460c864ab6b78dce9e32bc1b7f1c19fba3f186e7e84fc]
+  rclone_config_file:
+    path: rclone.conf
+    variable_name: RCLONE_CONFIG
   image_upload_script: |
-    if [ $DEVICE = 'beta' ]; then
-        if [[ ! -z "$CIRRUS_PR" ]]; then
-            THE_IMAGE=$(ls build/axiom-*.img.xz)
-            IMG_URL=$(curl --upload-file $THE_IMAGE https://transfer.sh/$(filename $THE_IMAGE))
+    if [[ ! -z "$CIRRUS_PR" ]]; then
+        THE_IMAGE=$(ls build/axiom-*.img.xz)
+
+        wget --no-verbose https://downloads.rclone.org/v1.65.0/rclone-v1.65.0-linux-amd64.zip
+        unzip -j rclone-v1.65.0-linux-amd64.zip "*/rclone"
+        pushd build
+        ../rclone --config ../rclone.conf copy $(basename $THE_IMAGE) r2:apertus-firmware-pr-builds/
+        popd
+        if [ $DEVICE = 'beta' ]; then
+            IMG_URL=https://pub-2af134bbddf1433f8ea8e2b459aa4c1a.r2.dev/$(basename $THE_IMAGE)
             wget --no-verbose https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
             chmod a+x github-commenter_linux_amd64
             ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR \
