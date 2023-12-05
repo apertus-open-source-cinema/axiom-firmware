@@ -26,16 +26,16 @@ docker_builder:
     FILE=axiom-$DEVICE$([ -z $CIRRUS_PR ] || echo "-pr-$CIRRUS_PR")-$(git describe --always --abbrev=8).img.xz
     xz -kT $(nproc) build/axiom-$DEVICE.img
     mv build/axiom-$DEVICE.img.xz build/$FILE
-  image_upload_artifacts:
-    path: "build/axiom-*.img.xz"
-  image_notify_script: |
+  image_upload_script: |
     if [ $DEVICE = 'beta' ]; then
         if [[ ! -z "$CIRRUS_PR" ]]; then
+            THE_IMAGE=$(ls build/axiom-*.img.xz)
+            IMG_URL=$(curl --upload-file $THE_IMAGE https://transfer.sh/$(filename $THE_IMAGE))
             wget --no-verbose https://github.com/cloudposse/github-commenter/releases/download/0.5.0/github-commenter_linux_amd64
             chmod a+x github-commenter_linux_amd64
             ./github-commenter_linux_amd64 -token $TOKEN -owner $CIRRUS_REPO_OWNER -repo $CIRRUS_REPO_NAME -type pr -number $CIRRUS_PR \
-              -comment "[//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa) 
-    Download a build of the latest (untested) commit at https://api.cirrus-ci.com/v1/artifact/task/$CIRRUS_TASK_ID/image_upload/$(ls build/axiom-*.img.xz)" \
+              -comment "[//]: # (tracking-code: wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa)
+    Download a build of the latest (untested) commit at $IMG_URL" \
               -delete-comment-regex "wasDinkDrybatghivSeerz8opDyajMoartEvbagyivwavdapGa"
         fi
     fi
