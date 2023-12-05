@@ -22,8 +22,8 @@ pacman --noprogressbar --noconfirm -R linux-zedboard || true
 
 # install dependencies
 pacman --noprogressbar --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
-pip install wheel
-pip install --progress-bar off -r makefiles/in_chroot/requirements_pip.txt
+pip install --break-system-packages wheel
+pip install --break-system-packages --progress-bar off -r makefiles/in_chroot/requirements_pip.txt
 
 # setup users
 if ! grep "dont log in as root" /root/.profile; then
