@@ -5,7 +5,7 @@
 docker_builder:
   only_if: $CIRRUS_TAG !=~ "nightly/.*"
   env:
-    TOKEN: ENCRYPTED[ff5d77afd50c9ceadca368ed98e35696323ef74391d534709a9b29005dfe67182d5882744c78c0c348eb120282e4cfbc]
+    TOKEN: ENCRYPTED[e0b381c7a8f6c639e6946657936ed8db2ae027a911e8fa2abdd3dfb8b7785a56f393f324e9938b08e00d781085e710f7]
     matrix:
       DEVICE: beta
 #      DEVICE: pynqz2
