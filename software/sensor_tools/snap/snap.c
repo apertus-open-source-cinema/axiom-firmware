@@ -805,7 +805,7 @@ int     main(int argc, char *argv[])
             vtfl[1] = evolt_pc[1];
             set_cmv_reg(106,
                 (get_cmv_reg(106) & ~(0x7F << 7)) |
-                ((vtfl[1] << 7) & 0x7F));
+                ((vtfl[1] & 0x7F) << 7));
         }
         if (num_volts > 0) {
             vtfl[0] = evolt_pc[0];
