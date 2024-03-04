@@ -18,10 +18,10 @@ set_property PACKAGE_PIN V10 [get_ports {hdmi_south_d_n[0]}]
 set_property IOSTANDARD LVDS_25 [get_ports {hdmi_south_d_*}]
 
 # LVDS_5A [JX2_18_P]
-set_property PACKAGE_PIN N15 [get_ports hdmi_south_scl]
+set_property PACKAGE_PIN K14 [get_ports hdmi_south_scl]
 set_property IOSTANDARD LVCMOS25 [get_ports hdmi_south_scl]
 
 # LVDS_5B [JX2_18_N]
-set_property PACKAGE_PIN N16 [get_ports hdmi_south_sda]
+set_property PACKAGE_PIN J14 [get_ports hdmi_south_sda]
 set_property IOSTANDARD LVCMOS25 [get_ports hdmi_south_sda]
 

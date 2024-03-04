@@ -27,6 +27,7 @@ entity scan_event is
 	--
 	hevent	: in std_logic_vector(3 downto 0);
 	vevent	: in std_logic_vector(3 downto 0);
+	border	: in std_logic_vector(3 downto 0);
 	--
 	hcnt_in	: in std_logic_vector(11 downto 0);
 	vcnt_in	: in std_logic_vector(11 downto 0);
@@ -34,6 +35,7 @@ entity scan_event is
 	--
 	data_eo	: in std_logic;
 	econf	: in std_logic_vector(63 downto 0);
+	syncinv : in std_logic_vector(1 downto 0);
 	--
 	hsync	: out std_logic;
 	vsync	: out std_logic;
@@ -44,6 +46,7 @@ entity scan_event is
 	terc	: out std_logic;
 	--
 	event	: out std_logic_vector(7 downto 0);
+	corner	: out std_logic_vector(3 downto 0);
 	--
 	hcnt	: out std_logic_vector(11 downto 0);
 	vcnt	: out std_logic_vector(11 downto 0);
@@ -61,8 +64,8 @@ begin
     sync_proc : process (clk)
     begin
 	if rising_edge(clk) then
-	    hsync <= sync_in(0) xor sync_in(1);
-	    vsync <= sync_in(2) xor sync_in(3);
+	    hsync <= sync_in(0) xor sync_in(1) xor syncinv(0);
+	    vsync <= sync_in(2) xor sync_in(3) xor syncinv(1);
 	end if;
     end process;
 
@@ -215,6 +218,16 @@ begin
 	    hcnt <= hcnt_in;
 	    vcnt <= vcnt_in;
 	    fcnt <= fcnt_in;
+	end if;
+    end process;
+
+    corner_proc : process (clk)
+    begin
+	if rising_edge(clk) then
+	    corner(0) <= border(0) and border(2);
+	    corner(1) <= border(1) and border(2);
+	    corner(2) <= border(0) and border(3);
+	    corner(3) <= border(1) and border(3);
 	end if;
     end process;
 

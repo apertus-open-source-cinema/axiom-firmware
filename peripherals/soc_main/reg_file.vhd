@@ -45,7 +45,9 @@ entity reg_file is
     generic (
 	REG_SPLIT : natural := 4;
 	OREG_SIZE : natural := 8;
-	IREG_SIZE : natural := 8
+	IREG_SIZE : natural := 8;
+	INITIAL   : reg32_a(0 to OREG_SIZE - 1)
+	    := (others => (others => '0'))
     );
     port (
 	s_axi_aclk : in std_logic;
@@ -118,8 +120,7 @@ begin
 
 	variable state : rw_state := idle_s;
 
-	variable oreg_v : reg32_a(0 to OREG_SIZE - 1)
-	    := (others => (others => '0'));
+	variable oreg_v : reg32_a(0 to OREG_SIZE - 1) := INITIAL;
 
     begin
 	if rising_edge(s_axi_aclk) then
