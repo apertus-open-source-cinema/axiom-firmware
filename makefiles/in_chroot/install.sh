@@ -69,6 +69,7 @@ mkdir -p /usr/axiom/bin/
 for dir in $(ls -d software/sensor_tools/*/); do cdmake "$dir"; done
 for dir in $(ls -d software/processing_tools/*/); do cdmake "$dir"; done
 cdmake software/memtool
+cdmake software/prng
 
 mkdir -p /usr/axiom/script/
 for script in $(cat <(ls software/scripts) software/scripts/bringup_scripts.list | sort | uniq -u | grep -E  '\.sh$|\.py$'); do ln -sf $(pwd)/software/scripts/$script /usr/axiom/script/$script; chmod a+x $(pwd)/software/scripts/$script; done

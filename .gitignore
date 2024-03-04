@@ -19,6 +19,7 @@ peripherals/soc_main/vhdl_ls.toml
 BERTL/
 
 software/memtool/memtool
+software/prng/prng
 software/processing_tools/lut_conf/lut_conf
 software/processing_tools/mimg/mimg
 software/sensor_tools/hist/hist
