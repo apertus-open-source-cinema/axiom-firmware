@@ -28,8 +28,7 @@ axiom_zynq_info.sh
 memtool -1 -F 0x0 0x18000000 0x8000000
 
 # FPGA bitstreams in bin format are loaded from /lib/firmware/
-[ "$MODE" == "raw" ] && echo cmv_hdmi3_raw.bin > /sys/class/fpga_manager/fpga0/firmware
-[ "$MODE" == "normal" ] && echo axiom_fpga_main.bin > /sys/class/fpga_manager/fpga0/firmware
+echo axiom_fpga_main.bin > /sys/class/fpga_manager/fpga0/firmware
 
 axiom_mem_reg -4 0xF8006210 0x00001
 axiom_mem_reg -4 0xF8006214 0x00001
