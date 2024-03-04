@@ -70,6 +70,8 @@ begin
 
     DSP48E1_comp_inst : entity work.dsp48_wrap
 	generic map (
+	    USE_DPORT => FALSE,		-- Activate preadder (FALSE, TRUE)
+	    USE_MULT => "NONE",		-- "NONE", "MULTIPLY", "DYNAMIC"
 	    USE_SIMD => "FOUR12" )	-- SIMD selection ("ONE48", "TWO24", "FOUR12")
 	port map (
 	    CLK => clk,			-- 1-bit input: Clock input

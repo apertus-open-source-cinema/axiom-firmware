@@ -130,8 +130,8 @@ begin
 	    bgr_dilp(0)(1) <= vsync;
 	    bgr_dilp(0)(0) <= hsync;
 
-	    bgr_dilp(1) <= data(7 downto 4);
-	    bgr_dilp(2) <= data(3 downto 0);
+	    bgr_dilp(1) <= data(3 downto 0);
+	    bgr_dilp(2) <= data(7 downto 4);
 
 	    bgr_di_d <= bgr_di;
 	    bgr_di <= de(1);

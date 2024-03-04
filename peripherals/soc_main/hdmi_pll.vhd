@@ -16,9 +16,10 @@ use IEEE.numeric_std.ALL;
 package hdmi_pll_pkg is
 
     type hdmi_config is (
-	HDMI_5000KHZ, HDMI_7425KHZ,
+	HDMI_5000KHZ, HDMI_5208KHZ, HDMI_7425KHZ,
 	HDMI_120MHZ, HDMI_148MHZ, HDMI_148500KHZ,
-	HDMI_148571KHZ, HDMI_160MHZ );
+	HDMI_148571KHZ,
+	HDMI_160MHZ, HDMI_180MHZ, HDMI_200MHZ );
 
 end;
 
@@ -94,6 +95,20 @@ architecture RTL of hdmi_pll is
 	    CLKOUT1_PHASE => 0.0,
 	    CLKOUT2_PHASE => 0.0 ),
 
+	HDMI_5208KHZ => (
+	    CLKIN1_PERIOD => 10.000,
+	    CLKFBOUT_MULT_F => 62.5,
+	    DIVCLK_DIVIDE => 10,
+	    --
+	    CLKOUT0_DIVIDE_F => 24.0,
+	    CLKOUT1_DIVIDE => 120,
+	    CLKOUT2_DIVIDE => 120,
+	    --
+	    CLKOUT0_PHASE => 0.0,
+	    CLKOUT1_PHASE => 0.0,
+	    CLKOUT2_PHASE => 0.0 ),
+
+
 	HDMI_7425KHZ => (
 	    CLKIN1_PERIOD => 10.000,
 	    CLKFBOUT_MULT_F => 37.125,
@@ -162,6 +177,32 @@ architecture RTL of hdmi_pll is
 	HDMI_160MHZ => (
 	    CLKIN1_PERIOD => 10.000,
 	    CLKFBOUT_MULT_F => 8.0,
+	    DIVCLK_DIVIDE => 1,
+	    --
+	    CLKOUT0_DIVIDE_F => 1.0,
+	    CLKOUT1_DIVIDE => 5,
+	    CLKOUT2_DIVIDE => 5,
+	    --
+	    CLKOUT0_PHASE => 0.0,
+	    CLKOUT1_PHASE => 0.0,
+	    CLKOUT2_PHASE => 0.0 ),
+
+	HDMI_180MHZ => (
+	    CLKIN1_PERIOD => 10.000,
+	    CLKFBOUT_MULT_F => 9.0,
+	    DIVCLK_DIVIDE => 1,
+	    --
+	    CLKOUT0_DIVIDE_F => 1.0,
+	    CLKOUT1_DIVIDE => 5,
+	    CLKOUT2_DIVIDE => 5,
+	    --
+	    CLKOUT0_PHASE => 0.0,
+	    CLKOUT1_PHASE => 0.0,
+	    CLKOUT2_PHASE => 0.0 ),
+
+	HDMI_200MHZ => (
+	    CLKIN1_PERIOD => 10.000,
+	    CLKFBOUT_MULT_F => 10.0,
 	    DIVCLK_DIVIDE => 1,
 	    --
 	    CLKOUT0_DIVIDE_F => 1.0,

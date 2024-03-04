@@ -5,8 +5,10 @@
 # Copyright (C) 2015 H.Poetzl
 
 set ODIR .
+set NAME cmv_hdmi
 set_param messaging.defaultLimit 10000
 set_param place.sliceLegEffortLimit 2000
+set_param board.repoPaths [list /opt/Xilinx/XilinxBoardStore/2021.1/boards]
 
 
 # STEP#1: setup design sources and constraints
@@ -81,15 +83,16 @@ read_vhdl -vhdl2008 ../top.vhd
 read_xdc ../top.xdc
 read_xdc ../pin_hdmi_north.xdc
 read_xdc ../pin_hdmi_south.xdc
+read_xdc ../pin_hdmi_shield.xdc
 read_xdc ../pin_i2c.xdc
 read_xdc ../pin_spi.xdc
 read_xdc ../pin_cmv.xdc
-read_xdc ../pin_debug.xdc
+# read_xdc ../pin_debug.xdc
 
 # set_property vhdl_version vhdl_2008 [current_fileset]
 
 set_property PART xc7z020clg400-1 [current_project]
-set_property BOARD_PART em.avnet.com:microzed_7020:part0:1.0 [current_project]
+set_property BOARD_PART avnet.com:microzed_7020:part0:1.3 [current_project]
 set_property TARGET_LANGUAGE VHDL [current_project]
 
 
@@ -146,8 +149,8 @@ place_design -directive Explore
 # place_design -directive ExtraNetDelay_high
 # place_design -directive SpreadLogic_high
 
-# phys_opt_design -placement_opt -critical_pin_opt -hold_fix -rewire -retime
-phys_opt_design -critical_cell_opt -critical_pin_opt -placement_opt -hold_fix -rewire -retime
+# phys_opt_design -placement_opt -critical_pin_opt -hold_fix -restruct_opt -retime
+phys_opt_design -critical_cell_opt -critical_pin_opt -placement_opt -hold_fix -restruct_opt -retime
 power_opt_design
 write_checkpoint -force $ODIR/post_place
 # write_verilog -force -quiet -mode timesim -sdf_anno true post_place.v
@@ -172,8 +175,8 @@ write_checkpoint -force $ODIR/post_route
 # place_design -directive ExtraNetDelay_high
 # place_design -directive ExtraPostPlacementOpt
 # place_design -post_place_opt
-# phys_opt_design -directive ExploreWithHoldFix
-# route_design -directive HigherDelayCost
+phys_opt_design -directive ExploreWithHoldFix
+route_design -directive HigherDelayCost
 # route_design -directive NoTimingRelaxation -free_resource_mode
 # route_design -directive AdvancedSkewModeling -free_resource_mode
 # route_design -directive MoreGlobalIterations -free_resource_mode
@@ -188,8 +191,9 @@ set_property BITSTREAM.CONFIG.USR_ACCESS TIMESTAMP [current_design]
 set_property BITSTREAM.READBACK.ACTIVERECONFIG Yes [current_design]
 
 # write_bitstream -force -bin_file $ODIR/cmv_io.bit
-write_bitstream -force $ODIR/cmv_hdmi3.bit
-
+write_bitstream -force -logic_location_file $ODIR/$NAME.bit
+write_cfgmem -force -interface SMAPx32 -format BIN -disablebitswap \
+	-loadbit "up 0x0 $ODIR/$NAME.bit" $ODIR/$NAME.bin
 
 # STEP#6: generate reports
 
