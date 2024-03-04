@@ -10,9 +10,7 @@ Until nextpnr, yosys and ghdl are ready to build this gateware or we have switch
 ## contents
 ### micro_main.bit
 This bitstream is for the AXIOM Micro r2, it reads out the AR0330 sensor and writes the sensor into a ringbuffer in the DDR3 RAM connected to the zynq. From there the data can sent away over ethernet.
-### cmv_hdmi3_dual_60.bit
-This bitstream is for the AXIOM Beta, it reads out the cmv12k sensor and outputs 1920x1080@60Hz HDMI on both plugin modules.
-### cmv_hdmi3_dual_30.bit
-This bitstream is for the AXIOM Beta, it reads out the cmv12k sensor and outputs 1920x1080@30Hz HDMI on both plugin modules.
+### cmv_hdmi.bit
+This bitstream is for the AXIOM Beta, it reads out the cmv12k sensor and gives HDMI output in a configurable fashion.
 ### icsp.bit, check_pin10.bit, check_pin20.bit
 These bitstreams are used for the initial bringup of a AXIOM Beta.

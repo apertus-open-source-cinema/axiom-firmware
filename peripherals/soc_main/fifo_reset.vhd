@@ -89,7 +89,7 @@ begin
 	    shift_post_v := w_post_wclk &
 		shift_post_v(shift_post_v'high downto 1);
 	end if;
-	
+
 	w_prep_rclk <= shift_prep_v(0);
 	w_hold_rclk <= shift_hold_v(0);
 	w_post_rclk <= shift_post_v(0);
@@ -122,14 +122,14 @@ begin
 	    shift_post_v := r_post_rclk &
 		shift_post_v(shift_post_v'high downto 1);
 	end if;
-	
+
 	r_prep_wclk <= shift_prep_v(0);
 	r_hold_wclk <= shift_hold_v(0);
 	r_post_wclk <= shift_post_v(0);
     end process;
 
 
-    rst_rclk_proc : process (rclk)
+    rst_rclk_proc : process (rclk, reset)
 	variable shift_v : std_logic_vector (SHIFT_SIZE - 1 downto 0)
 	    := (others => '0');
     begin
@@ -149,7 +149,7 @@ begin
 		end if;
 	    end if;
 	end if;
-	
+
 	r_prep_rclk <= shift_v(INDEX_PRE);
 	r_hold_rclk <= shift_v(INDEX_RST);
 	r_post_rclk <= shift_v(0);
@@ -158,7 +158,7 @@ begin
     fifo_rrdy <= r_post_rclk and w_post_rclk;
     fifo_rst <= (r_hold_rclk xor r_prep_rclk) and (w_hold_rclk xor w_prep_rclk);
 
-    rst_wclk_proc : process (wclk)
+    rst_wclk_proc : process (wclk, reset)
 	variable shift_v : std_logic_vector (SHIFT_SIZE - 1 downto 0)
 	    := (others => '0');
     begin

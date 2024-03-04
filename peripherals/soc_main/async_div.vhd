@@ -29,7 +29,7 @@ entity async_div is
 	clk_out	: out std_logic		-- output clock
     );
 
-    attribute CLOCK_BUFFER_TYPE of clk_out : signal is "BUFG";
+    -- attribute CLOCK_BUFFER_TYPE of clk_out : signal is "BUFG";
 
 end entity async_div;
 

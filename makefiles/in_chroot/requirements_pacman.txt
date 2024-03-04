@@ -35,6 +35,7 @@ python-numpy
 dtc
 man
 man-pages
+libdisplay-info
 
 # webserver
 lighttpd

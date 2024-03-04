@@ -132,7 +132,7 @@ done
 if [[ $DEVICE == 'micro' ]]; then
   ln -sf /opt/bitstreams/micro_main.bin /lib/firmware/axiom_fpga_main.bin
 else
-  ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom_fpga_main.bin
+  ln -sf /opt/bitstreams/cmv_hdmi.bin /lib/firmware/axiom_fpga_main.bin
 fi
 
 cp software/scripts/axiom_start.service /etc/systemd/system/

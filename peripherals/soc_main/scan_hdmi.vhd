@@ -62,6 +62,7 @@ entity scan_hdmi is
 	--
 	hevent	: out std_logic_vector(3 downto 0);
 	vevent	: out std_logic_vector(3 downto 0);
+	border	: out std_logic_vector(3 downto 0);
 	--
 	hcnt	: out std_logic_vector(11 downto 0);
 	vcnt	: out std_logic_vector(11 downto 0);
@@ -260,4 +261,19 @@ begin
 	    b3 => std_logic_vector(cnt_h),
 	    --
 	    flags => ctrl );
+
+    border_proc : process (clk, hdata_s, hdata_e, vdata_s, vdata_e)
+	variable lb_v : unsigned(11 downto 0) := unsigned(hdata_s);
+	variable rb_v : unsigned(11 downto 0) := unsigned(hdata_e) - "1";
+	variable tb_v : unsigned(11 downto 0) := unsigned(vdata_s);
+	variable bb_v : unsigned(11 downto 0) := unsigned(vdata_e) - "1";
+    begin
+	if rising_edge(clk) then
+	    border(0) <= '1' when cnt_h = lb_v else '0';
+	    border(1) <= '1' when cnt_h = rb_v else '0';
+	    border(2) <= '1' when cnt_v = tb_v else '0';
+	    border(3) <= '1' when cnt_v = bb_v else '0';
+	end if;
+    end process;
+
 end RTL;
