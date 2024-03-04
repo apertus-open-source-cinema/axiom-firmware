@@ -1,13 +1,17 @@
-
 /***********************************************************************
 **
 **  memtool.c
 **
-**  SPDX-FileCopyrightText: © 2020 Herbert Poetzl <herbert@13thfloor.at>
+**  SPDX-FileCopyrightText: © 2019-2022 Herbert Poetzl <herbert@13thfloor.at>
 **  SPDX-License-Identifier: GPL-2.0-only
+**  Copyright (C) 2019-2022 Herbert Poetzl
 **
 **  Memory Tool
 **
+**
+**  This program is free software; you can redistribute it and/or modify
+**  it under the terms of the GNU General Public License version 2 as
+**  published by the Free Software Foundation.
 **
 ***********************************************************************/
 
@@ -30,6 +34,7 @@
 static char *cmd_name = NULL;
 
 static uint64_t num_fill = 0L;
+static uint64_t num_mask = ~0L;
 static uint64_t num_wdat = 0L;
 static uint16_t num_cols = 0;
 
@@ -70,10 +75,10 @@ static uint32_t mem_size = 0L;
 static uint32_t page_size = 0L;
 
 
-typedef long long int (stoll_t)(const char *, char **, int);
+typedef long long unsigned int (stoull_t)(const char *, char **, int);
 
-long long int argtoll(
-	const char *str, const char **end, stoll_t stoll)
+long long unsigned int argtoull(
+	const char *str, const char **end, stoull_t stoull)
 {
 	int bit, inv = 0;
 	long long int val = 0;
@@ -81,8 +86,8 @@ long long int argtoll(
 
 	if (!str)
 	    return -1;
-	if (!stoll)
-	    stoll = strtoll;
+	if (!stoull)
+	    stoull = strtoull;
 
 	switch (*str) {
 	case '~':
@@ -100,10 +105,10 @@ long long int argtoll(
 		val ^= (1LL << bit);
 		break;
 	    case '&':
-		val &= stoll(str+1, &eptr, 0);
+		val &= stoull(str+1, &eptr, 0);
 		break;
 	    case '|':
-		val |= stoll(str+1, &eptr, 0);
+		val |= stoull(str+1, &eptr, 0);
 		break;
 	    case '-':
 	    case '+':
@@ -112,7 +117,7 @@ long long int argtoll(
 	    case '/':
 		break;
 	    default:
-		val = stoll(str, &eptr, 0);
+		val = stoull(str, &eptr, 0);
 		break;
 	    }
 	    if (eptr == str)
@@ -186,133 +191,237 @@ uint64_t lfsr_64(uint64_t val)
 }
 
 
-static void fill_u8(uint8_t *ptr, uint32_t cnt, uint8_t val)
+static void fill_u8(uint8_t *ptr, uint32_t cnt, uint8_t val, uint8_t mask)
 {
-	while (cnt--)
-	    *ptr++ = val;
+	if (mask == ~0L)
+	    while (cnt--)
+		*ptr++ = val;
+	else if (mask)
+	    while (cnt--)
+		{ *ptr = (*ptr & ~mask) | (val & mask); ptr++; };
 }
 
-static void fill_u16(uint16_t *ptr, uint32_t cnt, uint16_t val)
+static void fill_u16(uint16_t *ptr, uint32_t cnt, uint16_t val, uint16_t mask)
 {
-	while (cnt--)
-	    *ptr++ = val;
+	if (mask == ~0L)
+	    while (cnt--)
+		*ptr++ = val;
+	else if (mask)
+	    while (cnt--)
+		{ *ptr = (*ptr & ~mask) | (val & mask); ptr++; };
 }
 
-static void fill_u32(uint32_t *ptr, uint32_t cnt, uint32_t val)
+static void fill_u32(uint32_t *ptr, uint32_t cnt, uint32_t val, uint32_t mask)
 {
-	while (cnt--)
-	    *ptr++ = val;
+	if (mask == ~0L)
+	    while (cnt--)
+		*ptr++ = val;
+	else if (mask)
+	    while (cnt--)
+		{ *ptr = (*ptr & ~mask) | (val & mask); ptr++; };
 }
 
-static void fill_u64(uint64_t *ptr, uint32_t cnt, uint64_t val)
+static void fill_u64(uint64_t *ptr, uint32_t cnt, uint64_t val, uint64_t mask)
 {
-	while (cnt--)
-	    *ptr++ = val;
+	if (mask == ~0L)
+	    while (cnt--)
+		*ptr++ = val;
+	else if (mask)
+	    while (cnt--)
+		{ *ptr = (*ptr & ~mask) | (val & mask); ptr++; };
 }
 
 
-static void lfsr_u8(uint8_t *ptr, uint32_t cnt, uint8_t val)
+static void lfsr_u8(uint8_t *ptr, uint32_t cnt, uint8_t val, uint8_t mask)
 {
-	while (cnt--) {
-	    *ptr++ = val;
-	    val = lfsr_8(val);
+	if (mask == ~0L) {
+	    while (cnt--) {
+		*ptr++ = val;
+		val = lfsr_8(val);
+	    }
+	} else if (mask) {
+	    while (cnt--) {
+		*ptr = (*ptr & ~mask) | (val & mask);
+		val = lfsr_8(val);
+		ptr++;
+	    }
 	}
 }
 
-static void lfsr_u16(uint16_t *ptr, uint32_t cnt, uint16_t val)
+static void lfsr_u16(uint16_t *ptr, uint32_t cnt, uint16_t val, uint16_t mask)
 {
-	while (cnt--) {
-	    *ptr++ = val;
-	    val = lfsr_16(val);
+	if (mask == ~0L) {
+	    while (cnt--) {
+		*ptr++ = val;
+		val = lfsr_16(val);
+	    }
+	} else if (mask) {
+	    while (cnt--) {
+		*ptr = (*ptr & ~mask) | (val & mask);
+		val = lfsr_16(val);
+		ptr++;
+	    }
 	}
 }
 
-static void lfsr_u32(uint32_t *ptr, uint32_t cnt, uint32_t val)
+static void lfsr_u32(uint32_t *ptr, uint32_t cnt, uint32_t val, uint32_t mask)
 {
-	while (cnt--) {
-	    *ptr++ = val;
-	    val = lfsr_32(val);
+	if (mask == ~0L) {
+	    while (cnt--) {
+		*ptr++ = val;
+		val = lfsr_32(val);
+	    }
+	} else if (mask) {
+	    while (cnt--) {
+		*ptr = (*ptr & ~mask) | (val & mask);
+		val = lfsr_32(val);
+		ptr++;
+	    }
 	}
 }
 
-static void lfsr_u64(uint64_t *ptr, uint32_t cnt, uint64_t val)
+static void lfsr_u64(uint64_t *ptr, uint32_t cnt, uint64_t val, uint64_t mask)
 {
-	while (cnt--) {
-	    *ptr++ = val;
-	    val = lfsr_64(val);
+	if (mask == ~0L) {
+	    while (cnt--) {
+		*ptr++ = val;
+		val = lfsr_64(val);
+	    }
+	} else if (mask) {
+	    while (cnt--) {
+		*ptr = (*ptr & ~mask) | (val & mask);
+		val = lfsr_64(val);
+		ptr++;
+	    }
 	}
 }
 
 
-static uint32_t check_u8(uint8_t *ptr, uint32_t cnt, uint8_t val)
+static uint32_t check_u8(uint8_t *ptr, uint32_t cnt, uint8_t val, uint8_t mask)
 {
-	while (cnt--)
-	    if (*ptr++ != val)
-		break;
-	return cnt + 1;
-}
-
-static uint32_t check_u16(uint16_t *ptr, uint32_t cnt, uint16_t val)
-{
-	while (cnt--)
-	    if (*ptr++ != val)
-		break;
-	return cnt + 1;
-}
-
-static uint32_t check_u32(uint32_t *ptr, uint32_t cnt, uint32_t val)
-{
-	while (cnt--)
-	    if (*ptr++ != val)
-		break;
-	return cnt + 1;
-}
-
-static uint32_t check_u64(uint64_t *ptr, uint32_t cnt, uint64_t val)
-{
-	while (cnt--)
-	    if (*ptr++ != val)
-		break;
-	return cnt + 1;
-}
-
-
-static uint32_t clfsr_u8(uint8_t *ptr, uint32_t cnt, uint8_t val)
-{
-	while (cnt--) {
-	    if (*ptr++ != val)
-		break;
-	    val = lfsr_8(val);
+	if (mask == ~0L) {
+	    while (cnt--)
+		if (*ptr++ != val)
+		    break;
+	} else {
+	    while (cnt--)
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
 	}
 	return cnt + 1;
 }
 
-static uint32_t clfsr_u16(uint16_t *ptr, uint32_t cnt, uint16_t val)
+static uint32_t check_u16(uint16_t *ptr, uint32_t cnt, uint16_t val, uint16_t mask)
 {
-	while (cnt--) {
-	    if (*ptr++ != val)
-		break;
-	    val = lfsr_16(val);
+	if (mask == ~0L) {
+	    while (cnt--)
+		if (*ptr++ != val)
+		    break;
+	} else {
+	    while (cnt--)
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
 	}
 	return cnt + 1;
 }
 
-static uint32_t clfsr_u32(uint32_t *ptr, uint32_t cnt, uint32_t val)
+static uint32_t check_u32(uint32_t *ptr, uint32_t cnt, uint32_t val, uint32_t mask)
 {
-	while (cnt--) {
-	    if (*ptr++ != val)
-		break;
-	    val = lfsr_32(val);
+	if (mask == ~0L) {
+	    while (cnt--)
+		if (*ptr++ != val)
+		    break;
+	} else {
+	    while (cnt--)
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
 	}
 	return cnt + 1;
 }
 
-static uint32_t clfsr_u64(uint64_t *ptr, uint32_t cnt, uint64_t val)
+static uint32_t check_u64(uint64_t *ptr, uint32_t cnt, uint64_t val, uint64_t mask)
 {
-	while (cnt--) {
-	    if (*ptr++ != val)
-		break;
-	    val = lfsr_64(val);
+	if (mask == ~0L) {
+	    while (cnt--)
+		if (*ptr++ != val)
+		    break;
+	} else {
+	    while (cnt--)
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
+	}
+	return cnt + 1;
+}
+
+
+static uint32_t clfsr_u8(uint8_t *ptr, uint32_t cnt, uint8_t val, uint8_t mask)
+{
+	if (mask == ~0L) {
+	    while (cnt--) {
+		if (*ptr++ != val)
+		    break;
+		val = lfsr_8(val);
+	    }
+	} else {
+	    while (cnt--) {
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
+		val = lfsr_8(val);
+	    }
+	}
+	return cnt + 1;
+}
+
+static uint32_t clfsr_u16(uint16_t *ptr, uint32_t cnt, uint16_t val, uint16_t mask)
+{
+	if (mask == ~0L) {
+	    while (cnt--) {
+		if (*ptr++ != val)
+		    break;
+		val = lfsr_16(val);
+	    }
+	} else {
+	    while (cnt--) {
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
+		val = lfsr_16(val);
+	    }
+	}
+	return cnt + 1;
+}
+
+static uint32_t clfsr_u32(uint32_t *ptr, uint32_t cnt, uint32_t val, uint32_t mask)
+{
+	if (mask == ~0L) {
+	    while (cnt--) {
+		if (*ptr++ != val)
+		    break;
+		val = lfsr_32(val);
+	    }
+	} else {
+	    while (cnt--) {
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
+		val = lfsr_32(val);
+	    }
+	}
+	return cnt + 1;
+}
+
+static uint32_t clfsr_u64(uint64_t *ptr, uint32_t cnt, uint64_t val, uint64_t mask)
+{
+	if (mask == ~0L) {
+	    while (cnt--) {
+		if (*ptr++ != val)
+		    break;
+		val = lfsr_64(val);
+	    }
+	} else {
+	    while (cnt--) {
+		if ((*ptr++ & mask) != (val & mask))
+		    break;
+		val = lfsr_64(val);
+	    }
 	}
 	return cnt + 1;
 }
@@ -329,8 +438,8 @@ static void action(const char *name)
 }
 
 
-#define VERSION "V0.4"
-#define	OPTIONS "h1248dlnqrvwC:F:N:RW:"
+#define VERSION "V0.5"
+#define	OPTIONS "h1248dlnqrvwC:F:M:N:RW:"
 
 int main(int argc, char *argv[])
 {
@@ -359,6 +468,7 @@ int main(int argc, char *argv[])
 		    "\t-w        write data to memory\n"
 		    "\t-C <val>  check memory\n"
 		    "\t-F <val>  fill memory\n"
+		    "\t-M <val>  mask for fill\n"
 		    "\t-N <val>  number of columns\n"
 		    "\t-R        read memory location\n"
 		    "\t-W <val>  write memory location\n"
@@ -402,22 +512,25 @@ int main(int argc, char *argv[])
 
 	    case 'C':
 		opt_check = true;
-		num_fill = argtoll(optarg, NULL, NULL);
+		num_fill = argtoull(optarg, NULL, NULL);
 		break;
 	    case 'F':
 		opt_fill = true;
-		num_fill = argtoll(optarg, NULL, NULL);
+		num_fill = argtoull(optarg, NULL, NULL);
+		break;
+	    case 'M':
+		num_mask = argtoull(optarg, NULL, NULL);
 		break;
 	    case 'N':
 		opt_cols = true;
-		num_cols = argtoll(optarg, NULL, NULL);
+		num_cols = argtoull(optarg, NULL, NULL);
 		break;
 	    case 'R':
 		opt_rreg = true;
 		break;
 	    case 'W':
 		opt_wreg = true;
-		num_wdat = argtoll(optarg, NULL, NULL);
+		num_wdat = argtoull(optarg, NULL, NULL);
 		break;
 
 	    default:
@@ -427,13 +540,13 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc > optind) {
-	    mem_addr = argtoll(argv[optind++], NULL, NULL);
+	    mem_addr = argtoull(argv[optind++], NULL, NULL);
 	} else {
 	    err_flag++;
 	}
 
 	if (argc > optind) {
-	    mem_size = argtoll(argv[optind++], NULL, NULL);
+	    mem_size = argtoull(argv[optind++], NULL, NULL);
 	}
 
 	if (err_flag) {
@@ -516,30 +629,30 @@ rskip:
 	    switch (opt_ds) {
 	    case DS_8:
 		if (opt_lfsr)
-		    lfsr_u8(mem_ptr, mem_size, num_fill & 0xFF);
+		    lfsr_u8(mem_ptr, mem_size, num_fill, num_mask);
 		else
-		    fill_u8(mem_ptr, mem_size, num_fill & 0xFF);
+		    fill_u8(mem_ptr, mem_size, num_fill, num_mask);
 		break;
 
 	    case DS_16:
 		if (opt_lfsr)
-		    lfsr_u16(mem_ptr, mem_size/2, num_fill & 0xFFFF);
+		    lfsr_u16(mem_ptr, mem_size/2, num_fill, num_mask);
 		else
-		    fill_u16(mem_ptr, mem_size/2, num_fill & 0xFFFF);
+		    fill_u16(mem_ptr, mem_size/2, num_fill, num_mask);
 		break;
 
 	    case DS_32:
 		if (opt_lfsr)
-		    lfsr_u32(mem_ptr, mem_size/4, num_fill & 0xFFFFFFFF);
+		    lfsr_u32(mem_ptr, mem_size/4, num_fill, num_mask);
 		else
-		    fill_u32(mem_ptr, mem_size/4, num_fill & 0xFFFFFFFF);
+		    fill_u32(mem_ptr, mem_size/4, num_fill, num_mask);
 		break;
 
 	    case DS_64:
 		if (opt_lfsr)
-		    lfsr_u64(mem_ptr, mem_size/8, num_fill);
+		    lfsr_u64(mem_ptr, mem_size/8, num_fill, num_mask);
 		else
-		    fill_u64(mem_ptr, mem_size/8, num_fill);
+		    fill_u64(mem_ptr, mem_size/8, num_fill, num_mask);
 		break;
 
 	    default:
@@ -574,38 +687,30 @@ rskip:
 	    switch (opt_ds) {
 	    case DS_8:
 		if (opt_lfsr)
-		    cnt = clfsr_u8(mem_ptr, mem_size,
-			num_fill & 0xFF);
+		    cnt = clfsr_u8(mem_ptr, mem_size, num_fill, num_mask);
 		else
-		    cnt = check_u8(mem_ptr, mem_size,
-			num_fill & 0xFF);
+		    cnt = check_u8(mem_ptr, mem_size, num_fill, num_mask);
 		break;
 
 	    case DS_16:
 		if (opt_lfsr)
-		    cnt = clfsr_u16(mem_ptr, mem_size/2,
-			num_fill & 0xFFFF);
+		    cnt = clfsr_u16(mem_ptr, mem_size/2, num_fill, num_mask);
 		else
-		    cnt = check_u16(mem_ptr, mem_size/2,
-			num_fill & 0xFFFF);
+		    cnt = check_u16(mem_ptr, mem_size/2, num_fill, num_mask);
 		break;
 
 	    case DS_32:
 		if (opt_lfsr)
-		    cnt = clfsr_u32(mem_ptr, mem_size/4,
-			num_fill & 0xFFFFFFFF);
+		    cnt = clfsr_u32(mem_ptr, mem_size/4, num_fill, num_mask);
 		else
-		    cnt = check_u32(mem_ptr, mem_size/4,
-			num_fill & 0xFFFFFFFF);
+		    cnt = check_u32(mem_ptr, mem_size/4, num_fill, num_mask);
 		break;
 
 	    case DS_64:
 		if (opt_lfsr)
-		    cnt = clfsr_u64(mem_ptr, mem_size/8,
-			num_fill);
+		    cnt = clfsr_u64(mem_ptr, mem_size/8, num_fill, num_mask);
 		else
-		    cnt = check_u64(mem_ptr, mem_size/8,
-			num_fill);
+		    cnt = check_u64(mem_ptr, mem_size/8, num_fill, num_mask);
 		break;
 
 	    default:
