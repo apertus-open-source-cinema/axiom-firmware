@@ -36,6 +36,7 @@ dtc
 man
 man-pages
 libdisplay-info
+bash-completion
 
 # webserver
 lighttpd

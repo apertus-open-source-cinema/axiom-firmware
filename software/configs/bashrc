@@ -33,3 +33,6 @@ alias mv='mv -i'
 
 # editor
 alias vi='vim'
+
+# enable bash autocompletion
+[ -r /usr/share/bash-completion/bash_completion   ] && . /usr/share/bash-completion/bash_completion
