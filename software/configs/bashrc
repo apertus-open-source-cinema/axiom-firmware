@@ -31,8 +31,17 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# editor
-alias vi='vim'
 
 # enable bash autocompletion
 [ -r /usr/share/bash-completion/bash_completion   ] && . /usr/share/bash-completion/bash_completion
+
+# you can use pvim/pnano/pcat to edit scripts in the $PATH
+function pvim(){ sudo vim $(which "$1"); }
+complete -F _command pvim
+function pnano(){ sudo nano $(which "$1"); }
+complete -F _command pnano
+function pcat(){ cat $(which "$1"); }
+complete -F _command pcat
+
+alias vi='vim'
+alias pvi='pvim'
