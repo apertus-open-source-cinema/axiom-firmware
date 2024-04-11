@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: © 2017 Herbert Poetzl <herbert@13thfloor.at>
+# SPDX-FileCopyrightText: © 2017-2024 Herbert Poetzl <herbert@13thfloor.at>
 # SPDX-License-Identifier: GPL-2.0-only
 
 # this script initializes and starts the image streaming pipeline
@@ -34,6 +34,8 @@ axiom_mem_reg -4 0xF8006210 0x00001
 axiom_mem_reg -4 0xF8006214 0x00001
 axiom_mem_reg -4 0xF8000600 0x84
 
+memtool -w -4 0x80400000 0x200 </opt/axiom-firmware/peripherals/pll/HDMI_148500KHZ.pll
+
 axiom_power_init.sh
 axiom_gpio.py init
 axiom_power_on.sh
@@ -62,25 +64,39 @@ axiom_setup.sh $MODE
 
 axiom_fil_reg 15 0x01000100
 
+# show overlay in normal mode - clear overlay in raw mode
 [ "$MODE" == "normal" ] && axiom_mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
 [ "$MODE" == "raw" ] && axiom_mimg -O -P0
 
-# axiom_scn_reg 32  264		# pream_s
-# axiom_scn_reg 33  264		# guard_s
 
-# axiom_scn_reg  9  2100
-# axiom_scn_reg  8  0
-
+# initiate HDMI
 axiom_hdmi_init3.sh
+
+# load HDMI data islands
+# generate AVI info frame, create a packet and upload it to the packet buffer
+axiom_infoframe.py | axiom_makepkt.py | axiom_packet.py
+
+# generate vendor frame (AXIOM Beta) and upload it into the second slot of the packet buffer
+axiom_vendorframe.py | axiom_makepkt.py | axiom_packet.py /dev/stdin 32
+
+
 axiom_rf_sel.py A
 axiom_pic_jtag_pcie.py 0x92 0x92
 
-# ./rest_pll.sh <PLL/5000kHz.pll
 
+# set analog gain to 1 (unity gain - no amplification)
 axiom_set_gain.sh 1
 
-[ "$MODE" == "raw" ] && axiom_scn_reg 28 0x7700
-[ "$MODE" == "raw" ] && axiom_scn_reg 28 0x7000
+
+# raw mode related commands
+if [ "$MODE" == "raw" ]; then 
+	axiom_scn_reg 28 0x7700
+	axiom_scn_reg 28 0x7000
+	axiom_scn_reg 31 0x0000  # top HDMI plugin module set normal color mode
+	axiom_scn_reg 30 0x7000  # bottom HDMI plugin module set to alternating A/B raw frames  
+	axiom_raw_mark.sh        # enable corner markers
+	axiom_scn_reg 2 0x100    # set corner marker frame counter max to 256
+fi
 
 
 #./rcn_darkframe.py darkframe-x1.pgm
