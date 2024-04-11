@@ -121,18 +121,14 @@ cdmake software/misc-tools-utilities/raw2dng
 
 # copy prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel
-mkdir -p /opt/bitstreams/
 for bit in peripherals/bitstreams/*.bit; do
-    NAME=$(basename $bit)
-    ln -sf $(pwd)/$bit /opt/bitstreams
-    ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$NAME /opt/bitstreams/"$(basename ${NAME%.bit}).bin"
-    ln -sf /opt/bitstreams/"${NAME%.bit}.bin" /lib/firmware
+    ./makefiles/in_chroot/to_raw_bitstream.py -f $bit /lib/firmware/"$(basename ${bit%.bit}).bin"
 done
 
 if [[ $DEVICE == 'micro' ]]; then
-  ln -sf /opt/bitstreams/micro_main.bin /lib/firmware/axiom_fpga_main.bin
+  ln -sf /lib/firmware/micro_main.bin /lib/firmware/axiom_fpga_main.bin
 else
-  ln -sf /opt/bitstreams/cmv_hdmi.bin /lib/firmware/axiom_fpga_main.bin
+  ln -sf /lib/firmware/cmv_hdmi.bin /lib/firmware/axiom_fpga_main.bin
 fi
 
 cp software/scripts/axiom_start.service /etc/systemd/system/
