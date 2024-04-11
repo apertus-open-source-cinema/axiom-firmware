@@ -190,11 +190,7 @@ yarn cache clean --all
 VERIFY_DIRECTORIES="/etc /usr /opt"
 HASH_LOCATION="/opt/integrity_check"
 mkdir -p $HASH_LOCATION
-# delete hashes so they aren't included in the new files list
-rm -f $HASH_LOCATION/hashes.txt; rm -f $HASH_LOCATION/files.txt
-find $VERIFY_DIRECTORIES -type f > $HASH_LOCATION/files.txt
-# also hash file list
-echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt
-sudo rhash --sha256 --file-list $HASH_LOCATION/files.txt -o $HASH_LOCATION/hashes.txt
+
+sudo rhash --sha256 --recursive $VERIFY_DIRECTORIES -o $HASH_LOCATION/hashes.txt
 
 echo "axiom-update finished. Software version is now $(git describe --always --abbrev=8 --dirty)."
