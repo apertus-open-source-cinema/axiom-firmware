@@ -25,11 +25,6 @@ pacman --noprogressbar --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_c
 pip install --break-system-packages wheel
 pip install --break-system-packages --progress-bar off -r makefiles/in_chroot/requirements_pip.txt
 
-# setup users
-if ! grep "dont log in as root" /root/.profile; then
-    echo 'echo -e "\033[31municorns dont log in as root\033[0m"' >> /root/.profile
-fi
-
 PASS=axiom
 USERNAME=operator
 if ! [ -d /home/$USERNAME ]; then
@@ -38,6 +33,9 @@ if ! [ -d /home/$USERNAME ]; then
     echo "$USERNAME      ALL=(ALL) PASSWD: ALL" >> /etc/sudoers
     rm -f /home/$USERNAME/.bashrc
 fi
+
+# also set the same password for root
+echo "root:$PASS" | chpasswd
 
 # add empty ~/.ssh/authorized_keys (see #80)
 function add_authorized_keys_file() {
@@ -56,8 +54,8 @@ add_authorized_keys_file "root"
 userdel -r -f alarm || true
 
 # configure ssh
-grep 'PermitRootLogin' /etc/ssh/sshd_config && sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin without-password/' /etc/ssh/sshd_config
-grep 'PermitRootLogin' /etc/ssh/sshd_config || echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
+grep 'PermitRootLogin' /etc/ssh/sshd_config && sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
+grep 'PermitRootLogin' /etc/ssh/sshd_config || echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 grep -x 'X11Forwarding yes' /etc/ssh/sshd_config || echo "X11Forwarding yes" >> /etc/ssh/sshd_config
 
 # build all the tools
