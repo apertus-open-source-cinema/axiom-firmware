@@ -16,7 +16,6 @@ a complete change list, only those that may directly interest or affect users.
 * hashdeep package replaced with rhash package
 * bash-completion added
 * axiom_gateware_version.sh script added to output generation date of loaded gateware
-* root user ssh login with password now enabled by default
 
 firmware release: fillme
 
