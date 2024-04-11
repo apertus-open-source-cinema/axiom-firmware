@@ -20,14 +20,14 @@ fi
 
 
 MODE=${1:-normal}
-if [ "$MODE" = "normal" ]; then
+if [ "$MODE" == "normal" ]; then
   echo "starting with FHD color HDMI output on top and bottom plugins";
   echo
-elif [ "$MODE" = "raw-uhd" ]; then
+elif [ "$MODE" == "raw-uhd" ]; then
   echo "starting camera with color HDMI output on top plugin and raw mode with alternating A/B frames on bottom plugin";
   echo "the resolution of the raw output is 3840x2160 (no black colums present)";
   echo
-elif [ "$MODE" = "raw-full-width" ]; then
+elif [ "$MODE" == "raw-full-width" ]; then
   echo "starting camera with color HDMI output on top plugin and raw mode with alternating A/B frames on bottom plugin";
   echo "the resolution of the raw output is 4096x2160 (with black columns on left and right sides)";
   echo
@@ -73,7 +73,31 @@ done
 
 [[ "$MODE" =~ ^"raw" ]] && i2c0_bit_set 0x22 0x15 7
 
-axiom_setup.sh $MODE
+if [ "$MODE" == "normal" ]; then
+  axiom_gen_init.sh SHOGUN
+  axiom_linear_conf.sh 1.0 0.0
+elif [ "$MODE" == "raw-uhd" ]; then
+  axiom_gen_init_hdmi.sh 1080p60
+elif [ "$MODE" == "raw-full-width" ]; then
+  axiom_gen_init_hdmi.sh 2048x1080p50
+  axiom_snap -E -b -z  # enable the black columns
+fi
+
+axiom_rmem_conf.sh
+axiom_wmem_conf.sh
+
+axiom_gamma_conf.sh 0.8
+axiom_mat4_conf.sh 0.3 0.3 0.3 0.3  0 0 0 1  0 0.42 0.42 0  1 0 0 0
+
+if [ "$MODE" == "normal" ]; then
+  axiom_scn_reg 31 3
+  axiom_scn_reg 31 1
+else
+  axiom_scn_reg 31 0x4000
+  axiom_scn_reg 30 0x4000
+fi
+
+
 # ./hdmi_init.sh
 # ./pic_jtag_pcie.py 0x00 0x12
 
@@ -86,14 +110,9 @@ else
   axiom_mimg -O -P0
 fi
 
-if [ "$MODE" == "raw-full-width" ]; then
-  axiom_gen_init_hdmi.sh 2048x1080p50
-  axiom_data_init_hdmi.sh
-  axiom_snap -E -b -z  # enable the black columns
-fi
-
 # initiate HDMI
 axiom_hdmi_init3.sh
+axiom_data_init_hdmi.sh
 
 # load HDMI data islands
 # generate AVI info frame, create a packet and upload it to the packet buffer
@@ -126,5 +145,3 @@ fi
 
 # running axiom_start.sh twice will crash the camera, this should prevent that from happening
 touch /tmp/axiom.started
-
-
