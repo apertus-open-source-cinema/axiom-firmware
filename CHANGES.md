@@ -1,6 +1,19 @@
 This file lists major or notable changes to the AXIOM Beta Firmware in chronological order (YYYY-MM-DD format). This is not
 a complete change list, only those that may directly interest or affect users.
 
+
+# 2024-04-11
+
+##latest additions are:
+
+* memtool updated to latest version
+* latest gateware bin file added (now supports HDMI Data Islands)
+* python scripts added to fill HDMI Data Islands with metadata
+* added pseudo random number generator tool (prng)
+
+firmware release: fillme
+
+
 # 2021-11-17
 
 ## CHANGES.md file crated, recent additions are:
