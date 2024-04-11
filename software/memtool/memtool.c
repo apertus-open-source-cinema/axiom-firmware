@@ -1,10 +1,10 @@
+
 /***********************************************************************
 **
 **  memtool.c
 **
-**  SPDX-FileCopyrightText: © 2019-2022 Herbert Poetzl <herbert@13thfloor.at>
+**  SPDX-FileCopyrightText: © 2020-2023 Herbert Poetzl <herbert@13thfloor.at>
 **  SPDX-License-Identifier: GPL-2.0-only
-**  Copyright (C) 2019-2022 Herbert Poetzl
 **
 **  Memory Tool
 **
@@ -661,21 +661,47 @@ rskip:
 
 	} else if (opt_write) {
 	    ssize_t cnt = mem_size;
-	    void *ptr = mem_ptr;
+	    void *dst = mem_ptr;
+	    ssize_t sze = opt_ds ? opt_ds >> 3 : cnt;
+	    uint64_t buf;
 
 	    action("writing");
 
 	    while (cnt > 0) {
-		ssize_t len = read(0, ptr, cnt);
+	        void *ptr = opt_ds ? &buf : dst;
 
-		if (len == -1) {
+		ssize_t len = read(0, ptr, sze);
+
+		if ((len == -1) || (len < sze)) {
 		    fprintf(stderr,
 			"error reading from stdin.\n%s\n",
 			strerror(errno));
 		    exit(4);
 		}
-		cnt -= len;
-		ptr += len;
+
+		switch (opt_ds) {
+		case DS_8:
+		    *(uint8_t *)dst = *(uint8_t *)ptr; 
+		    break;
+
+		case DS_16:
+		    *(uint16_t *)dst = *(uint16_t *)ptr; 
+		    break;
+
+		case DS_32:
+		    *(uint32_t *)dst = *(uint32_t *)ptr; 
+		    break;
+
+		case DS_64:
+		    *(uint64_t *)dst = *(uint64_t *)ptr; 
+		    break;
+
+		default:
+		    break;
+		}
+
+	        dst += sze;
+	        cnt -= sze;
 	    }
 	}
 
@@ -776,20 +802,48 @@ rskip:
 
 	} else if (opt_read) {
 	    ssize_t cnt = mem_size;
-	    void *ptr = mem_ptr;
+	    void *src = mem_ptr;
+	    ssize_t sze = opt_ds ? opt_ds >> 3 : cnt;
+	    uint64_t buf;
 
 	    action("reading");
 
 	    while (cnt > 0) {
-		ssize_t len = write(1, ptr, cnt);
+	        void *ptr = opt_ds ? &buf : src;
+	        ssize_t len = 0;
 
-		if (len == -1) {
+		switch (opt_ds) {
+		case DS_8:
+		    *(uint8_t *)ptr = *(uint8_t *)src; 
+		    break;
+
+		case DS_16:
+		    *(uint16_t *)ptr = *(uint16_t *)src; 
+		    break;
+
+		case DS_32:
+		    *(uint32_t *)ptr = *(uint32_t *)src; 
+		    break;
+
+		case DS_64:
+		    *(uint64_t *)ptr = *(uint64_t *)src; 
+		    break;
+
+		default:
+		    break;
+		}
+
+	        len = write(1, ptr, sze);
+
+	        src += sze;
+	        cnt -= sze;
+
+		if ((len == -1) || (len < sze)) {
 		    fprintf(stderr,
 			"error writing to stdout.\n%s\n",
 			strerror(errno));
 		    exit(6);
 		}
-		cnt -= len;
 	    }
 	}
 
