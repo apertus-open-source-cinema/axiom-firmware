@@ -10,6 +10,11 @@ a complete change list, only those that may directly interest or affect users.
 * latest gateware bin file added (now supports HDMI Data Islands)
 * python scripts added to fill HDMI Data Islands with metadata
 * added pseudo random number generator tool (prng)
+* login via root user now possible
+* pvim, pnano, pcat commands added to access scripts and tools without having to care about their location
+* axiom_grow_fs.sh added to expand primary partition size to size of microsd card
+* hashdeep package replaced with rhash package
+* bash-completion added
 
 firmware release: fillme
 
