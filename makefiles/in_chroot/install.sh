@@ -17,11 +17,11 @@ sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
 echo 'Server = http://de3.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman --noprogressbar --noconfirm --needed -Syu
+pacman --noprogressbar --noconfirm --needed --overwrite '*' -Syu
 pacman --noprogressbar --noconfirm -R linux-zedboard || true
 
 # install dependencies
-pacman --noprogressbar --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
+pacman --noprogressbar --noconfirm --needed --overwrite '*' -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
 pip install --break-system-packages wheel
 pip install --break-system-packages --progress-bar off -r makefiles/in_chroot/requirements_pip.txt
 
@@ -192,6 +192,6 @@ rm -f $HASH_LOCATION/hashes.txt; rm -f $HASH_LOCATION/files.txt
 find $VERIFY_DIRECTORIES -type f > $HASH_LOCATION/files.txt
 # also hash file list
 echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt
-hashdeep -c sha256 -f $HASH_LOCATION/files.txt > $HASH_LOCATION/hashes.txt
+sudo rhash --sha256 --file-list $HASH_LOCATION/files.txt -o $HASH_LOCATION/hashes.txt
 
 echo "axiom-update finished. Software version is now $(git describe --always --abbrev=8 --dirty)."

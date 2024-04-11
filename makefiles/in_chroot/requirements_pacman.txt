@@ -9,7 +9,7 @@ base-devel
 git
 figlet
 wget
-hashdeep
+rhash
 pacman-contrib
 rsync
 
