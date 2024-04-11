@@ -7,19 +7,34 @@
 # it was previously known as kick.sh / kick-manual.sh
 
 if [ "$EUID" -ne 0 ]
-  then echo "please run as root, 'sudo axiom_start.sh'"
-  exit
+  then echo "please run as root, e.g. 'sudo axiom_start.sh'"
+  exit 2
 fi
 
 # running axiom_start.sh twice will crash the camera, this should prevent that from happening
 FILE=/tmp/axiom.started
 if [[ -f "$FILE" ]]; then
     echo "AXIOM service seems to be running already, if that is not the case please remove the /tmp/axiom.started file and try again."
-    exit
+    exit 1
 fi
 
 
 MODE=${1:-normal}
+if [ "$MODE" = "normal" ]; then
+  echo "starting with FHD color HDMI output on top and bottom plugins";
+  echo
+elif [ "$MODE" = "raw-uhd" ]; then
+  echo "starting camera with color HDMI output on top plugin and raw mode with alternating A/B frames on bottom plugin";
+  echo "the resolution of the raw output is 3840x2160 (no black colums present)";
+  echo
+elif [ "$MODE" = "raw-full-width" ]; then
+  echo "starting camera with color HDMI output on top plugin and raw mode with alternating A/B frames on bottom plugin";
+  echo "the resolution of the raw output is 4096x2160 (with black columns on left and right sides)";
+  echo
+else
+  echo 
+  exit 2
+fi
 
 axiom_fclk_init.sh
 axiom_zynq_info.sh
@@ -47,7 +62,7 @@ while sleep 1; do
     axiom_fil_reg 15 0x08000800
     axiom_fil_reg 15 0x0
 
-    [ "$MODE" == "raw" ] && axiom_fil_reg 11 0x00000031
+    [[ "$MODE" =~ ^"raw" ]] && axiom_fil_reg 11 0x00000031
 
     axiom_cmv_init.sh
     axiom_train && break
@@ -56,7 +71,7 @@ while sleep 1; do
     axiom_gpio.py init
 done
 
-[ "$MODE" == "raw" ] && i2c0_bit_set 0x22 0x15 7
+[[ "$MODE" =~ ^"raw" ]] && i2c0_bit_set 0x22 0x15 7
 
 axiom_setup.sh $MODE
 # ./hdmi_init.sh
@@ -65,9 +80,17 @@ axiom_setup.sh $MODE
 axiom_fil_reg 15 0x01000100
 
 # show overlay in normal mode - clear overlay in raw mode
-[ "$MODE" == "normal" ] && axiom_mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
-[ "$MODE" == "raw" ] && axiom_mimg -O -P0
+if [ "$MODE" == "normal" ]; then
+  axiom_mimg -a -O /opt/overlays/AXIOM-Beta-logo-overlay-white.raw
+else
+  axiom_mimg -O -P0
+fi
 
+if [ "$MODE" == "raw-full-width" ]; then
+  axiom_gen_init_hdmi.sh 2048x1080p50
+  axiom_data_init_hdmi.sh
+  axiom_snap -E -b -z  # enable the black columns
+fi
 
 # initiate HDMI
 axiom_hdmi_init3.sh
@@ -88,8 +111,8 @@ axiom_pic_jtag_pcie.py 0x92 0x92
 axiom_set_gain.sh 1
 
 
-# raw mode related commands
-if [ "$MODE" == "raw" ]; then 
+# setup raw output
+if [[ "$MODE" =~ ^"raw" ]]; then 
 	axiom_scn_reg 28 0x7700
 	axiom_scn_reg 28 0x7000
 	axiom_scn_reg 31 0x0000  # top HDMI plugin module set normal color mode
