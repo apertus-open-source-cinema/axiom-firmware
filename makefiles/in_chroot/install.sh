@@ -114,6 +114,9 @@ chmod 700 /etc/NetworkManager/dispatcher.d/iptables.sh
 cp -f software/configs/dnsmasq-shared-hosts.conf /etc/NetworkManager/dnsmasq-shared.d/hosts.conf
 systemctl enable NetworkManager
 
+# disable services that take a long time during boot
+systemctl mask systemd-random-seed
+
 # build raw2dng
 cdmake software/misc-tools-utilities/raw2dng
 
