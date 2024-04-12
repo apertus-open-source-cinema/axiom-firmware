@@ -6,6 +6,8 @@
 # this script initializes and starts the image streaming pipeline
 # it was previously known as kick.sh / kick-manual.sh
 
+set -xeuo pipefail
+
 if [ "$EUID" -ne 0 ]
   then echo "please run as root, e.g. 'sudo axiom_start.sh'"
   exit 2
@@ -62,7 +64,7 @@ while sleep 1; do
     axiom_fil_reg 15 0x08000800
     axiom_fil_reg 15 0x0
 
-    [[ "$MODE" =~ ^"raw" ]] && axiom_fil_reg 11 0x00000031
+    axiom_fil_reg 11 0x00000031
 
     axiom_cmv_init.sh
     axiom_train && break
@@ -71,11 +73,10 @@ while sleep 1; do
     axiom_gpio.py init
 done
 
-[[ "$MODE" =~ ^"raw" ]] && i2c0_bit_set 0x22 0x15 7
+i2c0_bit_set 0x22 0x15 7
 
 if [ "$MODE" == "normal" ]; then
   axiom_gen_init.sh SHOGUN
-  axiom_linear_conf.sh 1.0 0.0
 elif [ "$MODE" == "raw-uhd" ]; then
   axiom_gen_init_hdmi.sh 1080p60
 elif [ "$MODE" == "raw-full-width" ]; then
