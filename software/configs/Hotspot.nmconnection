@@ -5,7 +5,7 @@
 id=Hotspot
 uuid=3405979c-8a50-4785-9125-7055b7356e3f
 type=wifi
-interface-name=wlan0
+interface-name=wlu1 (1C:BF:CE:69:69:42)
 permissions=
 timestamp=1571938616
 

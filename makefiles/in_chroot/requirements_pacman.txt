@@ -9,7 +9,7 @@ base-devel
 git
 figlet
 wget
-hashdeep
+rhash
 pacman-contrib
 rsync
 
@@ -35,6 +35,10 @@ python-numpy
 dtc
 man
 man-pages
+libdisplay-info
+bash-completion
+# for growpart
+cloud-guest-utils
 
 # webserver
 lighttpd

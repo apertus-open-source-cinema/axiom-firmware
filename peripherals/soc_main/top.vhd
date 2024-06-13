@@ -1,12 +1,12 @@
 ----------------------------------------------------------------------------
 --  top.vhd (for cmv_hdmi)
---	Axiom Beta CMV HDMI Test
---	Version 1.3
+--	Axiom Beta CMV HDMI RAW
+--	Version 1.4
 --
 --  SPDX-FileCopyrightText: © 2013 Herbert Poetzl <herbert@13thfloor.at>
 --  SPDX-License-Identifier: GPL-2.0-or-later
 --
---  Vivado 2014.2:
+--  Vivado 2023.2:
 --    mkdir -p build.vivado
 --    (cd build.vivado && vivado -mode tcl -source ../vivado.tcl)
 ----------------------------------------------------------------------------
@@ -73,14 +73,23 @@ entity top is
 	hdmi_south_d_p : out std_logic_vector (2 downto 0);
 	hdmi_south_d_n : out std_logic_vector (2 downto 0);
 	--
-    /*	hdmi_north_clk_p : out std_logic;
+	hdmi_south_scl : inout std_ulogic;
+	hdmi_south_sda : inout std_ulogic;
+	--
+    	hdmi_north_clk_p : out std_logic;
 	hdmi_north_clk_n : out std_logic;
 	--
 	hdmi_north_d_p : out std_logic_vector (2 downto 0);
-	hdmi_north_d_n : out std_logic_vector (2 downto 0);	*/
+	hdmi_north_d_n : out std_logic_vector (2 downto 0);
 	--
-	debug_tmds: out std_logic_vector (3 downto 0);
-	debug : out std_logic_vector (3 downto 0)
+	hdmi_north_scl : inout std_ulogic;
+	hdmi_north_sda : inout std_ulogic;
+	--
+    	hdmi_shield_clk_p : out std_logic;
+	hdmi_shield_clk_n : out std_logic;
+	--
+	hdmi_shield_d_p : out std_logic_vector (2 downto 0);
+	hdmi_shield_d_n : out std_logic_vector (2 downto 0)
     );
 
 end entity top;
@@ -91,9 +100,6 @@ architecture RTL of top is
     attribute KEEP_HIERARCHY of RTL : architecture is "TRUE";
 
     signal clk_100 : std_logic;
-
-    signal debug_data : std_logic_vector (3 downto 0);
-    signal debug_data_d : std_logic_vector (3 downto 0);
 
     signal hd_de : std_logic;
     signal hd_terc : std_logic;
@@ -108,19 +114,33 @@ architecture RTL of top is
     --------------------------------------------------------------------
 
     signal tmds_south_io : std_logic_vector (3 downto 0);
+
+    signal tmds_s_enable : std_logic := '1';
+    signal tmds_s_reset : std_logic := '0';
+
+    signal rgb_s_data : vec8_a (2 downto 0) :=
+	(others => (others => '0'));
+
     signal tmds_north_io : std_logic_vector (3 downto 0);
 
-    signal tmds_enable : std_logic := '1';
-    signal tmds_reset : std_logic := '0';
+    signal tmds_n_enable : std_logic := '1';
+    signal tmds_n_reset : std_logic := '0';
 
-    signal rgb_data : vec8_a (2 downto 0) :=
+    signal rgb_n_data : vec8_a (2 downto 0) :=
+	(others => (others => '0'));
+
+    signal tmds_shield_io : std_logic_vector (3 downto 0);
+
+    signal tmds_x_enable : std_logic := '1';
+    signal tmds_x_reset : std_logic := '0';
+
+    signal rgb_x_data : vec8_a (2 downto 0) :=
 	(others => (others => '0'));
 
     signal dil_data : std_logic_vector (8 downto 0);
     signal dil_de : std_logic;
 
     signal rgb_de : std_logic;
-    signal rgb_blank : std_logic;
 
     signal rgb_hsync : std_logic;
     signal rgb_vsync : std_logic;
@@ -130,6 +150,30 @@ architecture RTL of top is
     signal btn : std_logic_vector (4 downto 0) := (others => '0');
     signal swi : std_logic_vector (7 downto 0) := (others => '0');
     signal led : std_logic_vector (7 downto 0);
+
+    --------------------------------------------------------------------
+    -- I2C HDMI North Signals
+    --------------------------------------------------------------------
+
+    signal hdmi_north_sda_i : std_ulogic;
+    signal hdmi_north_sda_o : std_ulogic;
+    signal hdmi_north_sda_t : std_ulogic;
+
+    signal hdmi_north_scl_i : std_ulogic;
+    signal hdmi_north_scl_o : std_ulogic;
+    signal hdmi_north_scl_t : std_ulogic;
+
+    --------------------------------------------------------------------
+    -- I2C HDMI South Signals
+    --------------------------------------------------------------------
+
+    signal hdmi_south_sda_i : std_ulogic;
+    signal hdmi_south_sda_o : std_ulogic;
+    signal hdmi_south_sda_t : std_ulogic;
+
+    signal hdmi_south_scl_i : std_ulogic;
+    signal hdmi_south_scl_o : std_ulogic;
+    signal hdmi_south_scl_t : std_ulogic;
 
     --------------------------------------------------------------------
     -- PS7 Signals
@@ -384,9 +428,6 @@ architecture RTL of top is
     alias writer_enable : std_logic_vector (3 downto 0)
 	is reg_oreg(11)(19 downto 16);
 
-    alias rcn_clip : std_logic_vector (1 downto 0)
-	is reg_oreg(11)(21 downto 20);
-
     alias write_strobe : std_logic_vector (7 downto 0)
 	is reg_oreg(11)(31 downto 24);
 
@@ -405,7 +446,7 @@ architecture RTL of top is
     alias led_val : std_logic_vector (7 downto 0)
 	is reg_oreg(14)(7 downto 0);
 
-    alias i2c1_sel : std_logic_vector (1 downto 0)
+    alias i2c_sel : std_logic_vector (1 downto 0)
 	is reg_oreg(14)(13 downto 12);
 
     alias led_mask : std_logic_vector (7 downto 0)
@@ -565,14 +606,14 @@ architecture RTL of top is
     type addr_a is array (natural range <>) of
 	std_logic_vector (ADDR_WIDTH - 1 downto 0);
 
-    constant RADDR_MASK : addr_a(0 to 3) := 
+    constant RADDR_MASK : addr_a(0 to 3) :=
 	( x"07FFFFFF", x"07FFFFFF", x"07FFFFFF", x"07FFFFFF" );
-    constant RADDR_BASE : addr_a(0 to 3) := 
+    constant RADDR_BASE : addr_a(0 to 3) :=
 	( x"18000000", x"20000000", x"18000000", x"20000000" );
 
-    constant WADDR_MASK : addr_a(0 to 3) := 
+    constant WADDR_MASK : addr_a(0 to 3) :=
 	( x"07FFFFFF", x"07FFFFFF", x"07FFFFFF", x"07FFFFFF" );
-    constant WADDR_BASE : addr_a(0 to 3) := 
+    constant WADDR_BASE : addr_a(0 to 3) :=
 	( x"18000000", x"20000000", x"18000000", x"20000000" );
 
     --------------------------------------------------------------------
@@ -674,8 +715,6 @@ architecture RTL of top is
 
     signal data_ctrl : std_logic_vector (11 downto 0);
     signal data_ctrl_d : std_logic_vector (11 downto 0);
-    signal data_ctrl_dd : std_logic_vector (11 downto 0);
-    signal data_ctrl_ddd : std_logic_vector (11 downto 0);
 
     alias data_dval : std_logic is data_ctrl(0);
     alias data_lval : std_logic is data_ctrl(1);
@@ -684,10 +723,6 @@ architecture RTL of top is
     alias data_dval_d : std_logic is data_ctrl_d(0);
     alias data_lval_d : std_logic is data_ctrl_d(1);
     alias data_fval_d : std_logic is data_ctrl_d(2);
-
-    alias data_dval_dd : std_logic is data_ctrl_dd(0);
-    alias data_lval_dd : std_logic is data_ctrl_dd(1);
-    alias data_fval_dd : std_logic is data_ctrl_dd(2);
 
     alias data_fot : std_logic is data_ctrl(3);
     alias data_inte1 : std_logic is data_ctrl(4);
@@ -700,33 +735,8 @@ architecture RTL of top is
     signal data_wen_d : std_logic_vector (0 downto 0);
     signal data_wen_dd : std_logic_vector (0 downto 0);
 
-    signal data_rcn_wen : std_logic;
-
     signal data_in : std_logic_vector (DATA_WIDTH - 1 downto 0);
     signal data_in_d : std_logic_vector (DATA_WIDTH - 1 downto 0);
-    -- signal data_in_dd : std_logic_vector (DATA_WIDTH - 1 downto 0);
-
-    signal data_rcn : std_logic_vector (DATA_WIDTH - 1 downto 0);
-
-    signal llut_dout_ch0 : std_logic_vector (17 downto 0);
-    signal llut_dout_ch1 : std_logic_vector (17 downto 0);
-    signal llut_dout_ch2 : std_logic_vector (17 downto 0);
-    signal llut_dout_ch3 : std_logic_vector (17 downto 0);
-
-    signal llut_dout_ch0_d : std_logic_vector (17 downto 0);
-    signal llut_dout_ch1_d : std_logic_vector (17 downto 0);
-    signal llut_dout_ch2_d : std_logic_vector (17 downto 0);
-    signal llut_dout_ch3_d : std_logic_vector (17 downto 0);
-
-    signal llut_dout_ch0_dd : std_logic_vector (17 downto 0);
-    signal llut_dout_ch1_dd : std_logic_vector (17 downto 0);
-    signal llut_dout_ch2_dd : std_logic_vector (17 downto 0);
-    signal llut_dout_ch3_dd : std_logic_vector (17 downto 0);
-
-    signal data_rcn_ch0 : std_logic_vector (15 downto 0);
-    signal data_rcn_ch1 : std_logic_vector (15 downto 0);
-    signal data_rcn_ch2 : std_logic_vector (15 downto 0);
-    signal data_rcn_ch3 : std_logic_vector (15 downto 0);
 
     --------------------------------------------------------------------
     -- HDMI FIFO Signals
@@ -773,12 +783,51 @@ architecture RTL of top is
 
     signal hdmi_ch4_d : std_logic_vector (15 downto 0);
 
+    signal raw_in : std_logic_vector (DATA_WIDTH - 1 downto 0);
+    alias raw_in_ch0 : std_logic_vector (11 downto 0)
+	is raw_in (63 downto 52);
+    alias raw_in_ch1 : std_logic_vector (11 downto 0)
+	is raw_in (51 downto 40);
+    alias raw_in_ch2 : std_logic_vector (11 downto 0)
+	is raw_in (39 downto 28);
+    alias raw_in_ch3 : std_logic_vector (11 downto 0)
+	is raw_in (27 downto 16);
+    alias raw_in_ch4 : std_logic_vector (15 downto 0)
+	is raw_in (15 downto 0);
+
+    signal raw_out : std_logic_vector (DATA_WIDTH - 1 downto 0);
+
+    alias raw_out_ch0 : std_logic_vector (11 downto 0)
+	is raw_out (63 downto 52);
+    alias raw_out_ch1 : std_logic_vector (11 downto 0)
+	is raw_out (51 downto 40);
+    alias raw_out_ch2 : std_logic_vector (11 downto 0)
+	is raw_out (39 downto 28);
+    alias raw_out_ch3 : std_logic_vector (11 downto 0)
+	is raw_out (27 downto 16);
+    alias raw_out_ch4 : std_logic_vector (15 downto 0)
+	is raw_out (15 downto 0);
+
+    signal raw_border : std_logic_vector (3 downto 0);
+    signal raw_corner : std_logic_vector (3 downto 0);
+    signal raw_wrsel : std_logic_vector (3 downto 0);
+
+    signal raw_hd_code : std_logic_vector(63 downto 0);
+
+    alias raw_hd_ch0 : std_logic_vector (11 downto 0)
+	is raw_hd_code (63 downto 52);
+    alias raw_hd_ch1 : std_logic_vector (11 downto 0)
+	is raw_hd_code (51 downto 40);
+    alias raw_hd_ch2 : std_logic_vector (11 downto 0)
+	is raw_hd_code (39 downto 28);
+    alias raw_hd_ch3 : std_logic_vector (11 downto 0)
+	is raw_hd_code (27 downto 16);
+
     signal conv_out : std_logic_vector (63 downto 0);
     signal hdmi_out : std_logic_vector (63 downto 0);
 
-    signal hd_edata : std_logic_vector(31 downto 0);
-    signal hd_odata : std_logic_vector(31 downto 0);
-    signal hd_sdata : std_logic_vector(31 downto 0);
+--  signal hd_edata : std_logic_vector(31 downto 0);
+--  signal hd_odata : std_logic_vector(31 downto 0);
 
     signal hd_code : std_logic_vector(63 downto 0);
 
@@ -803,13 +852,13 @@ architecture RTL of top is
 
     signal scan_hevent : std_logic_vector (3 downto 0);
     signal scan_vevent : std_logic_vector (3 downto 0);
+    signal scan_border : std_logic_vector (3 downto 0);
 
     signal scan_hcnt : std_logic_vector (11 downto 0);
     signal scan_vcnt : std_logic_vector (11 downto 0);
     signal scan_fcnt : std_logic_vector (11 downto 0);
 
     signal scan_econf : std_logic_vector (63 downto 0);
-    signal scan_event : std_logic_vector (63 downto 0);
 
     signal scan_eo : std_logic;
 
@@ -823,17 +872,19 @@ architecture RTL of top is
     signal sync_rload : std_logic;
     signal sync_rswitch : std_logic_vector (1 downto 0);
 
+    signal sync_inv : std_logic_vector (1 downto 0);
+
     signal event_event : std_logic_vector (7 downto 0);
+    signal event_corner : std_logic_vector (3 downto 0);
     signal event_data : std_logic_vector (1 downto 0);
-    signal event_data_d : std_logic_vector (1 downto 0);
 
     signal event_hcnt : std_logic_vector (11 downto 0);
     signal event_vcnt : std_logic_vector (11 downto 0);
     signal event_fcnt : std_logic_vector (11 downto 0);
 
-    signal event_cr : std_logic_vector (11 downto 0);
-    signal event_cg : std_logic_vector (11 downto 0);
-    signal event_cb : std_logic_vector (11 downto 0);
+--  signal event_cr : std_logic_vector (11 downto 0);
+--  signal event_cg : std_logic_vector (11 downto 0);
+--  signal event_cb : std_logic_vector (11 downto 0);
 
 
 
@@ -868,7 +919,6 @@ architecture RTL of top is
     signal sync_wswitch : std_logic_vector (1 downto 0);
 
     signal sync_wempty : std_logic;
-    signal sync_wenable : std_logic;
     signal sync_winact : std_logic;
     signal sync_frmreq : std_logic;
     signal sync_arm : std_logic;
@@ -878,40 +928,14 @@ architecture RTL of top is
     --------------------------------------------------------------------
 
     signal cmv_active : std_logic;
-
-    signal sync_switch : std_logic;
     signal sync_done : std_logic;
-
-    signal flip_active : std_logic;
-
-    signal sync_flip : std_logic;
 
     signal ilu_clk : std_logic;
     signal ilu_frmreq : std_logic;
 
-    signal ilu_led0 : std_logic := '0';
-    signal ilu_led1 : std_logic := '0';
-    signal ilu_led2 : std_logic := '0';
-
-    signal ilu_led3 : std_logic := '0';
-    signal ilu_led4 : std_logic := '0';
-
     --------------------------------------------------------------------
     -- BRAM LUT Signals
     --------------------------------------------------------------------
-
-    constant CLUT_COUNT : natural := 6;
-
-    signal clut_addr : lut11_a (0 to CLUT_COUNT - 1);
-    signal clut_dout : lut12_a (0 to CLUT_COUNT - 1);
-    signal clut_dout_d : lut12_a (0 to CLUT_COUNT - 1);
-    signal clut_dout_dd : lut12_a (0 to CLUT_COUNT - 1);
-
-    constant LLUT_COUNT : natural := 4;
-
-    signal llut_addr : lut12_a (0 to LLUT_COUNT - 1);
-    signal llut_dout : lut18_a (0 to LLUT_COUNT - 1);
-    signal llut_dout_d : lut18_a (0 to LLUT_COUNT - 1);
 
     constant DLUT_COUNT : natural := 4;
 
@@ -1215,6 +1239,78 @@ begin
     -- cmv_sys_res_n <= '1';
 
     --------------------------------------------------------------------
+    -- I2C Interface HDMI North
+    --------------------------------------------------------------------
+
+    IOBUF_north_sda_inst : IOBUF
+	port map (
+	    I => hdmi_north_sda_o, O => hdmi_north_sda_i,
+	    T => hdmi_north_sda_t, IO => hdmi_north_sda );
+
+    PULLUP_north_sda_inst : PULLUP
+        port map ( O => hdmi_north_sda );
+
+    IOBUF_north_scl_inst : IOBUF
+	port map (
+	    I => hdmi_north_scl_o, O => hdmi_north_scl_i,
+	    T => hdmi_north_scl_t, IO => hdmi_north_scl );
+
+    PULLUP_north_scl_inst : PULLUP
+        port map ( O => hdmi_north_scl );
+
+    --------------------------------------------------------------------
+    -- I2C Interface HDMI South
+    --------------------------------------------------------------------
+
+    IOBUF_south_sda_inst : IOBUF
+	port map (
+	    I => hdmi_south_sda_o, O => hdmi_south_sda_i,
+	    T => hdmi_south_sda_t, IO => hdmi_south_sda );
+
+    PULLUP_south_sda_inst : PULLUP
+        port map ( O => hdmi_south_sda );
+
+    IOBUF_south_scl_inst : IOBUF
+	port map (
+	    I => hdmi_south_scl_o, O => hdmi_south_scl_i,
+	    T => hdmi_south_scl_t, IO => hdmi_south_scl );
+
+    PULLUP_south_scl_inst : PULLUP
+        port map ( O => hdmi_south_scl );
+
+    --------------------------------------------------------------------
+    -- I2C Interface HDMI Selection
+    --------------------------------------------------------------------
+
+    hdmi_north_sda_o <= i2c0_sda_o when i2c_sel = "01" else '1';
+    hdmi_north_sda_t <= i2c0_sda_t when i2c_sel = "01" else '1';
+
+    hdmi_south_sda_o <= i2c0_sda_o when i2c_sel = "10" else '1';
+    hdmi_south_sda_t <= i2c0_sda_t when i2c_sel = "10" else '1';
+
+    i2c0_sda_t <= not i2c0_sda_t_n;
+
+    with i2c_sel select i2c0_sda_i <=
+	'1'		 when  "00",
+	hdmi_north_sda_i when  "01",
+	hdmi_south_sda_i when  "10",
+	'1'		 when  "11";
+
+    hdmi_north_scl_o <= i2c0_scl_o when i2c_sel = "01" else '1';
+    hdmi_north_scl_t <= i2c0_scl_t when i2c_sel = "01" else '1';
+
+    hdmi_south_scl_o <= i2c0_scl_o when i2c_sel = "10" else '1';
+    hdmi_south_scl_t <= i2c0_scl_t when i2c_sel = "10" else '1';
+
+    i2c0_scl_t <= not i2c0_scl_t_n;
+
+    with i2c_sel select i2c0_scl_i <=
+	'1'		 when  "00",
+	hdmi_north_scl_i when  "01",
+	hdmi_south_scl_i when  "10",
+	'1'		 when  "11";
+
+    --------------------------------------------------------------------
     -- I2C Interface AB
     --------------------------------------------------------------------
 
@@ -1225,10 +1321,10 @@ begin
 	    I => i2c1_sda_o, O => i2c1_sda_i,
 	    T => i2c1_sda_t, IO => i2c_sda );
 
-    i2c1_scl_t <= not i2c1_scl_t_n;
-
     PULLUP_sda_inst : PULLUP
         port map ( O => i2c_sda );
+
+    i2c1_scl_t <= not i2c1_scl_t_n;
 
     IOBUF_scl_inst : IOBUF
 	port map (
@@ -1269,7 +1365,10 @@ begin
 	generic map (
 	    -- PLL_CONFIG => HDMI_7425KHZ )
 	    -- PLL_CONFIG => HDMI_5000KHZ )
+	    -- PLL_CONFIG => HDMI_5208KHZ )
 	    PLL_CONFIG => HDMI_148500KHZ )
+	    -- PLL_CONFIG => HDMI_160MHZ )
+	    -- PLL_CONFIG => HDMI_180MHZ )
 	port map (
 	    ref_clk_in => clk_100,
 	    --
@@ -1362,7 +1461,10 @@ begin
 	generic map (
 	    REG_SPLIT => REG_SPLIT,
 	    OREG_SIZE => OREG_SIZE,
-	    IREG_SIZE => IREG_SIZE )
+	    IREG_SIZE => IREG_SIZE,
+	    INITIAL => 
+		(11 => x"00000131",		-- all stopped/in reset
+		others => (others => '0')) )
 	port map (
 	    s_axi_aclk => m_axi0a_aclk(1),
 	    s_axi_areset_n => m_axi0a_areset_n(1),
@@ -1393,7 +1495,7 @@ begin
 		   cseq_wload & cseq_wswitch &			-- 2bit
 		   cseq_wempty & cseq_frmreq &			-- 2bit
 		   cseq_flip & cseq_switch & x"000000";		-- 18bit
-		   
+
 
     --------------------------------------------------------------------
     -- Delay Control
@@ -1431,45 +1533,6 @@ begin
 	    mismatch => par_mismatch,		-- in
 	    bitslip => serdes_bitslip );	-- out
 
-    --------------------------------------------------------------------
-    -- BRAM LUT Register File (Linearization)
-    --------------------------------------------------------------------
-
-    reg_lut_inst2 : entity work.reg_lut_12x18
-	generic map (
-	    LUT_COUNT => LLUT_COUNT )
-	port map (
-	    s_axi_aclk => m_axi0a_aclk(5),
-	    s_axi_areset_n => m_axi0a_areset_n(5),
-	    --
-	    s_axi_ro => m_axi0a_ri(5),
-	    s_axi_ri => m_axi0a_ro(5),
-	    s_axi_wo => m_axi0a_wi(5),
-	    s_axi_wi => m_axi0a_wo(5),
-	    --
-	    lut_clk => fifo_data_wclk,
-	    lut_addr => llut_addr,
-	    lut_dout => llut_dout );
-
-    --------------------------------------------------------------------
-    -- BRAM LUT Register File (ColRow Noise)
-    --------------------------------------------------------------------
-
-    reg_lut_inst0 : entity work.reg_lut_11x12
-	generic map (
-	    LUT_COUNT => CLUT_COUNT )
-	port map (
-	    s_axi_aclk => m_axi0a_aclk(3),
-	    s_axi_areset_n => m_axi0a_areset_n(3),
-	    --
-	    s_axi_ro => m_axi0a_ri(3),
-	    s_axi_ri => m_axi0a_ro(3),
-	    s_axi_wo => m_axi0a_wi(3),
-	    s_axi_wi => m_axi0a_wo(3),
-	    --
-	    lut_clk => serdes_clk,
-	    lut_addr => clut_addr,
-	    lut_dout => clut_dout );
 
     --------------------------------------------------------------------
     -- LVDS Input and Deserializer
@@ -1699,8 +1762,8 @@ begin
             for I in 15 downto 1 loop
 		del_v(I) := del_v(I-1);
 		dat_v(I) := dat_v(I-1);
-	    end loop; 
-	
+	    end loop;
+
 	    del_v(0) := par_valid & par_ctrl;
 	    dat_v(0) := par_data;
 	end if;
@@ -1797,36 +1860,18 @@ begin
 
 
 
-    llut_proc : process (fifo_data_wclk)
-    begin
-	if rising_edge(fifo_data_wclk) then
-	    llut_dout_ch0 <= llut_dout_d(0);
-	    llut_dout_ch1 <= llut_dout_d(1);
-	    llut_dout_ch2 <= llut_dout_d(2);
-	    llut_dout_ch3 <= llut_dout_d(3);
-
-	    llut_dout_d <= llut_dout;
-
-	    llut_addr(0) <= data_in_d(63 downto 52);
-	    llut_addr(1) <= data_in_d(51 downto 40);
-	    llut_addr(2) <= data_in_d(39 downto 28);
-	    llut_addr(3) <= data_in_d(27 downto 16);
-
-	    data_in_d <= data_in;
-	end if;
-    end process;
-
---  delay_inst0 : entity work.sync_delay
---	generic map (
---	    STAGES => 2,
---	    DATA_WIDTH => data_in'length )
---	port map (
---	    clk => fifo_data_wclk,
---	    data_in => data_in,
---	    data_out => data_in_d );
-
 
     delay_inst0 : entity work.sync_delay
+	generic map (
+	    STAGES => 2,
+	    DATA_WIDTH => data_in'length )
+	port map (
+	    clk => fifo_data_wclk,
+	    data_in => data_in,
+	    data_out => data_in_d );
+
+
+    delay_inst1 : entity work.sync_delay
 	generic map (
 	    STAGES => 2,
 	    DATA_WIDTH => data_ctrl'length )
@@ -1834,15 +1879,6 @@ begin
 	    clk => fifo_data_wclk,
 	    data_in => data_ctrl,
 	    data_out => data_ctrl_d );
-
-    delay_inst1 : entity work.sync_delay
-	generic map (
-	    STAGES => 3,
-	    DATA_WIDTH => data_ctrl'length )
-	port map (
-	    clk => fifo_data_wclk,
-	    data_in => data_ctrl_d,
-	    data_out => data_ctrl_dd );
 
     delay_inst2 : entity work.sync_delay
 	generic map (
@@ -1853,171 +1889,23 @@ begin
 	    data_in => data_wen,
 	    data_out => data_wen_d );
 
-    delay_inst3 : entity work.sync_delay
-	generic map (
-	    STAGES => 4,
-	    DATA_WIDTH => 1 )
-	port map (
-	    clk => fifo_data_wclk,
-	    data_in => data_wen_d,
-	    data_out => data_wen_dd );
 
-/*  conf_delay_proc : process (fifo_data_wclk)
-	type del_a is array (natural range <>) of
-	    std_logic_vector (12 downto 0);
+    match_en <= data_wen_d(0)
+	when (data_ctrl_d(2 downto 0) and reg_mask) = reg_mval
+	else '0';
 
-	variable del_v : del_a (15 downto 0)
-	    := (others => (others => '0'));
+    cmv_active <= or_reduce(data_ctrl_d(2 downto 0) and reg_amsk);
 
-	variable cpos_v : integer;
-	variable cposd_v : integer;
-	variable wpos_v : integer;
-	variable wposd_v : integer;
-
-    begin
-	if rising_edge(fifo_data_wclk) then
-	    data_wen_d <= del_v(wpos_v)(12 downto 12);
-	    data_wen_dd <= del_v(wposd_v)(12 downto 12);
-	    data_ctrl_d <= del_v(cpos_v)(11 downto 0);
-	    data_ctrl_dd <= del_v(cposd_v)(11 downto 0);
-
-	    cpos_v := to_index(reg_oreg(14)(31 downto 28));
-	    cposd_v := to_index(reg_oreg(14)(27 downto 24));
-	    wpos_v := to_index(reg_oreg(14)(23 downto 20));
-	    wposd_v := to_index(reg_oreg(14)(19 downto 16));
-
-            for I in 15 downto 1 loop
-		del_v(I) := del_v(I-1);
-	    end loop; 
-	
-	    del_v(0) := data_wen & data_ctrl;
-	end if;
-    end process; 	*/
-
-
-    track_proc : process (fifo_data_wclk)
-	variable lval_v : std_logic := '0';
-	variable fval_v : std_logic := '0';
-
-	variable ccnt_v : unsigned (10 downto 0) := (others => '0');
-	variable rcnt_v : unsigned (10 downto 0) := (others => '0');
-
-	variable ccnt_d_v : unsigned (ccnt_v'range) := (others => '0');
-	variable rcnt_d_v : unsigned (rcnt_v'range) := (others => '0');
-
-    begin
-
-	if rising_edge(fifo_data_wclk) then
-	    if fval_v = '1' and data_fval_d = '0' then
-		ccnt_v := (others => '0');
-		rcnt_v := (others => '0');
-		
-	    elsif lval_v = '1' and data_lval_d = '0' then
-		ccnt_v := (others => '0');
-		rcnt_v := rcnt_v + "1";
-
-	    elsif data_dval_d = '1' and data_wen_d(0) = '1' then
-		ccnt_v := ccnt_v + "1";
-
-	    end if;
-
-	--  clut_addr(0) <= data_fot & data_inte1 & data_inte2 &
-	--	std_logic_vector(ccnt_v);
-	--  clut_addr(1) <= data_fot & data_inte1 & data_inte2 &
-	--	std_logic_vector(ccnt_v);
-
-	    clut_dout_dd <= clut_dout_d;
-	    clut_dout_d <= clut_dout;
-
-	    clut_addr(0) <= std_logic_vector(ccnt_v);
-	    clut_addr(1) <= std_logic_vector(ccnt_v);
-
-	    clut_addr(2) <= std_logic_vector(ccnt_v);
-	    clut_addr(3) <= std_logic_vector(ccnt_v);
-
-	    clut_addr(4) <= std_logic_vector(rcnt_v);
-	    clut_addr(5) <= std_logic_vector(rcnt_v);
-
-	    lval_v := data_lval_d;
-	    fval_v := data_fval_d;
-
-	end if;
-    end process;
-
-
-
-    rc_noise_inst : entity work.row_col_noise
-	port map (
-	    clk => fifo_data_wclk,
-	    clip => rcn_clip,
-	    --
-	    ch0_in => llut_dout_ch0_dd,
-	    ch1_in => llut_dout_ch1_dd,
-	    ch2_in => llut_dout_ch2_dd,
-	    ch3_in => llut_dout_ch3_dd,
-	    --
-	    c0r0_lut => clut_dout_dd(0),
-	    c1r0_lut => clut_dout_dd(1),
-	    c0r1_lut => clut_dout_dd(2),
-	    c1r1_lut => clut_dout_dd(3),
-	    --
-	    r0_lut => clut_dout_dd(4),
-	    r1_lut => clut_dout_dd(5),
-	    --
-	    ch0_out => data_rcn_ch0,
-	    ch1_out => data_rcn_ch1,
-	    ch2_out => data_rcn_ch2,
-	    ch3_out => data_rcn_ch3 );	
-
-    copy_proc : process (fifo_data_wclk)
-    begin
-	if rising_edge(fifo_data_wclk) then
-	/*  data_rcn_ch0 <= llut_dout_ch0(15 downto 0);
-	    data_rcn_ch1 <= llut_dout_ch1(15 downto 0);
-	    data_rcn_ch2 <= llut_dout_ch2(15 downto 0);
-	    data_rcn_ch3 <= llut_dout_ch3(15 downto 0); */
-
-	    llut_dout_ch0_dd <= llut_dout_ch0_d;
-	    llut_dout_ch1_dd <= llut_dout_ch1_d;
-	    llut_dout_ch2_dd <= llut_dout_ch2_d;
-	    llut_dout_ch3_dd <= llut_dout_ch3_d; 
-
-	    llut_dout_ch0_d <= llut_dout_ch0;
-	    llut_dout_ch1_d <= llut_dout_ch1;
-	    llut_dout_ch2_d <= llut_dout_ch2;
-	    llut_dout_ch3_d <= llut_dout_ch3; 
-
-	    match_en_d <= match_en;
-	    match_en <= '1'
-		when (data_ctrl_dd(2 downto 0) and reg_mask) = reg_mval
-		else '0';
-
-	    data_ctrl_ddd <= data_ctrl_dd;
-
-	end if;
-
-    	data_rcn(63 downto 52) <= data_rcn_ch0(15 downto 4);
-	data_rcn(51 downto 40) <= data_rcn_ch1(15 downto 4);
-	data_rcn(39 downto 28) <= data_rcn_ch2(15 downto 4);
-	data_rcn(27 downto 16) <= data_rcn_ch3(15 downto 4);
-    /*	data_rcn(63 downto 52) <= data_rcn_ch0(11 downto 0);
-	data_rcn(51 downto 40) <= data_rcn_ch1(11 downto 0);
-	data_rcn(39 downto 28) <= data_rcn_ch2(11 downto 0);
-	data_rcn(27 downto 16) <= data_rcn_ch3(11 downto 0); */
-	data_rcn(15 downto 0)  <= x"0" & data_ctrl_ddd;
-    end process;
-
-
+    -- data_rcn <= data_in;
     -- data_in_c(63 downto 16) <= data_in(63 downto 16);
 
-    cmv_active <= or_reduce(data_ctrl(2 downto 0) and reg_amsk);
 
-    data_rcn_wen <= data_wen_dd(0) and match_en_d;
+    -- data_rcn_wen <= data_wen_dd(0) and match_en_d;
 
     -- fifo_data_wclk <= iserdes_clk;
-    fifo_data_wen <= data_rcn_wen when fifo_data_wrdy = '1' else '0';
+    fifo_data_wen <= match_en when fifo_data_wrdy = '1' else '0';
     wdata_full <= fifo_data_full when fifo_data_wrdy = '1' else '1';
-    fifo_data_in <= data_rcn;
+    fifo_data_in <= data_in_d;
 
     fifo_data_rclk <= wdata_clk;
     fifo_data_ren <=
@@ -2342,6 +2230,8 @@ begin
     btn_ovr <= (btn and not btn_mask) or (btn_val and btn_mask);
     led <= (led_out and not led_mask) or (led_val and led_mask);
 
+    emio_gpio_i(7 downto 0) <= led;
+
 --  div_mask_64 <= reg_oreg(17) & reg_oreg(16);
 --  div_mask <= div_mask_64(CHANNELS + 8 downto 0);
 --  led_done <= xor_reduce((led_out & div_out) and div_mask);
@@ -2494,7 +2384,10 @@ begin
 	generic map (
 	    REG_SPLIT => GEN_SPLIT,
 	    OREG_SIZE => OGEN_SIZE,
-	    IREG_SIZE => IGEN_SIZE )
+	    IREG_SIZE => IGEN_SIZE,
+	    INITIAL =>
+		(11 => x"00000321",		-- all stopped/in reset
+		others => (others => '0')) )
 	port map (
 	    s_axi_aclk => m_axi1a_aclk(1),
 	    s_axi_areset_n => m_axi1a_areset_n(1),
@@ -2565,7 +2458,7 @@ begin
 	    lut_dout => dlut_dout );
 
     --------------------------------------------------------------------
-    -- BRAM LUT Register File
+    -- BRAM Data Island Register File
     --------------------------------------------------------------------
 
     reg_mem_inst : entity work.reg_mem
@@ -2635,10 +2528,13 @@ begin
 	    --
 	    hevent => scan_hevent,
 	    vevent => scan_vevent,
+	    border => scan_border,
 	    --
 	    hcnt => scan_hcnt,
 	    vcnt => scan_vcnt,
 	    fcnt => scan_fcnt );
+
+    sync_inv <= reg_oscn(5)(31) & reg_oscn(4)(31);
 
     scan_event_inst : entity work.scan_event
 	port map (
@@ -2652,6 +2548,7 @@ begin
 	    --
 	    hevent => scan_hevent,
 	    vevent => scan_vevent,
+	    border => scan_border,
 	    --
 	    hcnt_in => scan_hcnt,
 	    vcnt_in => scan_vcnt,
@@ -2659,6 +2556,7 @@ begin
 	    --
 	    data_eo => scan_eo,
 	    econf => scan_econf,
+	    syncinv => sync_inv,
 	    --
 	    hsync => hd_hsync,
 	    vsync => hd_vsync,
@@ -2669,6 +2567,7 @@ begin
 	    data => event_data,
 	    --
 	    event => event_event,
+	    corner => event_corner,
 	    --
 	    hcnt => event_hcnt,
 	    vcnt => event_vcnt,
@@ -2677,9 +2576,9 @@ begin
     scan_eo <= reg_oscn(2)(0) xor reg_oscn(14)(0);
     scan_econf <= reg_oscn(13) & reg_oscn(12);
 
-    event_cr <= x"FFF" when event_event(1) = '1' else x"000";
-    event_cg <= x"FFF" when event_event(2) = '1' else x"000";
-    event_cb <= x"FFF" when event_event(3) = '1' else x"000";
+--  event_cr <= x"FFF" when event_event(1) = '1' else x"000";
+--  event_cg <= x"FFF" when event_event(2) = '1' else x"000";
+--  event_cb <= x"FFF" when event_event(3) = '1' else x"000";
 
 --  hd_edata <= event_cg & event_cr when event_event(0) = '1'
 --	else x"4040" when event_data(0) = '0'
@@ -2694,7 +2593,7 @@ begin
 	port map (
 	    clk => data_clk,
 	    clip => reg_oscn(14)(5 downto 4),
-	    bypass => reg_oscn(14)(8),
+	    bypass => reg_oscn(14)(6),
 	    --
 	    matrix => mat_values,
 	    adjust => mat_adjust,
@@ -2752,7 +2651,7 @@ begin
     dlut_addr(2) <= mat_v_out(2);
     dlut_addr(3) <= mat_v_out(3);
 
-    ch4_delay_inst : entity work.sync_delay
+    hdmi_delay_inst0 : entity work.sync_delay
 	generic map (
 	    STAGES => 10,
 	    DATA_WIDTH => 16 )
@@ -2761,7 +2660,6 @@ begin
 	    data_in => hdmi_ch4,
 	    data_out => hdmi_ch4_d );
 
-	
     overlay_proc : process (data_clk)
 	variable a_v : unsigned(11 downto 0);
 	variable b_v : unsigned(11 downto 0);
@@ -2778,7 +2676,7 @@ begin
 		a_v := unsigned(dlut_dout_d(I)(15 downto 4));
 		b_v := unsigned(hdmi_ch4_d(11 downto 0));
 		c_v := unsigned(hdmi_ch4_d(ci_c(I)+3 downto ci_c(I)));
-		
+
 		case hdmi_ch4_d(15 downto 12) is
 		    when "0001" =>
 		    	o_v := b_v;
@@ -2801,7 +2699,7 @@ begin
 
 		    when "0111" =>
 		    	o_v := shift_right(not a_v, 1) + shift_right(b_v, 1);
-		    
+
 
 		    when "1000" =>
 		    	o_v := x"000" when scan_fcnt(5) else x"FFF";
@@ -2826,21 +2724,21 @@ begin
 		    	o_v := x"000" when scan_fcnt(1) else x"FFF";
 
 		    when "1111" =>
-		    	o_v := x"000" when scan_fcnt(0) else x"FFF";
-			
+		    	o_v := x"000";
+
 		    when others =>
 			o_v := a_v;
 		end case;
 
 		hdmi_out(I*16+15 downto I*16) <=
 		    std_logic_vector(o_v) & x"0";
-	    end loop;	
+	    end loop;
 	    -- conv_out <= conv_ch0 & conv_ch1 & conv_ch2 & conv_ch3;
 	    -- hdmi_out <= conv_out;
 	    -- hd_code <= hdmi_out;
 	end if;
     end process;
-    
+
     out_delay_inst : entity work.sync_delay
 	generic map (
 	    STAGES => 4,
@@ -2854,6 +2752,77 @@ begin
     hdmi_enable <= event_data(0) or event_event(4);
     -- hdmi_enable <= (event_data(0) and event_data(1)) or event_event(4);
 
+    raw_delay_inst0 : entity work.sync_delay
+	generic map (
+	    STAGES => 10,
+	    DATA_WIDTH => 64 )
+	port map (
+	    clk => data_clk,
+	    data_in => hdmi_in,
+	    data_out => raw_in );
+
+    raw_delay_inst1 : entity work.sync_delay
+	generic map (
+	    STAGES => 4,
+	    DATA_WIDTH => 4 )
+	port map (
+	    clk => data_clk,
+	    data_in => wbuf_sel & rbuf_sel,
+	    data_out => raw_wrsel);
+/*
+    raw_delay_inst1 : entity work.sync_delay
+	generic map (
+	    STAGES => 9,
+	    DATA_WIDTH => 4 )
+	port map (
+	    clk => data_clk,
+	    data_in => event_corner,
+	    data_out => raw_corner );
+
+    raw_delay_inst1 : entity work.sync_delay
+	generic map (
+	    STAGES => 10,
+	    DATA_WIDTH => 4 )
+	port map (
+	    clk => data_clk,
+	    data_in => scan_border,
+	    data_out => raw_border );
+*/
+    raw_overlay_proc : process (data_clk)
+    begin
+	if rising_edge(data_clk) then
+	    if raw_in_ch4(15 downto 11) = "11110"  then
+		raw_out_ch0 <= scan_fcnt(7 downto 0) &
+		    "00" & raw_wrsel(3 downto 2);
+		raw_out_ch1 <= "00" & raw_wrsel(1 downto 0) & x"AA";
+		raw_out_ch2 <= scan_fcnt(7 downto 0) &
+		    "00" & raw_wrsel(3 downto 2);
+		raw_out_ch3 <= "00" & raw_wrsel(1 downto 0) & x"55";
+		raw_out_ch4 <= raw_in_ch4;
+
+	    elsif raw_in_ch4(15 downto 11) = "11111"  then
+		raw_out_ch0 <= cseq_fcnt(7 downto 0) &
+		    "00" & raw_wrsel(3 downto 2);
+		raw_out_ch1 <= "00" & raw_wrsel(1 downto 0) & x"AA";
+		raw_out_ch2 <= cseq_fcnt(7 downto 0) &
+		    "00" & raw_wrsel(3 downto 2);
+		raw_out_ch3 <= "00" & raw_wrsel(1 downto 0) & x"55";
+		raw_out_ch4 <= raw_in_ch4;
+
+	    else
+		raw_out <= raw_in;
+	    end if;
+	end if;
+    end process;
+
+    raw_delay_inst2 : entity work.sync_delay
+	generic map (
+	    STAGES => 4,
+	    DATA_WIDTH => 64 )
+	port map (
+	    clk => data_clk,
+	    data_in => raw_out,
+	    data_out => raw_hd_code );
 
     --------------------------------------------------------------------
     -- TMDS Output
@@ -2866,49 +2835,66 @@ begin
 	    I => tmds_south_io(3) );
 
     OBUFDS_GEN0: for I in 2 downto 0 generate
-	OBUFDS_data_inst0 : OBUFDS
+	OBUFDS_data_inst : OBUFDS
 	    port map (
 		O => hdmi_south_d_p(I),
 		OB => hdmi_south_d_n(I),
 		I => tmds_south_io(2 - I) );
     end generate;
 
-/*  OBUFDS_clk_inst1 : OBUFDS
+    OBUFDS_clk_inst1 : OBUFDS
 	port map (
 	    O => hdmi_north_clk_p,
 	    OB => hdmi_north_clk_n,
 	    I => tmds_north_io(3) );
 
     OBUFDS_GEN1: for I in 2 downto 0 generate
-	OBUFDS_data_inst1 : OBUFDS
+	OBUFDS_data_inst : OBUFDS
 	    port map (
 		O => hdmi_north_d_p(I),
 		OB => hdmi_north_d_n(I),
 		I => tmds_north_io(2 - I) );
-    end generate;	*/
+    end generate;
+
+    OBUFDS_clk_inst2 : OBUFDS
+	port map (
+	    O => hdmi_shield_clk_p,
+	    OB => hdmi_shield_clk_n,
+	    I => tmds_shield_io(3) );
+
+    OBUFDS_GEN2: for I in 2 downto 0 generate
+	OBUFDS_data_inst : OBUFDS
+	    port map (
+		O => hdmi_shield_d_p(I),
+		OB => hdmi_shield_d_n(I),
+		I => tmds_shield_io(2 - I) );
+    end generate;
 
     dil_proc : process (hdmi_clk)
 	variable dil_addr_v : unsigned (11 downto 0)
 	    := (others => '0');
     begin
 	if rising_edge(hdmi_clk) then
+	    dmem_addr <= std_logic_vector(dil_addr_v);
+
 	    if hd_vsync then
-		if hd_terc then
+		if hd_terc or hd_guard(1) then
 		    dil_addr_v := dil_addr_v + '1';
+		elsif hd_guard(2) then
+		    dil_addr_v := dil_addr_v - '1';
 		end if;
 	    else
 		dil_addr_v := (others => '0');
 	    end if;
-	    dmem_addr <= std_logic_vector(dil_addr_v);
 	end if;
     end process;
 
     rgb_proc : process (hdmi_clk)
 
 	variable cond : boolean;
-	
-	variable hd_r_d : std_logic_vector(11 downto 0);
-	variable hd_b_d : std_logic_vector(11 downto 0);
+
+	-- variable hd_r_d : std_logic_vector(11 downto 0);
+	-- variable hd_b_d : std_logic_vector(11 downto 0);
 
 	function "*" ( a : std_logic_vector; b : std_logic_vector )
 	    return std_logic_vector is
@@ -2924,7 +2910,7 @@ begin
 	    return res_v;
 	end function;
 
-	function sel ( c : boolean; 
+	function sel ( c : boolean;
 	    a : std_logic_vector;
 	    b : std_logic_vector )
 	    return std_logic_vector is
@@ -2939,48 +2925,159 @@ begin
     begin
 	if rising_edge(hdmi_clk) then
 
-	    cond := scan_fcnt(0) = '1' when reg_oscn(15)(25) = '1'
-	    	else reg_oscn(15)(24) = '1';
+	    cond := scan_fcnt(0) = '1';
 
-	    case reg_oscn(15)(27 downto 26) is
-		when "00" =>	-- normal output
-		    rgb_data(0) <= hd_r(11 downto 4);
-		    rgb_data(1) <= hd_g1(11 downto 4);
-		    rgb_data(2) <= hd_b(11 downto 4);
+	    case reg_oscn(15)(14 downto 12) is
+		when "001" =>	-- raw output
+		    rgb_s_data(0) <= raw_hd_ch0(11 downto 4);
+		    rgb_s_data(1) <= raw_hd_ch1(11 downto 4);
+		    rgb_s_data(2) <= raw_hd_ch3(11 downto 4);
 
-		when "01" =>	-- r/g1, b/g2 alternate
-		    rgb_data(0) <= sel(cond,
-		    	 hd_r(11 downto 4), hd_b(11 downto 4));
-		    rgb_data(1) <= sel(cond,
-		    	 hd_g1(3 downto 0) * hd_r(3 downto 0), 
-			 hd_g2(3 downto 0) * hd_b(3 downto 0));
-		    rgb_data(2) <= sel(cond,
-		    	 hd_g1(11 downto 4), hd_g2(11 downto 4));
-			 
-		when "10" =>	-- g1/g2, r/b fixed (AlexML)	
-		    rgb_data(0) <= sel(cond,
-		    	 hd_r(11 downto 4), hd_r_d(11 downto 4));
-		    rgb_data(1) <= sel(cond,
-		    	 hd_g1(11 downto 4), hd_g2(11 downto 4));
-		    rgb_data(2) <= sel(cond,
-		    	 hd_b(11 downto 4), hd_b_d(11 downto 4));
+		when "010" =>	-- missing
+		    rgb_s_data(0) <= raw_hd_ch0(3 downto 0) & raw_hd_ch1(3 downto 0);
+		    rgb_s_data(1) <= raw_hd_ch2(11 downto 4);
+		    rgb_s_data(2) <= raw_hd_ch3(3 downto 0) & raw_hd_ch2(3 downto 0);
 
-		when "11" =>	-- mix and match
-		    rgb_data(0) <= sel(cond,
-		    	hd_r(11 downto 4),
-			hd_b(11 downto 8) & hd_r(3 downto 0));
-		    rgb_data(1) <= sel(cond,
-		    	hd_g1(11 downto 4),
-			hd_g2(11 downto 8) * hd_g1(3 downto 0));
-		    rgb_data(2) <= sel(cond,
-		    	hd_b(11 downto 4),
-			hd_r(11 downto 8) & hd_b(3 downto 0));
+		when "011" =>	-- alternating
+		    rgb_s_data(0) <= sel(cond,
+		    	raw_hd_ch0(11 downto 4),
+			raw_hd_ch0(3 downto 0) & raw_hd_ch1(3 downto 0));
+		    rgb_s_data(1) <= sel(cond,
+		    	raw_hd_ch1(11 downto 4),
+			raw_hd_ch2(11 downto 4));
+		    rgb_s_data(2) <= sel(cond,
+		    	raw_hd_ch3(11 downto 4),
+			raw_hd_ch3(3 downto 0) & raw_hd_ch2(3 downto 0));
 
-		-- when others =>
+		when "101" =>	-- monochrome even
+		    rgb_s_data(0) <= raw_hd_ch0(11 downto 4);
+		    rgb_s_data(1) <= raw_hd_ch0(3 downto 0) & raw_hd_ch1(11 downto 8);
+		    rgb_s_data(2) <= raw_hd_ch1(7 downto 0);
+
+		when "110" =>	-- monochrome odd
+		    rgb_s_data(0) <= raw_hd_ch2(11 downto 4);
+		    rgb_s_data(1) <= raw_hd_ch2(3 downto 0) & raw_hd_ch3(11 downto 8);
+		    rgb_s_data(2) <= raw_hd_ch3(7 downto 0);
+
+		when "111" =>	-- alternating
+		    rgb_s_data(0) <= sel(cond,
+		    	raw_hd_ch0(11 downto 4),
+			raw_hd_ch2(11 downto 4));
+		    rgb_s_data(1) <= sel(cond,
+		    	raw_hd_ch0(3 downto 0) & raw_hd_ch1(11 downto 8),
+			raw_hd_ch2(3 downto 0) & raw_hd_ch3(11 downto 8));
+		    rgb_s_data(2) <= sel(cond,
+		    	raw_hd_ch1(7 downto 0),
+			raw_hd_ch3(7 downto 0));
+
+		when others =>	-- normal output
+		    rgb_s_data(0) <= hd_r(11 downto 4);
+		    rgb_s_data(1) <= hd_g1(11 downto 4);
+		    rgb_s_data(2) <= hd_b(11 downto 4);
+
 	    end case;
 
-	    hd_r_d := hd_r;
-	    hd_b_d := hd_b;
+	    case reg_oscn(15)(30 downto 28) is
+		when "001" =>	-- raw output
+		    rgb_n_data(0) <= raw_hd_ch0(11 downto 4);
+		    rgb_n_data(1) <= raw_hd_ch1(11 downto 4);
+		    rgb_n_data(2) <= raw_hd_ch3(11 downto 4);
+
+		when "010" =>	-- missing
+		    rgb_n_data(0) <= raw_hd_ch0(3 downto 0) & raw_hd_ch1(3 downto 0);
+		    rgb_n_data(1) <= raw_hd_ch2(11 downto 4);
+		    rgb_n_data(2) <= raw_hd_ch3(3 downto 0) & raw_hd_ch2(3 downto 0);
+
+		when "011" =>	-- alternating
+		    rgb_n_data(0) <= sel(cond,
+		    	raw_hd_ch0(11 downto 4),
+			raw_hd_ch0(3 downto 0) & raw_hd_ch1(3 downto 0));
+		    rgb_n_data(1) <= sel(cond,
+		    	raw_hd_ch1(11 downto 4),
+			raw_hd_ch2(11 downto 4));
+		    rgb_n_data(2) <= sel(cond,
+		    	raw_hd_ch3(11 downto 4),
+			raw_hd_ch3(3 downto 0) & raw_hd_ch2(3 downto 0));
+
+		when "101" =>	-- monochrome even
+		    rgb_n_data(0) <= raw_hd_ch0(11 downto 4);
+		    rgb_n_data(1) <= raw_hd_ch0(3 downto 0) & raw_hd_ch1(11 downto 8);
+		    rgb_n_data(2) <= raw_hd_ch1(7 downto 0);
+
+		when "110" =>	-- monochrome odd
+		    rgb_n_data(0) <= raw_hd_ch2(11 downto 4);
+		    rgb_n_data(1) <= raw_hd_ch2(3 downto 0) & raw_hd_ch3(11 downto 8);
+		    rgb_n_data(2) <= raw_hd_ch3(7 downto 0);
+
+		when "111" =>	-- alternating
+		    rgb_n_data(0) <= sel(cond,
+		    	raw_hd_ch0(11 downto 4),
+			raw_hd_ch2(11 downto 4));
+		    rgb_n_data(1) <= sel(cond,
+		    	raw_hd_ch0(3 downto 0) & raw_hd_ch1(11 downto 8),
+			raw_hd_ch2(3 downto 0) & raw_hd_ch3(11 downto 8));
+		    rgb_n_data(2) <= sel(cond,
+		    	raw_hd_ch1(7 downto 0),
+			raw_hd_ch3(7 downto 0));
+
+		when others =>	-- normal output
+		    rgb_n_data(0) <= hd_r(11 downto 4);
+		    rgb_n_data(1) <= hd_g1(11 downto 4);
+		    rgb_n_data(2) <= hd_b(11 downto 4);
+
+	    end case;
+
+	    case reg_oscn(14)(30 downto 28) is
+		when "001" =>	-- raw output
+		    rgb_x_data(0) <= raw_hd_ch0(11 downto 4);
+		    rgb_x_data(1) <= raw_hd_ch1(11 downto 4);
+		    rgb_x_data(2) <= raw_hd_ch3(11 downto 4);
+
+		when "010" =>	-- missing
+		    rgb_x_data(0) <= raw_hd_ch0(3 downto 0) & raw_hd_ch1(3 downto 0);
+		    rgb_x_data(1) <= raw_hd_ch2(11 downto 4);
+		    rgb_x_data(2) <= raw_hd_ch3(3 downto 0) & raw_hd_ch2(3 downto 0);
+
+		when "011" =>	-- alternating
+		    rgb_x_data(0) <= sel(cond,
+		    	raw_hd_ch0(11 downto 4),
+			raw_hd_ch0(3 downto 0) & raw_hd_ch1(3 downto 0));
+		    rgb_x_data(1) <= sel(cond,
+		    	raw_hd_ch1(11 downto 4),
+			raw_hd_ch2(11 downto 4));
+		    rgb_x_data(2) <= sel(cond,
+		    	raw_hd_ch3(11 downto 4),
+			raw_hd_ch3(3 downto 0) & raw_hd_ch2(3 downto 0));
+
+		when "101" =>	-- monochrome even
+		    rgb_x_data(0) <= raw_hd_ch0(11 downto 4);
+		    rgb_x_data(1) <= raw_hd_ch0(3 downto 0) & raw_hd_ch1(11 downto 8);
+		    rgb_x_data(2) <= raw_hd_ch1(7 downto 0);
+
+		when "110" =>	-- monochrome odd
+		    rgb_x_data(0) <= raw_hd_ch2(11 downto 4);
+		    rgb_x_data(1) <= raw_hd_ch2(3 downto 0) & raw_hd_ch3(11 downto 8);
+		    rgb_x_data(2) <= raw_hd_ch3(7 downto 0);
+
+		when "111" =>	-- alternating
+		    rgb_x_data(0) <= sel(cond,
+		    	raw_hd_ch0(11 downto 4),
+			raw_hd_ch2(11 downto 4));
+		    rgb_x_data(1) <= sel(cond,
+		    	raw_hd_ch0(3 downto 0) & raw_hd_ch1(11 downto 8),
+			raw_hd_ch2(3 downto 0) & raw_hd_ch3(11 downto 8));
+		    rgb_x_data(2) <= sel(cond,
+		    	raw_hd_ch1(7 downto 0),
+			raw_hd_ch3(7 downto 0));
+
+		when others =>	-- normal output
+		    rgb_x_data(0) <= hd_r(11 downto 4);
+		    rgb_x_data(1) <= hd_g1(11 downto 4);
+		    rgb_x_data(2) <= hd_b(11 downto 4);
+
+	    end case;
+	    -- hd_r_d := hd_r;
+	    -- hd_b_d := hd_b;
 
 	    -- dil_data <= scan_hcnt(8 downto 0);
 	    dil_data <= dmem_dout;
@@ -3026,21 +3123,25 @@ begin
     tmds_reset_proc : process (hdmi_clk)
     begin
 	if rising_edge(hdmi_clk) then
-	    tmds_reset <= reg_oscn(15)(17);
+	    tmds_s_reset <= reg_oscn(14)(8);
+	    tmds_n_reset <= reg_oscn(14)(9);
+	    tmds_x_reset <= reg_oscn(14)(10);
 	end if;
     end process;
 
-    tmds_enable <= reg_oscn(15)(16);
+    tmds_s_enable <= reg_oscn(14)(12);
+    tmds_n_enable <= reg_oscn(14)(13);
+    tmds_x_enable <= reg_oscn(14)(14);
 
     rgb_hdmi_inst0 : entity work.rgb_hdmi
 	port map (
 	    pix_clk => hdmi_clk,
 	    bit_clk => tmds_clk,
 	    --
-	    enable => tmds_enable,
-	    reset => tmds_reset,
+	    enable => tmds_s_enable,
+	    reset => tmds_s_reset,
 	    --
-	    rgb => rgb_data,
+	    rgb => rgb_s_data,
 	    data => dil_data,
 	    --
 	    de => dil_de & rgb_de,
@@ -3066,10 +3167,10 @@ begin
 	    pix_clk => hdmi_clk,
 	    bit_clk => tmds_clk,
 	    --
-	    enable => tmds_enable,
-	    reset => tmds_reset,
+	    enable => tmds_n_enable,
+	    reset => tmds_n_reset,
 	    --
-	    rgb => rgb_data,
+	    rgb => rgb_n_data,
 	    data => dil_data,
 	    --
 	    de => dil_de & rgb_de,
@@ -3078,31 +3179,46 @@ begin
 	    hsync => rgb_hsync,
 	    vsync => rgb_vsync,
 	    --
-	    d0idx => reg_oscn(15)(1 downto 0),
-	    d1idx => reg_oscn(15)(3 downto 2),
-	    d2idx => reg_oscn(15)(5 downto 4),
-	    clidx => reg_oscn(15)(7 downto 6),
+	    d0idx => reg_oscn(15)(17 downto 16),
+	    d1idx => reg_oscn(15)(19 downto 18),
+	    d2idx => reg_oscn(15)(21 downto 20),
+	    clidx => reg_oscn(15)(23 downto 22),
 	    --
-	    d0inv => reg_oscn(15)(8),
-	    d1inv => reg_oscn(15)(9),
-	    d2inv => reg_oscn(15)(10),
-	    clinv => reg_oscn(15)(11),
+	    d0inv => reg_oscn(15)(24),
+	    d1inv => reg_oscn(15)(25),
+	    d2inv => reg_oscn(15)(26),
+	    clinv => reg_oscn(15)(27),
 	    --
-	    tmds => debug_tmds);
-	    -- tmds => tmds_north_io );
+	    tmds => tmds_north_io );
 
-    debug_data <= rgb_vsync & rgb_guard(2 downto 0);
-    -- debug_data <= scan_hcnt(3 downto 0);
-
-    debug_delay_inst : entity work.sync_delay
-	generic map (
-	    STAGES => 3,
-	    DATA_WIDTH => debug'length )
+    rgb_hdmi_inst2 : entity work.rgb_hdmi
 	port map (
-	    clk => hdmi_clk,
-	    data_in => debug_data,
-	    data_out => debug );
-
+	    pix_clk => hdmi_clk,
+	    bit_clk => tmds_clk,
+	    --
+	    enable => tmds_x_enable,
+	    reset => tmds_x_reset,
+	    --
+	    rgb => rgb_x_data,
+	    data => dil_data,
+	    --
+	    de => dil_de & rgb_de,
+	    pream => rgb_pream,
+	    guard => rgb_guard,
+	    hsync => rgb_hsync,
+	    vsync => rgb_vsync,
+	    --
+	    d0idx => reg_oscn(14)(17 downto 16),
+	    d1idx => reg_oscn(14)(19 downto 18),
+	    d2idx => reg_oscn(14)(21 downto 20),
+	    clidx => reg_oscn(14)(23 downto 22),
+	    --
+	    d0inv => not reg_oscn(14)(24),
+	    d1inv => reg_oscn(14)(25),
+	    d2inv => not reg_oscn(14)(26),
+	    clinv => reg_oscn(14)(27),
+	    --
+	    tmds => tmds_shield_io );
 
 
     --------------------------------------------------------------------

@@ -2,7 +2,7 @@
 HASH_LOCATION="/opt/integrity_check"
 
 echo "Checking Axiom system files... (this might take a while)"
-output=$(hashdeep -c sha256 -x -f $HASH_LOCATION/files.txt -k $HASH_LOCATION/hashes.txt)
+output=$(sudo rhash --percents -c --skip-ok --brief $HASH_LOCATION/hashes.txt)
 
 if [ -z "$output" ]; then
     echo "No problems detected, all files are in factory state."

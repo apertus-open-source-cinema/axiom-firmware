@@ -17,18 +17,13 @@ sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
 echo 'Server = http://de3.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman --noprogressbar --noconfirm --needed -Syu
+pacman --noprogressbar --noconfirm --needed --overwrite '*' -Syu
 pacman --noprogressbar --noconfirm -R linux-zedboard || true
 
 # install dependencies
-pacman --noprogressbar --noconfirm --needed -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
+pacman --noprogressbar --noconfirm --needed --overwrite '*' -S $(grep -vE "^\s*#" makefiles/in_chroot/requirements_pacman.txt | tr "\n" " ")
 pip install --break-system-packages wheel
 pip install --break-system-packages --progress-bar off -r makefiles/in_chroot/requirements_pip.txt
-
-# setup users
-if ! grep "dont log in as root" /root/.profile; then
-    echo 'echo -e "\033[31municorns dont log in as root\033[0m"' >> /root/.profile
-fi
 
 PASS=axiom
 USERNAME=operator
@@ -38,6 +33,9 @@ if ! [ -d /home/$USERNAME ]; then
     echo "$USERNAME      ALL=(ALL) PASSWD: ALL" >> /etc/sudoers
     rm -f /home/$USERNAME/.bashrc
 fi
+
+# also set the same password for root
+echo "root:$PASS" | chpasswd
 
 # add empty ~/.ssh/authorized_keys (see #80)
 function add_authorized_keys_file() {
@@ -56,8 +54,8 @@ add_authorized_keys_file "root"
 userdel -r -f alarm || true
 
 # configure ssh
-grep 'PermitRootLogin' /etc/ssh/sshd_config && sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin without-password/' /etc/ssh/sshd_config
-grep 'PermitRootLogin' /etc/ssh/sshd_config || echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
+grep 'PermitRootLogin' /etc/ssh/sshd_config && sed -i 's/^.*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
+grep 'PermitRootLogin' /etc/ssh/sshd_config || echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
 grep -x 'X11Forwarding yes' /etc/ssh/sshd_config || echo "X11Forwarding yes" >> /etc/ssh/sshd_config
 
 # build all the tools
@@ -116,23 +114,22 @@ chmod 700 /etc/NetworkManager/dispatcher.d/iptables.sh
 cp -f software/configs/dnsmasq-shared-hosts.conf /etc/NetworkManager/dnsmasq-shared.d/hosts.conf
 systemctl enable NetworkManager
 
+# disable services that take a long time during boot
+systemctl mask systemd-random-seed
+
 # build raw2dng
 cdmake software/misc-tools-utilities/raw2dng
 
 # copy prebuilt fpga binaries & select the default binary
 # also convert the bitstreams to the format expected by the linux kernel
-mkdir -p /opt/bitstreams/
 for bit in peripherals/bitstreams/*.bit; do
-    NAME=$(basename $bit)
-    ln -sf $(pwd)/$bit /opt/bitstreams
-    ./makefiles/in_chroot/to_raw_bitstream.py -f /opt/bitstreams/$NAME /opt/bitstreams/"$(basename ${NAME%.bit}).bin"
-    ln -sf /opt/bitstreams/"${NAME%.bit}.bin" /lib/firmware
+    ./makefiles/in_chroot/to_raw_bitstream.py -f $bit /lib/firmware/"$(basename ${bit%.bit}).bin"
 done
 
 if [[ $DEVICE == 'micro' ]]; then
-  ln -sf /opt/bitstreams/micro_main.bin /lib/firmware/axiom_fpga_main.bin
+  ln -sf /lib/firmware/micro_main.bin /lib/firmware/axiom_fpga_main.bin
 else
-  ln -sf /opt/bitstreams/cmv_hdmi3_dual_60.bin /lib/firmware/axiom_fpga_main.bin
+  ln -sf /lib/firmware/cmv_hdmi.bin /lib/firmware/axiom_fpga_main.bin
 fi
 
 cp software/scripts/axiom_start.service /etc/systemd/system/
@@ -193,11 +190,7 @@ yarn cache clean --all
 VERIFY_DIRECTORIES="/etc /usr /opt"
 HASH_LOCATION="/opt/integrity_check"
 mkdir -p $HASH_LOCATION
-# delete hashes so they aren't included in the new files list
-rm -f $HASH_LOCATION/hashes.txt; rm -f $HASH_LOCATION/files.txt
-find $VERIFY_DIRECTORIES -type f > $HASH_LOCATION/files.txt
-# also hash file list
-echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt
-hashdeep -c sha256 -f $HASH_LOCATION/files.txt > $HASH_LOCATION/hashes.txt
+
+sudo rhash --sha256 --recursive $VERIFY_DIRECTORIES -o $HASH_LOCATION/hashes.txt
 
 echo "axiom-update finished. Software version is now $(git describe --always --abbrev=8 --dirty)."

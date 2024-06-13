@@ -10,7 +10,7 @@ OPENOCD_VERSION = d46f28c2ea2611f5fbbc679a5eed253d3dcd2fe3
 OPENOCD_SOURCE = build/openocd-$(OPENOCD_VERSION).git
 
 build/root.fs/.install_stamp: $(shell find makefiles/in_chroot/) build/root.fs/opt/axiom-firmware/.install_stamp $(LINUX_SOURCE)/arch/arm/boot/zImage build/root.fs/.base_install build/webui/dist/index.html build/nctrl/target/armv7-unknown-linux-musleabihf/release/nctrl $(OPENOCD_SOURCE)/.build_stamp
-	rsync -aK build/kernel_modules.fs/ $(@D)
+	rsync --safe-links -aK build/kernel_modules.fs/ $(@D)
 
 	cp -r build/webui/dist $(@D)/opt/axiom-firmware/software/webui
 
