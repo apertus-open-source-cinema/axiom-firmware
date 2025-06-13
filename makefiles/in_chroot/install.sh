@@ -197,7 +197,8 @@ mkdir -p $HASH_LOCATION
 rm -f $HASH_LOCATION/hashes.txt; rm -f $HASH_LOCATION/files.txt
 find $VERIFY_DIRECTORIES -type f > $HASH_LOCATION/files.txt
 # also hash file list
-echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt
-hashdeep -c sha256 -f $HASH_LOCATION/files.txt > $HASH_LOCATION/hashes.txt
+
+# echo "$HASH_LOCATION/files.txt" >> $HASH_LOCATION/files.txt
+# hashdeep -c sha256 -f $HASH_LOCATION/files.txt > $HASH_LOCATION/hashes.txt
 
 echo "axiom-update finished. Software version is now $(git describe --always --abbrev=8 --dirty)."
