@@ -9,7 +9,6 @@ base-devel
 git
 figlet
 wget
-hashdeep
 pacman-contrib
 rsync
 
@@ -33,7 +32,7 @@ nano
 python-pip
 python-numpy
 dtc
-man
+man-db
 man-pages
 
 # webserver
