@@ -1,8 +1,67 @@
 SPDX-FileCopyrightText: © 2013 Pantelis Antoniou <panto@antoniou-consulting.com>
 SPDX-License-Identifier: GPL-2.0-or-later
+From 2df5786c1323bb800a0c780ea811f2847ee570dd Mon Sep 17 00:00:00 2001
+From: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
+Date: Tue, 31 Dec 2019 15:20:17 +0530
+Subject: [PATCH] OF: DT-Overlay configfs interface (v8)
+
+Add a runtime interface to using configfs for generic device tree overlay
+usage. With it its possible to use device tree overlays without having
+to use a per-platform overlay manager.
+
+Please see Documentation/devicetree/configfs-overlays.txt for more info.
+
+Changes since v7:
+- Xilinx alignment
+- of: configfs: Fix error handling from of_overlay_create()
+- of: configfs: lock while resolving and applying
+- of: configfs: Fix memory leak in create overlay
+- of: configfs: Fix compilation warning
+- of: configfs: Use of_overlay_fdt_apply API call
+
+Changes since v6:
+- Default groups properties API changed.
+
+Changes since v5:
+- New style configfs.
+
+Changes since v4:
+- Loading fix for multiple overlays as found out by
+  Geert Uytterhoeven <geert@linux-m68k.org>
+
+Changes since v3:
+- Fixed compilation on SPARC & Xtensa
+
+Changes since v2:
+- Removed ifdef CONFIG_OF_OVERLAY (since for now it's required)
+- Created a documentation entry
+- Slight rewording in Kconfig
+
+Changes since v1:
+- of_resolve() -> of_resolve_phandles().
+
+Signed-off-by: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
+Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+State: not-upstreamable
+[michals: Squashed with
+v6.12 update
+OF: overlay: Skip overlay_removal_is_ok check for PL use cases
+Make cfs_overlay_item_dtbo_read/write static
+]
+---
+ .../devicetree/configfs-overlays.txt          |  31 ++
+ drivers/of/Kconfig                            |  11 +
+ drivers/of/Makefile                           |   1 +
+ drivers/of/configfs.c                         | 294 ++++++++++++++++++
+ drivers/of/overlay.c                          |   4 +
+ 5 files changed, 341 insertions(+)
+ create mode 100644 Documentation/devicetree/configfs-overlays.txt
+ create mode 100644 drivers/of/configfs.c
+
 diff --git a/Documentation/devicetree/configfs-overlays.txt b/Documentation/devicetree/configfs-overlays.txt
 new file mode 100644
-index 000000000000..185d85ef52e4
+index 00000000000000..5fa43e0643072c
 --- /dev/null
 +++ b/Documentation/devicetree/configfs-overlays.txt
 @@ -0,0 +1,31 @@
@@ -33,47 +92,49 @@ index 000000000000..185d85ef52e4
 +
 +	# rmdir /config/device-tree/overlays/foo
 +
-+The rationale for the dual interface (firmware & direct copy) is that each is
++The rationalle of the dual interface (firmware & direct copy) is that each is
 +better suited to different use patterns. The firmware interface is what's
 +intended to be used by hardware managers in the kernel, while the copy interface
 +make sense for developers (since it avoids problems with namespaces).
 diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
-index ad3fcad4d75b..db9b467fd039 100644
+index 0e2d608c3e207d..d0cac98af0bff1 100644
 --- a/drivers/of/Kconfig
 +++ b/drivers/of/Kconfig
-@@ -100,6 +100,14 @@ config OF_OVERLAY
- 	  While this option is selected automatically when needed, you can
- 	  enable it manually to improve device tree unit test coverage.
+@@ -120,4 +120,15 @@ config OF_OVERLAY_KUNIT_TEST
+ config OF_NUMA
+ 	bool
  
 +config OF_CONFIGFS
 +	bool "Device Tree Overlay ConfigFS interface"
 +	select CONFIGFS_FS
-+	select OF_FLATTREE
 +	depends on OF_OVERLAY
 +	help
-+	  Enable a simple user-space driven DT overlay interface.
++	  Select this option to enable simple user-space driven DT overlay
++	  interface to support device tree manipulated at runtime.
++	  Say Y here to include this support.
 +
- config OF_NUMA
- 	bool
- 
++	  If unsure, say N.
++
+ endif # OF
 diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-index 663a4af0cccd..b00a95adf519 100644
+index 379a0afcbdc0bf..f294b36207f80c 100644
 --- a/drivers/of/Makefile
 +++ b/drivers/of/Makefile
 @@ -1,6 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
- obj-y = base.o device.o platform.o property.o
+ obj-y = base.o cpu.o device.o module.o platform.o property.o
  obj-$(CONFIG_OF_KOBJ) += kobj.o
 +obj-$(CONFIG_OF_CONFIGFS) += configfs.o
  obj-$(CONFIG_OF_DYNAMIC) += dynamic.o
- obj-$(CONFIG_OF_FLATTREE) += fdt.o
+ obj-$(CONFIG_OF_FLATTREE) += fdt.o empty_root.dtb.o
  obj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o
 diff --git a/drivers/of/configfs.c b/drivers/of/configfs.c
 new file mode 100644
-index 000000000000..7a6cae074381
+index 00000000000000..3c21eec5633b13
 --- /dev/null
 +++ b/drivers/of/configfs.c
-@@ -0,0 +1,284 @@
+@@ -0,0 +1,294 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Configfs entries for device-tree
 + *
@@ -114,23 +175,29 @@ index 000000000000..7a6cae074381
 +
 +	void			*dtbo;
 +	int			dtbo_size;
++
++	void			*mem;
 +};
 +
-+static int create_overlay(struct cfs_overlay_item *overlay, const void *blob,
-+			  size_t size)
++static DEFINE_MUTEX(overlay_lock);
++
++static int create_overlay(struct cfs_overlay_item *overlay, void *blob)
 +{
 +	int err;
 +
-+	err = of_overlay_fdt_apply(blob, size, &overlay->ov_id);
-+	if (err < 0)
-+		pr_err("%s: Failed to create overlay (err=%d)\n", __func__,
-+		       err);
++	/* FIXME */
++	err = of_overlay_fdt_apply(blob, overlay->dtbo_size, &overlay->ov_id, NULL);
++	if (err < 0) {
++		pr_err("%s: Failed to create overlay (err=%d)\n",
++		       __func__, err);
++		return err;
++	}
 +
 +	return err;
 +}
 +
-+static inline struct cfs_overlay_item *to_cfs_overlay_item(
-+		struct config_item *item)
++static inline struct cfs_overlay_item
++		*to_cfs_overlay_item(struct config_item *item)
 +{
 +	return item ? container_of(item, struct cfs_overlay_item, item) : NULL;
 +}
@@ -141,7 +208,7 @@ index 000000000000..7a6cae074381
 +}
 +
 +static ssize_t cfs_overlay_item_path_store(struct config_item *item,
-+		const char *page, size_t count)
++					   const char *page, size_t count)
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
 +	const char *p = page;
@@ -167,7 +234,8 @@ index 000000000000..7a6cae074381
 +	if (err != 0)
 +		goto out_err;
 +
-+	err = create_overlay(overlay, overlay->fw->data, overlay->fw->size);
++	overlay->dtbo_size = overlay->fw->size;
++	err = create_overlay(overlay, (void *)overlay->fw->data);
 +	if (err < 0)
 +		goto out_err;
 +
@@ -179,11 +247,12 @@ index 000000000000..7a6cae074381
 +	overlay->fw = NULL;
 +
 +	overlay->path[0] = '\0';
-+	return err;
++
++	return count;
 +}
 +
 +static ssize_t cfs_overlay_item_status_show(struct config_item *item,
-+		char *page)
++					    char *page)
 +{
 +	return sprintf(page, "%s\n", to_cfs_overlay_item(item)->ov_id >= 0 ?
 +					"applied" : "unapplied");
@@ -198,19 +267,18 @@ index 000000000000..7a6cae074381
 +	NULL,
 +};
 +
-+static ssize_t cfs_overlay_item_dtbo_read(struct config_item *item, void *buf,
-+		size_t max_count)
++static ssize_t cfs_overlay_item_dtbo_read(struct config_item *item,
++				   void *buf, size_t max_count)
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
 +
-+	pr_debug("%s: buf=%p max_count=%zu\n", __func__,
-+			buf, max_count);
++	pr_debug("%s: buf=%p max_count=%zu\n", __func__, buf, max_count);
 +
-+	if (overlay->dtbo == NULL)
++	if (!overlay->dtbo)
 +		return 0;
 +
 +	/* copy if buffer provided */
-+	if (buf != NULL) {
++	if (buf) {
 +		/* the buffer must be large enough */
 +		if (overlay->dtbo_size > max_count)
 +			return -ENOSPC;
@@ -222,7 +290,7 @@ index 000000000000..7a6cae074381
 +}
 +
 +static ssize_t cfs_overlay_item_dtbo_write(struct config_item *item,
-+		const void *buf, size_t count)
++				    const void *buf, size_t count)
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
 +	int err;
@@ -233,12 +301,12 @@ index 000000000000..7a6cae074381
 +
 +	/* copy the contents */
 +	overlay->dtbo = kmemdup(buf, count, GFP_KERNEL);
-+	if (overlay->dtbo == NULL)
++	if (!overlay->dtbo)
 +		return -ENOMEM;
 +
 +	overlay->dtbo_size = count;
 +
-+	err = create_overlay(overlay, overlay->dtbo, overlay->dtbo_size);
++	err = create_overlay(overlay, overlay->dtbo);
 +	if (err < 0)
 +		goto out_err;
 +
@@ -269,6 +337,7 @@ index 000000000000..7a6cae074381
 +		release_firmware(overlay->fw);
 +	/* kfree with NULL is safe */
 +	kfree(overlay->dtbo);
++	kfree(overlay->mem);
 +	kfree(overlay);
 +}
 +
@@ -283,8 +352,9 @@ index 000000000000..7a6cae074381
 +	.ct_owner	= THIS_MODULE,
 +};
 +
-+static struct config_item *cfs_overlay_group_make_item(
-+		struct config_group *group, const char *name)
++static struct config_item
++	*cfs_overlay_group_make_item(struct config_group *group,
++				     const char *name)
 +{
 +	struct cfs_overlay_item *overlay;
 +
@@ -292,13 +362,13 @@ index 000000000000..7a6cae074381
 +	if (!overlay)
 +		return ERR_PTR(-ENOMEM);
 +	overlay->ov_id = -1;
-+
 +	config_item_init_type_name(&overlay->item, name, &cfs_overlay_type);
++
 +	return &overlay->item;
 +}
 +
 +static void cfs_overlay_group_drop_item(struct config_group *group,
-+		struct config_item *item)
++					struct config_item *item)
 +{
 +	struct cfs_overlay_item *overlay = to_cfs_overlay_item(item);
 +
@@ -324,7 +394,7 @@ index 000000000000..7a6cae074381
 +	.ct_owner       = THIS_MODULE,
 +};
 +
-+static struct config_group of_cfs_overlay_group;
++struct config_group of_cfs_overlay_group;
 +
 +static struct configfs_subsystem of_cfs_subsys = {
 +	.su_group = {
@@ -344,9 +414,9 @@ index 000000000000..7a6cae074381
 +
 +	config_group_init(&of_cfs_subsys.su_group);
 +	config_group_init_type_name(&of_cfs_overlay_group, "overlays",
-+			&overlays_type);
++				    &overlays_type);
 +	configfs_add_default_group(&of_cfs_overlay_group,
-+			&of_cfs_subsys.su_group);
++				   &of_cfs_subsys.su_group);
 +
 +	ret = configfs_register_subsystem(&of_cfs_subsys);
 +	if (ret != 0) {
@@ -358,3 +428,37 @@ index 000000000000..7a6cae074381
 +	return ret;
 +}
 +late_initcall(of_cfs_init);
+diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
+index cbdecccca09745..5335b48037dc3a 100644
+--- a/drivers/of/overlay.c
++++ b/drivers/of/overlay.c
+@@ -1069,6 +1069,7 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+ }
+ EXPORT_SYMBOL_GPL(of_overlay_fdt_apply);
+ 
++#ifndef CONFIG_OF_FPGA_REGION
+ /*
+  * Find @np in @tree.
+  *
+@@ -1145,6 +1146,7 @@ static int overlay_removal_is_ok(struct overlay_changeset *remove_ovcs)
+ 
+ 	return 1;
+ }
++#endif
+ 
+ /**
+  * of_overlay_remove() - Revert and free an overlay changeset
+@@ -1200,10 +1202,12 @@ int of_overlay_remove(int *ovcs_id)
+ 		goto err_unlock;
+ 	}
+ 
++#ifndef CONFIG_OF_FPGA_REGION
+ 	if (!overlay_removal_is_ok(ovcs)) {
+ 		ret = -EBUSY;
+ 		goto err_unlock;
+ 	}
++#endif
+ 
+ 	ret = overlay_notify(ovcs, OF_OVERLAY_PRE_REMOVE);
+ 	if (ret)
+
