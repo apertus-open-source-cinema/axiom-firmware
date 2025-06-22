@@ -37,6 +37,7 @@ man-pages
 
 # webserver
 lighttpd
+nodejs-lts-jod
 yarn
 
 # python-stuff
