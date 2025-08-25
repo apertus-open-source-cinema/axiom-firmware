@@ -170,6 +170,10 @@ systemctl enable gen_etc_issue.service
 cp software/configs/disable_kernel_messages.service /etc/systemd/system/
 systemctl enable disable_kernel_messages.service
 
+# configure plocate
+systemctl enable plocate-updatedb.timer
+updatedb
+
 # systemd is being stupid:
 sed -i 's/kernel.sysrq = 16/kernel.sysrq = 1/' /usr/lib/sysctl.d/50-default.conf
 
