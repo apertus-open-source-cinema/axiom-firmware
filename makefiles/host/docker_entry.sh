@@ -17,7 +17,7 @@ if [ ! -z $CI ]; then
     echo "WARNING: building rootfs in ramdisk; incremental builds suffer"
 else
     if [ ! -f 'build/root.fs.loopback.img' ]; then
-        truncate -s 4G build/root.fs.loopback.img
+        truncate -s 6G build/root.fs.loopback.img
         mkfs.btrfs build/root.fs.loopback.img
     fi
     losetup -d /dev/loop0 2> /dev/null
