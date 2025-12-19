@@ -20,6 +20,8 @@ cmake
 bc
 ## axiom_picture_snap.sh
 dcraw
+# dcraw transitively depends on libgl, use libglvnd here
+libglvnd 
 imagemagick
 # control daemon uses ninja now
 ninja
