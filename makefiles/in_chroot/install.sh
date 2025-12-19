@@ -40,6 +40,8 @@ if ! [ -d /home/$USERNAME ]; then
     rm -f /home/$USERNAME/.bashrc
 fi
 
+sed -i 's/Defaults secure_path.*/Defaults !secure_path/' /etc/sudoers
+
 # add empty ~/.ssh/authorized_keys (see #80)
 function add_authorized_keys_file() {
     SSH_AUTHORIZED_KEYS=/home/$1/.ssh/authorized_keys
