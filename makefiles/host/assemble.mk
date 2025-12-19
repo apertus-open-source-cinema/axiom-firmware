@@ -9,9 +9,9 @@ include rootfs.mk
 SHELL := /bin/bash
 
 # define the layout of the image
-IMGSIZE = 4096MiB
+IMGSIZE = 8192MiB
 BOOTSIZE = 50MiB
-ROOTSIZE = 3700MiB
+ROOTSIZE = 7700MiB
 LABEL_ID = f37043ff
 
 define SFDISK_SCRIPT
