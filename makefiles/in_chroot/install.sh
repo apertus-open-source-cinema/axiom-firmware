@@ -13,6 +13,7 @@ cd /opt/axiom-firmware
 # configure pacman & do sysupdate
 sed -i 's/^CheckSpace/#CheckSpace/g' /etc/pacman.conf
 sed -i 's/#IgnorePkg   =/IgnorePkg = linux linux-*/' /etc/pacman.conf
+sed -i 's/#DisableSandbox/DisableSandbox/' /etc/pacman.conf
 # use fixed mirror, because the alarm loadbalancing and some mirrors are broken
 echo 'Server = http://de3.mirror.archlinuxarm.org/$arch/$repo' > /etc/pacman.d/mirrorlist
 pacman-key --init
