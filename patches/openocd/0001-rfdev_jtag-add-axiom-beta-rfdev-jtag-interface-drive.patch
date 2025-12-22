@@ -1,58 +1,42 @@
-SPDX-FileCopyrightText: © 2020 Swaraj Hota <swarajhota353@gmail.com>
-SPDX-License-Identifier: GPL-2.0-only
-From e7a7c27e93ea0a223ba306f59f67ac708f10f0d5 Mon Sep 17 00:00:00 2001
-From: Swaraj Hota <swarajhota353@gmail.com>
-Date: Fri, 28 Aug 2020 00:07:00 +0530
-Subject: [PATCH] rfdev_jtag: add axiom beta rfdev jtag interface driver
-
----
- configure.ac                  |  21 ++-
- src/jtag/drivers/Makefile.am  |   4 +
- src/jtag/drivers/rfdev-jtag.c | 335 ++++++++++++++++++++++++++++++++++
- src/jtag/drivers/rfdev-uapi.h |  72 ++++++++
- src/jtag/interfaces.c         |   6 +
- 5 files changed, 437 insertions(+), 1 deletion(-)
- create mode 100644 src/jtag/drivers/rfdev-jtag.c
- create mode 100644 src/jtag/drivers/rfdev-uapi.h
-
 diff --git a/configure.ac b/configure.ac
-index 90ac2a98c..3b4208bb2 100644
+index d563f2b66..caec4f083 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -147,6 +147,9 @@ m4_define([LIBJAYLINK_ADAPTERS],
- m4_define([PCIE_ADAPTERS],
- 	[[[xlnx_pcie_xvc], [Xilinx XVC/PCIe], [XLNX_PCIE_XVC]]])
+@@ -227,6 +227,10 @@ m4_define([OPTIONAL_LIBRARIES],
+ m4_define([COVERAGE],
+ 	[[[gcov], [Collect coverage using gcov], []]])
  
 +m4_define([JTAGIF_ADAPTERS],
 +	[[[rfdev_jtag], [Axiom Beta RFDev JTAG Interface], [RFDEV_JTAG]]])
 +
- 
++
  AC_ARG_ENABLE([doxygen-html],
    AS_HELP_STRING([--disable-doxygen-html],
-@@ -333,6 +336,10 @@ AC_ARG_ENABLE([xlnx_pcie_xvc],
-   AS_HELP_STRING([--enable-xlnx-pcie-xvc], [Enable building support for Xilinx XVC/PCIe.]),
-   [build_xlnx_pcie_xvc=$enableval], [build_xlnx_pcie_xvc=no])
+     [Disable building Doxygen manual as HTML.]),
+@@ -367,6 +371,10 @@ AC_ARG_ENABLE([gw16012],
+ 
+ can_build_rshim=no
  
 +AC_ARG_ENABLE([rfdev_jtag],
 +  AS_HELP_STRING([--enable-rfdev-jtag], [Enable building support for Axiom Beta RFDev JTAG Interface]),
 +  [build_rfdev_jtag=$enableval], [build_rfdev_jtag=no])
 +
  AS_CASE([$host_os],
-   [linux*], [],
-   [
-@@ -348,6 +355,10 @@ AS_CASE([$host_os],
-       AC_MSG_ERROR([xlnx_pcie_xvc is only available on linux])
+   [linux*], [
+     is_linux=yes
+@@ -382,6 +390,10 @@ AS_CASE([$host_os],
+       ])
      ])
  
 +    AS_IF([test "x$build_rfdev_jtag" = "xyes"], [
 +      AC_MSG_ERROR([rfdev_jtag is only available on linux])
 +    ])
 +
-     AS_CASE([$host_os], [freebsd*], [],
-     [
-       AS_IF([test "x$build_rshim" = "xyes"], [
-@@ -622,6 +633,13 @@ AS_IF([test "x$build_xlnx_pcie_xvc" = "xyes"], [
-   AC_DEFINE([BUILD_XLNX_PCIE_XVC], [0], [0 if you don't want Xilinx XVC/PCIe driver.])
+     AS_IF([test "x$enable_dmem" = "xyes"], [
+       AC_MSG_ERROR([dmem is only available on linux])
+     ])
+@@ -533,6 +545,13 @@ AS_IF([test "x$use_internal_jimtcl" = "xyes"], [
+   ])
  ])
  
 +AS_IF([test "x$build_rfdev_jtag" = "xyes"], [
@@ -65,39 +49,30 @@ index 90ac2a98c..3b4208bb2 100644
  PKG_CHECK_MODULES([LIBUSB1], [libusb-1.0], [
  	use_libusb1=yes
  	AC_DEFINE([HAVE_LIBUSB1], [1], [Define if you have libusb-1.x])
-@@ -745,6 +763,7 @@ AM_CONDITIONAL([REMOTE_BITBANG], [test "x$build_remote_bitbang" = "xyes"])
- AM_CONDITIONAL([BUSPIRATE], [test "x$build_buspirate" = "xyes"])
- AM_CONDITIONAL([SYSFSGPIO], [test "x$build_sysfsgpio" = "xyes"])
- AM_CONDITIONAL([XLNX_PCIE_XVC], [test "x$build_xlnx_pcie_xvc" = "xyes"])
+@@ -729,6 +748,7 @@ AM_CONDITIONAL([GIVEIO], [test "x$parport_use_giveio" = "xyes"])
+ AM_CONDITIONAL([BITBANG], [test "x$build_bitbang" = "xyes"])
+ AM_CONDITIONAL([USB_BLASTER_DRIVER], [test "x$enable_usb_blaster" != "xno" -o "x$enable_usb_blaster_2" != "xno"])
+ AM_CONDITIONAL([GW16012], [test "x$build_gw16012" = "xyes"])
 +AM_CONDITIONAL([RFDEV_JTAG], [test "x$build_rfdev_jtag" = "xyes"])
- AM_CONDITIONAL([USE_LIBUSB0], [test "x$use_libusb0" = "xyes"])
  AM_CONDITIONAL([USE_LIBUSB1], [test "x$use_libusb1" = "xyes"])
  AM_CONDITIONAL([IS_CYGWIN], [test "x$is_cygwin" = "xyes"])
-@@ -826,7 +845,7 @@ echo --------------------------------------------------
- m4_foreach([adapter], [USB1_ADAPTERS, USB0_ADAPTERS,
- 	HIDAPI_ADAPTERS, HIDAPI_USB1_ADAPTERS, LIBFTDI_ADAPTERS,
- 	LIBGPIOD_ADAPTERS,
--	LIBJAYLINK_ADAPTERS, PCIE_ADAPTERS],
-+	LIBJAYLINK_ADAPTERS, PCIE_ADAPTERS, JTAGIF_ADAPTERS],
- 	[s=m4_format(["%-40s"], ADAPTER_DESC([adapter]))
- 	AS_CASE([$ADAPTER_VAR([adapter])],
- 		[auto], [
+ AM_CONDITIONAL([IS_MINGW], [test "x$is_mingw" = "xyes"])
 diff --git a/src/jtag/drivers/Makefile.am b/src/jtag/drivers/Makefile.am
-index c860833b3..64c48bd1e 100644
+index 5216e5d77..55ab76493 100644
 --- a/src/jtag/drivers/Makefile.am
 +++ b/src/jtag/drivers/Makefile.am
-@@ -179,6 +179,9 @@ endif
- if XDS110
- DRIVERFILES += %D%/xds110.c
+@@ -212,6 +212,9 @@ DRIVERFILES += %D%/am335xgpio.c
  endif
+ if CH347
+ DRIVERFILES += %D%/ch347.c
++endif
 +if RFDEV_JTAG
 +DRIVERFILES += %D%/rfdev-jtag.c
-+endif
+ endif
  
  DRIVERHEADERS = \
- 	%D%/bitbang.h \
-@@ -187,6 +190,7 @@ DRIVERHEADERS = \
- 	%D%/libusb_helper.h \
+@@ -222,6 +224,7 @@ DRIVERHEADERS = \
+ 	%D%/cmsis_dap.h \
  	%D%/minidriver_imp.h \
  	%D%/mpsse.h \
 +	%D%/rfdev-uapi.h \
@@ -109,7 +84,7 @@ new file mode 100644
 index 000000000..77507ceb6
 --- /dev/null
 +++ b/src/jtag/drivers/rfdev-jtag.c
-@@ -0,0 +1,335 @@
+@@ -0,0 +1,336 @@
 +#ifdef HAVE_CONFIG_H
 +#include "config.h"
 +#endif
@@ -118,6 +93,8 @@ index 000000000..77507ceb6
 +#include <sys/ioctl.h>
 +
 +#include "rfdev-uapi.h"
++
++typedef enum tap_state tap_state_t;
 +
 +#define DEV_NAME_SIZE	256
 +#define MAX_TX_SIZE	64
@@ -362,10 +339,9 @@ index 000000000..77507ceb6
 +	return retval;
 +}
 +
-+static int rfdev_jtag_execute_queue(void)
++static int rfdev_jtag_execute_queue(struct jtag_command *cmd)
 +{
 +	int ret;
-+	struct jtag_command *cmd = jtag_command_queue;
 +
 +	while (cmd != NULL) {
 +		ret = rfdev_jtag_execute_command(cmd);
@@ -436,7 +412,7 @@ index 000000000..77507ceb6
 +
 +struct adapter_driver rfdev_jtag_adapter_driver = {
 +	.name = "rfdev_jtag",
-+	.transports = jtag_only,
++	.transport_ids = TRANSPORT_JTAG,
 +	.commands = rfdevjtag_command_handlers,
 +
 +	.init = rfdev_jtag_init,
@@ -523,30 +499,29 @@ index 000000000..23fbef438
 +#define JTAG_IOCXFER	_IOWR(RFDEV_IOC_MAGIC, 2, struct jtag_xfer)
 +
 +#endif
+diff --git a/src/jtag/interface.h b/src/jtag/interface.h
+index 51cbf9ac0..9072aed7b 100644
+--- a/src/jtag/interface.h
++++ b/src/jtag/interface.h
+@@ -402,6 +402,7 @@ extern struct adapter_driver osbdm_adapter_driver;
+ extern struct adapter_driver parport_adapter_driver;
+ extern struct adapter_driver presto_adapter_driver;
+ extern struct adapter_driver remote_bitbang_adapter_driver;
++extern struct adapter_driver rfdev_jtag_adapter_driver;
+ extern struct adapter_driver rlink_adapter_driver;
+ extern struct adapter_driver rshim_dap_adapter_driver;
+ extern struct adapter_driver stlink_dap_adapter_driver;
 diff --git a/src/jtag/interfaces.c b/src/jtag/interfaces.c
-index 45e30c9b0..f4ec61fb5 100644
+index caf5ace99..e8aeb8f99 100644
 --- a/src/jtag/interfaces.c
 +++ b/src/jtag/interfaces.c
-@@ -147,6 +147,9 @@ extern struct adapter_driver stlink_dap_adapter_driver;
- #if BUILD_RSHIM == 1
- extern struct adapter_driver rshim_dap_adapter_driver;
+@@ -162,6 +162,8 @@ struct adapter_driver *adapter_drivers[] = {
+ 	&xlnx_pcie_xvc_adapter_driver,
+ 	&xlnx_axi_xvc_adapter_driver,
  #endif
-+#if BUILD_RFDEV_JTAG == 1
-+extern struct adapter_driver rfdev_jtag_adapter_driver;
-+#endif
- #endif /* standard drivers */
- 
- /**
-@@ -264,6 +267,9 @@ struct adapter_driver *adapter_drivers[] = {
- #if BUILD_RSHIM == 1
- 		&rshim_dap_adapter_driver,
- #endif
+-
 +#if BUILD_RFDEV_JTAG == 1
 +		&rfdev_jtag_adapter_driver,
 +#endif
- #endif /* standard drivers */
  		NULL,
- 	};
--- 
-2.28.0
-
+ };
