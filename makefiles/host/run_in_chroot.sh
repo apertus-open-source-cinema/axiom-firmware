@@ -9,8 +9,8 @@
 set -xeuo pipefail
 
 # needed for the binfmt interpreter for arm
-cp -f $(which qemu-arm-static) build/root.fs/usr/bin
-cp -f $(which qemu-aarch64-static) build/root.fs/usr/bin
+cp -f $(which qemu-arm) build/root.fs/usr/bin
+cp -f $(which qemu-aarch64) build/root.fs/usr/bin
 
 # mount the needed system filesystems
 mount -t proc /proc build/root.fs/proc
@@ -38,7 +38,7 @@ chroot build/root.fs $*
 
 # undo the changes, and reset the image to work on hardware again.
 ln -sf "$(cat build/root.fs/etc/resolv.conf.bak)" build/root.fs/etc/resolv.conf
-rm -f build/root.fs/usr/bin/qemu-arm-static build/root.fs/usr/bin/qemu-aarch64-static
+rm -f build/root.fs/usr/bin/qemu-arm build/root.fs/usr/bin/qemu-aarch64
 
 # unmount (allow fail)
 umount build/root.fs/var/cache/pacman/pkg/ || true
