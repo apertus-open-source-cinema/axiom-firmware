@@ -17,6 +17,7 @@ mount -t proc /proc build/root.fs/proc
 mount -o bind /dev build/root.fs/dev
 mount -o bind /dev/pts build/root.fs/dev/pts
 mount -o bind /sys build/root.fs/sys
+mount -o bind /tmp build/root.fs/tmp
 
 # register binfmt for arm emulation
 mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc || echo "binfmt_misc already loaded"
@@ -46,6 +47,7 @@ umount build/root.fs/sys || true
 umount build/root.fs/dev/pts || true
 umount build/root.fs/dev/ || true
 umount build/root.fs/proc || true
+umount build/root.fs/tmp || true
 # (
 #     true
 # ) > /dev/null 2>&1
