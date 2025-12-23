@@ -1,47 +1,5 @@
 SPDX-FileCopyrightText: © 2015 Xilinx
 SPDX-License-Identifier: GPL-2.0-only
-diff --git a/drivers/usb/chipidea/ci_hdrc_usb2.c b/drivers/usb/chipidea/ci_hdrc_usb2.c
-index c044fba46..83238293e 100644
---- a/drivers/usb/chipidea/ci_hdrc_usb2.c
-+++ b/drivers/usb/chipidea/ci_hdrc_usb2.c
-@@ -30,6 +30,7 @@ static const struct ci_hdrc_platform_data ci_default_pdata = {
- 
- static struct ci_hdrc_platform_data ci_zynq_pdata = {
- 	.capoffset	= DEF_CAPOFFSET,
-+	.flags          = CI_HDRC_PHY_VBUS_CONTROL,
- };
- 
- static const struct of_device_id ci_hdrc_usb2_of_match[] = {
-@@ -58,6 +59,10 @@ static int ci_hdrc_usb2_probe(struct platform_device *pdev)
- 	if (match && match->data) {
- 		/* struct copy */
- 		*ci_pdata = *(struct ci_hdrc_platform_data *)match->data;
-+		ci_pdata->usb_phy = devm_usb_get_phy_by_phandle(dev, "usb-phy",
-+					 0);
-+		if (IS_ERR(ci_pdata->usb_phy))
-+			return PTR_ERR(ci_pdata->usb_phy);
- 	}
- 
- 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-diff --git a/drivers/usb/chipidea/host.c b/drivers/usb/chipidea/host.c
-index d858a82c4..3d8f993e9 100644
---- a/drivers/usb/chipidea/host.c
-+++ b/drivers/usb/chipidea/host.c
-@@ -55,6 +55,14 @@ static int ehci_ci_portpower(struct usb_hcd *hcd, int portnum, bool enable)
- 		}
- 	}
- 
-+	if (ci->platdata->flags & CI_HDRC_PHY_VBUS_CONTROL &&
-+			ci->usb_phy && ci->usb_phy->set_vbus) {
-+		if (enable)
-+			ci->usb_phy->set_vbus(ci->usb_phy, 1);
-+		else
-+			ci->usb_phy->set_vbus(ci->usb_phy, 0);
-+	}
-+
- 	if (enable && (ci->platdata->phy_mode == USBPHY_INTERFACE_MODE_HSIC)) {
- 		/*
- 		 * Marvell 28nm HSIC PHY requires forcing the port to HS mode.
 diff --git a/drivers/usb/phy/phy-ulpi.c b/drivers/usb/phy/phy-ulpi.c
 index a43c49369..0f7f6eb16 100644
 --- a/drivers/usb/phy/phy-ulpi.c
@@ -106,7 +64,7 @@ index a43c49369..0f7f6eb16 100644
  
  	otg->usb_phy	= phy;
  	otg->set_host	= ulpi_set_host;
-@@ -271,2 +303,70 @@ devm_otg_ulpi_create(struct device *dev,
+@@ -271,2 +303,68 @@ devm_otg_ulpi_create(struct device *dev,
  }
  EXPORT_SYMBOL_GPL(devm_otg_ulpi_create);
 + 
@@ -150,13 +108,11 @@ index a43c49369..0f7f6eb16 100644
 +	return 0;
 +}
 +
-+static int ulpi_phy_remove(struct platform_device *pdev)
++static void ulpi_phy_remove(struct platform_device *pdev)
 +{
 +	struct ulpi_phy *uphy = platform_get_drvdata(pdev);
 +
 +	usb_remove_phy(uphy->usb_phy);
-+
-+	return 0;
 +}
 +
 +static const struct of_device_id ulpi_phy_table[] = {
@@ -177,16 +133,3 @@ index a43c49369..0f7f6eb16 100644
 +
 +MODULE_DESCRIPTION("ULPI PHY driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/usb/chipidea.h b/include/linux/usb/chipidea.h
-index 63758c399..be9aaf54e 100644
---- a/include/linux/usb/chipidea.h
-+++ b/include/linux/usb/chipidea.h
-@@ -60,7 +60,8 @@ struct ci_hdrc_platform_data {
- #define CI_HDRC_OVERRIDE_PHY_CONTROL	BIT(12) /* Glue layer manages phy */
- #define CI_HDRC_REQUIRES_ALIGNED_DMA	BIT(13)
- #define CI_HDRC_IMX_IS_HSIC		BIT(14)
- #define CI_HDRC_PMQOS			BIT(15)
-+#define CI_HDRC_PHY_VBUS_CONTROL	BIT(16)
- 	enum usb_dr_mode	dr_mode;
- #define CI_HDRC_CONTROLLER_RESET_EVENT		0
- #define CI_HDRC_CONTROLLER_STOPPED_EVENT	1
