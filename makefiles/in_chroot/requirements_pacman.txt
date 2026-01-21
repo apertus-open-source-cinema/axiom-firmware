@@ -48,7 +48,7 @@ python-numpy
 
 # various other packages
 lsof
-mlocate
+plocate
 stress
 screen
 minicom
