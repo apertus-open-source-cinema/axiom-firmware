@@ -52,6 +52,7 @@ mlocate
 stress
 screen
 minicom
+haveged
 
 # wifi utilities
 iw
