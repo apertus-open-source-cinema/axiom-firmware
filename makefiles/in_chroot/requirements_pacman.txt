@@ -52,6 +52,7 @@ mlocate
 stress
 screen
 minicom
+haveged # random number generator based on HAVEGE algorithm
 
 # wifi utilities
 iw
